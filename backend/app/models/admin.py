@@ -11,5 +11,5 @@ class Admin(User):
     managed_region = Column(String, nullable=True)
 
     __mapper_args__ = {
-        "polymorphic_identity": "admin",
+        "polymorphic_identity": "ADMIN",
     }
