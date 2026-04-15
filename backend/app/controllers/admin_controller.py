@@ -9,7 +9,7 @@ from app.services import admin_service
 
 router = APIRouter(prefix="/admins", tags=["Adminstrators"])
 
-@router.post("/", response_model=AdminResponse, status_code=status.HTTP_200_OK)
+@router.post("/register", response_model=AdminResponse, status_code=status.HTTP_200_OK)
 async def register_admin(
     admin_in: AdminCreate, 
     db: AsyncSession = Depends(get_db)
