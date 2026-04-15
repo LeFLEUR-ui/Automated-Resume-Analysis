@@ -62,8 +62,12 @@ const Header = () => {
     <header className="bg-white border-b border-gray-100 px-4 md:px-10 py-3 sticky top-0 z-50 font-sans">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center space-x-3 cursor-pointer shrink-0" onClick={() => navigate('/hrdashboard')}>
-          <div className="w-8 h-8 bg-pink-50 rounded-lg flex items-center justify-center">
-            <Building2 size={20} color={brandPink} />
+          <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center overflow-hidden">
+            <img 
+                src="../src/assets/logo.png" 
+                alt="description" 
+                className="w-full h-full object-cover"
+            />
           </div>
           <div className="hidden md:block">
             <h1 className="text-sm font-semibold tracking-tight text-gray-900 leading-snug">HR Portal</h1>
