@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 
 import ProtectedRoute from './ProtectedRoutes';
 import Register from './pages/main_page/Register';
-import Login from './pages/main_page/Login'
+import Login from './pages/main_page/Login';
 import LandingPage from './pages/main_page/LandingPage';
 import AboutPage from './pages/main_page/AboutPage';
 import CareersPage from './pages/main_page/CareersPage';
@@ -27,20 +27,27 @@ function App() {
       <Route path="/aboutpage" element={<AboutPage />} />
 
       {/* For Admin's */}
-      <Route path="/admin/dashboard" element={<AdminDashboard />} />
+      <Route element={<ProtectedRoute allowedRole="ADMIN" />}>
+        <Route path="/admin">
+          <Route path="dashboard" element={<AdminDashboard />} />
+        </Route>
+      </Route>
 
       {/* For HR's */}
       <Route element={<ProtectedRoute allowedRole="HR" />}> 
-        <Route path="/hr/dashboard" element={<HRDashboard />} />
-        <Route path="/hr/screeningportal" element={<ScreeningPortal />} />
-        <Route path="/hr/jobmanagement" element={<JobManagement />} />
+        <Route path="/hr">
+          <Route path="dashboard" element={<HRDashboard />} />
+          <Route path="screeningportal" element={<ScreeningPortal />} />
+          <Route path="jobmanagement" element={<JobManagement />} />
+        </Route>
       </Route>
-
 
       {/* For Candidates's */}
       <Route element={<ProtectedRoute allowedRole="CANDIDATE" />}> 
-        <Route path="/candidate/dashboard" element={<CandidateDashboard />} />
-        <Route path="/candidate/applypage" element={<ApplyPage />} />
+        <Route path="/candidate">
+          <Route path="dashboard" element={<CandidateDashboard />} />
+          <Route path="applypage" element={<ApplyPage />} />
+        </Route>
       </Route>
     </Routes>
   )
