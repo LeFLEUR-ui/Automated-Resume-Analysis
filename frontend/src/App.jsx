@@ -10,6 +10,7 @@ import ApplyPage from './pages/candidate/ApplyPage';
 import CandidateDashboard from './pages/candidate/CandidateDashboard';
 import CareersPage from './pages/main_page/CareersPage';
 import AboutPage from './pages/main_page/AboutPage';
+import ProtectedRoute from './ProtectedRoutes';
 
 function App() {
   return (
@@ -22,13 +23,18 @@ function App() {
       <Route path="/aboutpage" element={<AboutPage />} />
 
       {/* For HR's */}
-      <Route path="/hr/dashboard" element={<HRDashboard />} />
-      <Route path="/hr/screeningportal" element={<ScreeningPortal />} />
-      <Route path="/hr/jobmanagement" element={<JobManagement />} />
+      <Route element={<ProtectedRoute allowedRole="HR" />}> 
+        <Route path="/hr/dashboard" element={<HRDashboard />} />
+        <Route path="/hr/screeningportal" element={<ScreeningPortal />} />
+        <Route path="/hr/jobmanagement" element={<JobManagement />} />
+      </Route>
+
 
       {/* For Candidates's */}
-      <Route path="/candidate/dashboard" element={<CandidateDashboard />} />
-      <Route path="/candidate/applypage" element={<ApplyPage />} />
+      <Route element={<ProtectedRoute allowedRole="CANDIDATE" />}> 
+        <Route path="/candidate/dashboard" element={<CandidateDashboard />} />
+        <Route path="/candidate/applypage" element={<ApplyPage />} />
+      </Route>
     </Routes>
   )
 }
