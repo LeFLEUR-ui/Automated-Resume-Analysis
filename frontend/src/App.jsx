@@ -8,14 +8,18 @@ import ScreeningPortal from './pages/hr/ScreeningPortal';
 import JobManagement from './pages/hr/JobManagement';
 import ApplyPage from './pages/candidate/ApplyPage';
 import CandidateDashboard from './pages/candidate/CandidateDashboard';
+import CareersPage from './pages/main_page/CareersPage';
+import AboutPage from './pages/main_page/AboutPage';
 
 function App() {
   return (
     <Routes>
-      {/* Pages */}
-      <Route path="/" element={<LandingPage />} />
+      {/* Mariwasa Pages */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/careerspage" element={<CareersPage />} />
+      <Route path="/aboutpage" element={<AboutPage />} />
 
       {/* For HR's */}
       <Route path="/hr/dashboard" element={<HRDashboard />} />
