@@ -1,16 +1,19 @@
-import './App.css'
 import { Routes, Route } from 'react-router-dom';
+
+import ProtectedRoute from './ProtectedRoutes';
+import Register from './pages/main_page/Register';
 import Login from './pages/main_page/Login'
 import LandingPage from './pages/main_page/LandingPage';
-import Register from './pages/main_page/Register';
+import AboutPage from './pages/main_page/AboutPage';
+import CareersPage from './pages/main_page/CareersPage';
+
 import HRDashboard from './pages/hr/HRDashboard';
 import ScreeningPortal from './pages/hr/ScreeningPortal';
 import JobManagement from './pages/hr/JobManagement';
+
 import ApplyPage from './pages/candidate/ApplyPage';
 import CandidateDashboard from './pages/candidate/CandidateDashboard';
-import CareersPage from './pages/main_page/CareersPage';
-import AboutPage from './pages/main_page/AboutPage';
-import ProtectedRoute from './ProtectedRoutes';
+
 import AdminDashboard from './pages/admin/AdminDashboard';
 
 function App() {
@@ -24,9 +27,7 @@ function App() {
       <Route path="/aboutpage" element={<AboutPage />} />
 
       {/* For Admin's */}
-      <Route element={<ProtectedRoute allowedRole="Admin" />}>
-        <Route path="/admin/admindashbord" element={<AdminDashboard />} />
-      </Route>
+      <Route path="/admin/dashboard" element={<AdminDashboard />} />
 
       {/* For HR's */}
       <Route element={<ProtectedRoute allowedRole="HR" />}> 
@@ -45,4 +46,4 @@ function App() {
   )
 }
 
-export default App
+export default App;
