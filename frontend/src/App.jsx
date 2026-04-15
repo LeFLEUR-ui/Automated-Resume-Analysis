@@ -11,6 +11,7 @@ import CandidateDashboard from './pages/candidate/CandidateDashboard';
 import CareersPage from './pages/main_page/CareersPage';
 import AboutPage from './pages/main_page/AboutPage';
 import ProtectedRoute from './ProtectedRoutes';
+import AdminDashboard from './pages/admin/AdminDashboard';
 
 function App() {
   return (
@@ -21,6 +22,11 @@ function App() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/careerspage" element={<CareersPage />} />
       <Route path="/aboutpage" element={<AboutPage />} />
+
+      {/* For Admin's */}
+      <Route element={<ProtectedRoute allowedRole="Admin" />}>
+        <Route path="/admin/admindashbord" element={<AdminDashboard />} />
+      </Route>
 
       {/* For HR's */}
       <Route element={<ProtectedRoute allowedRole="HR" />}> 
