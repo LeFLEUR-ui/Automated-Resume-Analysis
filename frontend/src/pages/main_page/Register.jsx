@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Users, Briefcase, ArrowLeft, Loader2 } from 'lucide-react';
+import { Users, Briefcase, ShieldCheck, ArrowLeft, Loader2 } from 'lucide-react';
 
 const Register = () => {
   const [role, setRole] = useState('CANDIDATE');
@@ -10,6 +10,7 @@ const Register = () => {
     email: '',
     password: '',
     confirmPassword: '',
+    managedRegion: '', // Added for Admin
   });
 
   const handleChange = (e) => {
@@ -19,7 +20,6 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // 1. Password Validation
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match!");
       return;
@@ -27,26 +27,27 @@ const Register = () => {
 
     setLoading(true);
 
-    // 2. Dynamic Endpoint Selection
-    const endpoint = role === 'HR' 
-      ? 'http://127.0.0.1:8000/hr/register' 
-      : 'http://127.0.0.1:8000/candidate/register';
+    let endpoint = 'http://127.0.0.1:8000/candidate/register';
+    if (role === 'HR') {
+      endpoint = 'http://127.0.0.1:8000/hr/register';
+    } else if (role === 'ADMIN') {
+      endpoint = 'http://127.0.0.1:8000/admins/register';
+    }
 
-    // 3. Construct Payload based on Pydantic Schema
-    // Both schemas use 'fullname' (lowercase), 'email', and 'password'
     const payload = {
       fullname: formData.fullName,
       email: formData.email,
       password: formData.password,
     };
 
-    // Add role-specific fields
     if (role === 'HR') {
       payload.company_name = "Mariwasa Siam Ceramics Inc.";
       payload.department = "General";
+    } else if (role === 'ADMIN') {
+      payload.managed_region = formData.managedRegion || "Main Headquarters";
     } else {
-      payload.resume_url = null; // Matches Optional[str]
-      payload.experience_years = 0; // Matches Optional[int]
+      payload.resume_url = null;
+      payload.experience_years = 0;
     }
 
     try {
@@ -57,7 +58,6 @@ const Register = () => {
         window.location.href = "/login";
       }
     } catch (error) {
-      // Improved Error Handling: Extract detail from FastAPI response
       const errorData = error.response?.data?.detail;
       let errorMessage = "Registration failed.";
 
@@ -162,31 +162,54 @@ const Register = () => {
             </div>
           </div>
 
+          {role === 'ADMIN' && (
+            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+              <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                Managed Region / Office
+              </label>
+              <input
+                name="managedRegion"
+                type="text"
+                onChange={handleChange}
+                placeholder="e.g. Sto. Tomas, Batangas"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-100 focus:border-[#D60041] transition text-sm"
+              />
+            </div>
+          )}
+
           <div>
             <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">
               I am registering as
             </label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-2">
               <label 
-                className={`flex flex-col items-center justify-center p-4 rounded-xl border cursor-pointer transition ${role === 'CANDIDATE' ? 'border-[#D60041] bg-red-50' : 'border-gray-200 hover:bg-gray-50'}`}
+                className={`flex flex-col items-center justify-center p-3 rounded-xl border cursor-pointer transition ${role === 'CANDIDATE' ? 'border-[#D60041] bg-red-50' : 'border-gray-200 hover:bg-gray-50'}`}
                 onClick={() => setRole('CANDIDATE')}
               >
-                <input type="radio" name="role" className="hidden" checked={role === 'CANDIDATE'} readOnly />
-                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
-                  <Users size={18} className={role === 'CANDIDATE' ? 'text-[#D60041]' : 'text-gray-600'} />
+                <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mb-1">
+                  <Users size={16} className={role === 'CANDIDATE' ? 'text-[#D60041]' : 'text-gray-600'} />
                 </div>
-                <span className="text-xs font-medium text-gray-700">Candidate</span>
+                <span className="text-[10px] font-medium text-gray-700">Candidate</span>
               </label>
 
               <label 
-                className={`flex flex-col items-center justify-center p-4 rounded-xl border cursor-pointer transition ${role === 'HR' ? 'border-[#D60041] bg-red-50' : 'border-gray-200 hover:bg-gray-50'}`}
+                className={`flex flex-col items-center justify-center p-3 rounded-xl border cursor-pointer transition ${role === 'HR' ? 'border-[#D60041] bg-red-50' : 'border-gray-200 hover:bg-gray-50'}`}
                 onClick={() => setRole('HR')}
               >
-                <input type="radio" name="role" className="hidden" checked={role === 'HR'} readOnly />
-                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
-                  <Briefcase size={18} className={role === 'HR' ? 'text-[#D60041]' : 'text-gray-600'} />
+                <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mb-1">
+                  <Briefcase size={16} className={role === 'HR' ? 'text-[#D60041]' : 'text-gray-600'} />
                 </div>
-                <span className="text-xs font-medium text-gray-700">HR Staff</span>
+                <span className="text-[10px] font-medium text-gray-700">HR Staff</span>
+              </label>
+
+              <label 
+                className={`flex flex-col items-center justify-center p-3 rounded-xl border cursor-pointer transition ${role === 'ADMIN' ? 'border-[#D60041] bg-red-50' : 'border-gray-200 hover:bg-gray-50'}`}
+                onClick={() => setRole('ADMIN')}
+              >
+                <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mb-1">
+                  <ShieldCheck size={16} className={role === 'ADMIN' ? 'text-[#D60041]' : 'text-gray-600'} />
+                </div>
+                <span className="text-[10px] font-medium text-gray-700">Admin</span>
               </label>
             </div>
           </div>
