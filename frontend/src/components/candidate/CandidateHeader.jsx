@@ -20,19 +20,16 @@ const Header = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Retrieve the email stored during login
   const userEmail = localStorage.getItem('saved_email') || 'guest@example.com';
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
-    // We keep saved_email so the login field stays populated, 
-    // but you can removeItem('saved_email') if you want a total clear.
+
     navigate('/');
     window.location.reload(); 
   };
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
