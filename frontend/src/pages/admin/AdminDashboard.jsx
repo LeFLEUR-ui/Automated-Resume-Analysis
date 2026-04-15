@@ -1,156 +1,171 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import AdminHeader from '../../components/admin/AdminHeader';
-import SystemHealthMetrics from '../../components/admin/dashboard/SystemHealthMetrics';
-import TrafficAnalytics from '../../components/admin/dashboard/TrafficAnalytics';
-import UserActivityLog from '../../components/admin/dashboard/UserActivityLog';
+import React, { useState } from 'react';
 import { 
-  Download, 
-  ShieldCheck, 
+  ChevronDown, 
+  LayoutDashboard, 
   Users, 
+  ShieldCheck, 
   Settings, 
-  Database, 
-  Activity 
+  LogOut, 
+  Database,
+  Download,
+  Activity,
+  AlertTriangle,
+  Clock,
+  ArrowUpRight,
+  Search,
+  Filter
 } from 'lucide-react';
+import Header from '../../components/admin/AdminHeader';
 
-const SYSTEM_STATS = {
-  totalUsers: 14205,
-  activeSessions: 892,
-  serverUptime: "99.98%",
-  securityAlerts: 3
-};
+const SYSTEM_STATS = [
+  { label: 'Total Users', value: '14,205', change: '+12%', icon: Users, color: 'text-[#D10043]', bg: 'bg-red-50' },
+  { label: 'System Uptime', value: '99.98%', change: '+0.02%', icon: Activity, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+  { label: 'Active Sessions', value: '892', change: '-5%', icon: Clock, color: 'text-gray-600', bg: 'bg-gray-50' },
+  { label: 'Security Alerts', value: '3', change: 'Stable', icon: ShieldCheck, color: 'text-amber-600', bg: 'bg-amber-50' },
+];
 
-const RECENT_USERS = [
-  {
-    id: 1,
-    name: "Marcus Aurelius",
-    role: "Super Admin",
-    action: "Updated Firewall Rules",
-    timestamp: "2 mins ago",
-    status: "success",
-  },
-  {
-    id: 2,
-    name: "Helena Troi",
-    role: "Editor",
-    action: "Bulk Asset Upload",
-    timestamp: "15 mins ago",
-    status: "pending",
-  },
-  {
-    id: 3,
-    name: "Julian Casablancas",
-    role: "Moderator",
-    action: "Flagged Content Review",
-    timestamp: "1 hour ago",
-    status: "warning",
-  },
-  {
-    id: 4,
-    name: "Sophia Loren",
-    role: "User Manager",
-    action: "Created New Account",
-    timestamp: "3 hours ago",
-    status: "success",
-  }
+const RECENT_ACTIVITIES = [
+  { id: 1, user: "Marcus Aurelius", role: "Super Admin", action: "Updated Firewall Rules", time: "2 mins ago", status: "Success" },
+  { id: 2, user: "Helena Troi", role: "Editor", action: "Bulk Asset Upload", time: "15 mins ago", status: "Pending" },
+  { id: 3, user: "Julian Casablancas", role: "Moderator", action: "Flagged Content Review", time: "1 hour ago", status: "Warning" },
+  { id: 4, user: "Sophia Loren", role: "User Manager", action: "Created New Account", time: "3 hours ago", status: "Success" },
 ];
 
 const AdminDashboard = () => {
-  const navigate = useNavigate();
-
   return (
     <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter']">
-      <AdminHeader />
+      
+      <Header />
 
-      <main className="max-w-[1400px] mx-auto px-10 py-8">
+      <main className="max-w-[1400px] mx-auto px-10 py-10">
         
-        {/* 🔹 Dashboard Header */}
-        <div className="flex justify-between items-end mb-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-gray-900">
-              System Control Center
-            </h2>
-            <p className="text-sm text-gray-400 font-medium tracking-wide">
-              Global infrastructure and user management overview
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900">System Overview</h2>
+            <p className="text-sm text-gray-400 font-medium tracking-wide mt-1">
+              Monitoring global performance and administrative logs
             </p>
           </div>
 
-          <div className="flex space-x-3">
-            <button className="bg-white border border-gray-200 px-4 py-2 rounded-xl hover:shadow-sm transition-all text-xs font-semibold tracking-tight text-gray-600 flex items-center">
-              System Live
-              <div className="w-2 h-2 bg-blue-500 rounded-full ml-2 animate-pulse"></div>
+          <div className="flex space-x-3 w-full md:w-auto">
+            <button className="flex-1 md:flex-none bg-white border border-gray-200 px-5 py-2.5 rounded-xl hover:shadow-sm transition-all text-xs font-bold tracking-tight text-gray-600 flex items-center justify-center">
+              Network Live
+              <div className="w-2.5 h-2.5 bg-[#D10043] rounded-full ml-3 animate-pulse"></div>
             </button>
-
-            <button className="bg-[#111827] text-white px-4 py-2 rounded-xl hover:bg-gray-800 transition-all text-xs font-semibold tracking-tight flex items-center">
-              <Download className="h-3.5 w-3.5 mr-2" />
-              Download Audit Logs
+            <button className="flex-1 md:flex-none bg-[#D10043] text-white px-5 py-2.5 rounded-xl hover:bg-[#b00038] transition-all text-xs font-bold tracking-tight flex items-center justify-center shadow-lg shadow-red-100">
+              <Download className="h-4 w-4 mr-2" />
+              Export Reports
             </button>
           </div>
         </div>
 
-        {/* 🔹 Core Metrics Component */}
-        <SystemHealthMetrics stats={SYSTEM_STATS} />
-        
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-            <div className="lg:col-span-2">
-                <TrafficAnalytics />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          {SYSTEM_STATS.map((stat, idx) => (
+            <div key={idx} className="bg-white border border-gray-100 p-6 rounded-[24px] shadow-sm hover:shadow-md transition-all">
+              <div className="flex justify-between items-start mb-4">
+                <div className={`p-3 rounded-2xl ${stat.bg}`}>
+                  <stat.icon className={`${stat.color} h-6 w-6`} />
+                </div>
+                <span className={`text-[10px] font-bold px-2 py-1 rounded-lg ${stat.change.includes('+') ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-50 text-gray-400'}`}>
+                  {stat.change}
+                </span>
+              </div>
+              <p className="text-sm font-semibold text-gray-400 tracking-wide uppercase text-[10px]">{stat.label}</p>
+              <h3 className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</h3>
             </div>
-            <div className="lg:col-span-1">
-                <UserActivityLog activities={RECENT_USERS} />
-            </div>
+          ))}
         </div>
 
-        {/* 🔹 Admin Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
           
-          <div
-            onClick={() => navigate('/admin/security')}
-            className="bg-white border border-gray-100 rounded-[24px] p-8 shadow-sm hover:shadow-md transition-all group cursor-pointer flex items-start gap-5"
-          >
-            <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center transition-colors group-hover:bg-indigo-100">
-              <ShieldCheck className="text-indigo-600 h-5 w-5" />
+          <div className="lg:col-span-2 bg-white border border-gray-100 rounded-[32px] p-8 shadow-sm">
+            <div className="flex justify-between items-center mb-8">
+              <h4 className="text-lg font-bold text-gray-900">Recent Admin Activity</h4>
+              <div className="flex gap-2">
+                <button className="p-2 hover:bg-gray-50 rounded-lg text-gray-400 transition-colors"><Search size={18} /></button>
+                <button className="p-2 hover:bg-gray-50 rounded-lg text-gray-400 transition-colors"><Filter size={18} /></button>
+              </div>
             </div>
-            <div>
-              <h4 className="font-semibold tracking-tight text-gray-900">
-                Security Protocols
-              </h4>
-              <p className="text-[13px] text-gray-400 font-medium tracking-wide mt-1">
-                {SYSTEM_STATS.securityAlerts} active patches required
-              </p>
+            
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b border-gray-50 uppercase text-[10px] tracking-[0.1em] text-gray-400 font-bold">
+                    <th className="pb-4 font-bold">Administrator</th>
+                    <th className="pb-4 font-bold">Action Performed</th>
+                    <th className="pb-4 font-bold text-right">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {RECENT_ACTIVITIES.map((log) => (
+                    <tr key={log.id} className="group hover:bg-gray-50/50 transition-colors">
+                      <td className="py-5">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-500 text-xs">
+                            {log.user.charAt(0)}
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-gray-900">{log.user}</p>
+                            <p className="text-[11px] text-gray-400 font-medium">{log.role}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-5">
+                        <p className="text-sm font-semibold text-gray-700">{log.action}</p>
+                        <p className="text-[11px] text-gray-400 flex items-center gap-1 mt-0.5">
+                          <Clock size={12} /> {log.time}
+                        </p>
+                      </td>
+                      <td className="py-5 text-right">
+                        <span className={`text-[11px] font-bold px-3 py-1 rounded-full ${
+                          log.status === 'Success' ? 'bg-emerald-50 text-emerald-600' : 
+                          log.status === 'Warning' ? 'bg-amber-50 text-amber-600' : 'bg-red-50 text-[#D10043]'
+                        }`}>
+                          {log.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
+            <button className="w-full mt-6 py-3 text-xs font-bold text-[#D10043] hover:bg-red-50 rounded-xl transition-colors">
+              View Full Audit Trail
+            </button>
           </div>
 
-          <div
-            onClick={() => navigate('/admin/users')}
-            className="bg-white border border-gray-100 rounded-[24px] p-8 shadow-sm hover:shadow-md transition-all group cursor-pointer flex items-start gap-5"
-          >
-            <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center transition-colors group-hover:bg-emerald-100">
-              <Users className="text-emerald-600 h-5 w-5" />
+          <div className="space-y-6">
+            <div className="bg-[#D10043] rounded-[32px] p-8 text-white relative overflow-hidden group shadow-xl shadow-red-100">
+              <div className="relative z-10">
+                <ShieldCheck className="mb-4 opacity-80" size={32} />
+                <h4 className="text-xl font-bold mb-2">Security Status</h4>
+                <p className="text-red-50 text-sm leading-relaxed mb-6">
+                  All systems operational. Last security scan performed 14 minutes ago.
+                </p>
+                <button className="bg-white/20 hover:bg-white/30 backdrop-blur-md px-6 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2">
+                  Launch Scan <ArrowUpRight size={14} />
+                </button>
+              </div>
+              <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
             </div>
-            <div>
-              <h4 className="font-semibold tracking-tight text-gray-900">
-                User Management
-              </h4>
-              <p className="text-[13px] text-gray-400 font-medium tracking-wide mt-1">
-                {SYSTEM_STATS.totalUsers.toLocaleString()} registered accounts
-              </p>
-            </div>
-          </div>
 
-          <div
-            onClick={() => navigate('/admin/database')}
-            className="bg-white border border-gray-100 rounded-[24px] p-8 shadow-sm hover:shadow-md transition-all group cursor-pointer flex items-start gap-5"
-          >
-            <div className="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center transition-colors group-hover:bg-purple-100">
-              <Database className="text-purple-600 h-5 w-5" />
-            </div>
-            <div>
-              <h4 className="font-semibold tracking-tight text-gray-900">
-                Database Clusters
-              </h4>
-              <p className="text-[13px] text-gray-400 font-medium tracking-wide mt-1">
-                Health: Optimal (4 Nodes)
-              </p>
+            <div className="bg-white border border-gray-100 rounded-[32px] p-8 shadow-sm">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center">
+                  <AlertTriangle className="text-[#D10043]" size={20} />
+                </div>
+                <h4 className="font-bold text-gray-900">System Warnings</h4>
+              </div>
+              <div className="space-y-4">
+                <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                  <p className="text-xs font-bold text-gray-800">Storage reaching 85%</p>
+                  <p className="text-[11px] text-gray-400 mt-1 uppercase tracking-wider font-bold">Cluster: US-East-1</p>
+                </div>
+                <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                  <p className="text-xs font-bold text-gray-800">Deprecated API calls</p>
+                  <p className="text-[11px] text-gray-400 mt-1 uppercase tracking-wider font-bold">3 endpoints flagged</p>
+                </div>
+              </div>
             </div>
           </div>
 
