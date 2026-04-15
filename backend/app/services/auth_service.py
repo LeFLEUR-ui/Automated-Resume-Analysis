@@ -11,7 +11,7 @@ async def register_user(db: AsyncSession, email: str, password: str, role: str):
     if existing_user:
         raise Exception("Email already registered")
 
-    if role not in ["CANDIDATE", "HR"]:
+    if role not in ["CANDIDATE", "HR", "ADMIN"]:
         raise Exception("Invalid role")
 
     new_user = User(
