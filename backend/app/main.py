@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base 
 from app.controllers.auth_controller import router as auth_router
+from app.controllers.admin_controller import router as admin_router
 from app.controllers.hr_controller import router as hr_router
 from app.controllers.candidate_controller import router as candidate_router
 
@@ -27,6 +28,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
+app.include_router(admin_router)
 app.include_router(hr_router)
 app.include_router(candidate_router)
 
@@ -34,6 +36,7 @@ async def create_tables():
     from app.models.user import User
     from app.models.candidate import Candidate
     from app.models.hr import HR
+    from app.models.admin import Admin
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
