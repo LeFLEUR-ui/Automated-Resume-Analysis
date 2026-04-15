@@ -24,7 +24,6 @@ import Header from '../../components/candidate/CandidateHeader';
 
 const BRAND_RED = "#D10043";
 
-// --- Main Dashboard Component ---
 const CandidateDashboard = () => {
   const navigate = useNavigate();
 
