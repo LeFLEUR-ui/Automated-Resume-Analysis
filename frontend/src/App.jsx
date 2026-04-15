@@ -3,9 +3,9 @@ import { Routes, Route } from 'react-router-dom';
 import Login from './pages/Login'
 import LandingPage from './pages/LandingPage';
 import Register from './pages/Register';
-import HRDashboard from './pages/HRDashboard';
-import ScreeningPortal from './pages/ScreeningPortal';
-import JobManagement from './pages/JobManagement';
+import HRDashboard from './pages/hr/HRDashboard';
+import ScreeningPortal from './pages/hr/ScreeningPortal';
+import JobManagement from './pages/hr/JobManagement';
 
 function App() {
   return (
