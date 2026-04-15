@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Users, Briefcase, ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Users, Briefcase, ShieldCheck, ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState(() => {
@@ -31,8 +31,8 @@ const Login = () => {
 
       const { access_token, role: verifiedRole } = response.data;
 
-      if (role !== verifiedRole) {
-        setError(`Account mismatch: This email is registered as a ${verifiedRole}.`);
+      if (role.toUpperCase() !== verifiedRole.toUpperCase()) {
+        setError(`Account mismatch: This email is registered as ${verifiedRole}.`);
         setLoading(false);
         return;
       }
@@ -41,8 +41,14 @@ const Login = () => {
       localStorage.setItem('role', verifiedRole);
 
       alert("Login Successful!");
-      
-      window.location.href = verifiedRole === 'HR' ? '/hr/dashboard' : '/candidate/dashboard';
+
+      if (verifiedRole.toUpperCase() === 'ADMIN') {
+        window.location.href = '/admin/dashboard';
+      } else if (verifiedRole.toUpperCase() === 'HR') {
+        window.location.href = '/hr/dashboard';
+      } else {
+        window.location.href = '/candidate/dashboard';
+      }
       
     } catch (err) {
       const message = err.response?.data?.detail || "Invalid email or password";
@@ -118,7 +124,7 @@ const Login = () => {
             </a>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <div 
               onClick={() => setRole('CANDIDATE')}
               className={`flex flex-col items-center justify-center p-4 rounded-xl border cursor-pointer transition ${role === 'CANDIDATE' ? 'border-[#D60041] bg-red-50' : 'border-gray-200 hover:bg-gray-50'}`}
@@ -126,7 +132,7 @@ const Login = () => {
               <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
                 <Users size={18} className={role === 'CANDIDATE' ? 'text-[#D60041]' : 'text-gray-600'} />
               </div>
-              <span className="text-xs font-medium text-gray-700">Candidate</span>
+              <span className="text-[10px] font-medium text-gray-700">Candidate</span>
             </div>
           
             <div 
@@ -136,7 +142,17 @@ const Login = () => {
               <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
                 <Briefcase size={18} className={role === 'HR' ? 'text-[#D60041]' : 'text-gray-600'} />
               </div>
-              <span className="text-xs font-medium text-gray-700">HR Staff</span>
+              <span className="text-[10px] font-medium text-gray-700">HR Staff</span>
+            </div>
+
+            <div 
+              onClick={() => setRole('ADMIN')}
+              className={`flex flex-col items-center justify-center p-4 rounded-xl border cursor-pointer transition ${role === 'ADMIN' ? 'border-[#D60041] bg-red-50' : 'border-gray-200 hover:bg-gray-50'}`}
+            >
+              <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
+                <ShieldCheck size={18} className={role === 'ADMIN' ? 'text-[#D60041]' : 'text-gray-600'} />
+              </div>
+              <span className="text-[10px] font-medium text-gray-700">Admin</span>
             </div>
           </div>
 
