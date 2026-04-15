@@ -3,6 +3,9 @@ import { Routes, Route } from 'react-router-dom';
 import Login from './pages/Login'
 import LandingPage from './pages/LandingPage';
 import Register from './pages/Register';
+import HRDashboard from './pages/HRDashboard';
+import ScreeningPortal from './pages/ScreeningPortal';
+import JobManagement from './pages/JobManagement';
 
 function App() {
   return (
@@ -11,6 +14,9 @@ function App() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/hr/dashboard" element={<HRDashboard />} />
+      <Route path="/hr/screeningportal" element={<ScreeningPortal />} />
+      <Route path="/hr/jobmanagement" element={<JobManagement />} />
     </Routes>
   )
 }

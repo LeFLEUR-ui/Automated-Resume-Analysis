@@ -3,12 +3,20 @@ import axios from 'axios';
 import { Users, Briefcase, ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(() => {
+    return localStorage.getItem('saved_email') || '';
+  });
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('CANDIDATE');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const handleEmailChange = (e) => {
+    const value = e.target.value;
+    setEmail(value);
+    localStorage.setItem('saved_email', value);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,7 +42,6 @@ const Login = () => {
 
       alert("Login Successful!");
       
-  
       window.location.href = verifiedRole === 'HR' ? '/hr/dashboard' : '/candidate/dashboard';
       
     } catch (err) {
@@ -76,7 +83,7 @@ const Login = () => {
               type="email"
               required
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleEmailChange}
               placeholder="name@company.com"
               className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-100 focus:border-[#D60041] transition text-sm"
             />
