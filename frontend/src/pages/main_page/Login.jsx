@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Users, Briefcase, ShieldCheck, ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { 
+  Users, 
+  Briefcase, 
+  ShieldCheck, 
+  ArrowLeft, 
+  Eye, 
+  EyeOff, 
+  Loader2, 
+  CheckCircle2 
+} from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState(() => {
@@ -11,6 +20,9 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [verifiedUserRole, setVerifiedUserRole] = useState('');
 
   const handleEmailChange = (e) => {
     const value = e.target.value;
@@ -39,16 +51,9 @@ const Login = () => {
 
       localStorage.setItem('token', access_token);
       localStorage.setItem('role', verifiedRole);
-
-      alert("Login Successful!");
-
-      if (verifiedRole.toUpperCase() === 'ADMIN') {
-        window.location.href = '/admin/dashboard';
-      } else if (verifiedRole.toUpperCase() === 'HR') {
-        window.location.href = '/hr/dashboard';
-      } else {
-        window.location.href = '/candidate/dashboard';
-      }
+      
+      setVerifiedUserRole(verifiedRole);
+      setShowSuccessModal(true);
       
     } catch (err) {
       const message = err.response?.data?.detail || "Invalid email or password";
@@ -58,9 +63,41 @@ const Login = () => {
     }
   };
 
+  const handleRedirect = () => {
+    if (verifiedUserRole.toUpperCase() === 'ADMIN') {
+      window.location.href = '/admin/dashboard';
+    } else if (verifiedUserRole.toUpperCase() === 'HR') {
+      window.location.href = '/hr/dashboard';
+    } else {
+      window.location.href = '/candidate/dashboard';
+    }
+  };
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8 bg-gradient-to-br from-white via-[#fff5f7] to-[#ffeef2] font-sans antialiased text-gray-800">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8 bg-gradient-to-br from-white via-[#fff5f7] to-[#ffeef2] font-sans antialiased text-gray-800 relative">
       
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/40">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-8 text-center animate-in fade-in zoom-in duration-300">
+            <div className="flex justify-center mb-4">
+              <div className="bg-green-50 p-3 rounded-full">
+                <CheckCircle2 size={48} className="text-green-600" />
+              </div>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Success!</h3>
+            <p className="text-gray-500 text-sm mb-8">
+              Authentication successful. Welcome back to the {verifiedUserRole} portal.
+            </p>
+            <button
+              onClick={handleRedirect}
+              className="w-full bg-[#D60041] hover:bg-[#b50037] text-white font-semibold py-3 rounded-lg transition-all shadow-lg active:scale-95"
+            >
+              Go to Dashboard
+            </button>
+          </div>
+        </div>
+      )}
+
       <a href="/" className="text-gray-500 hover:text-gray-900 text-sm flex items-center mb-10 transition-colors group">
         <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
         Back to Home
@@ -77,7 +114,11 @@ const Login = () => {
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-10 border border-gray-100">
         <div className="text-center mb-8">
           <h2 className="text-xl font-semibold text-gray-900 tracking-tight">Sign In</h2>
-          {error && <p className="text-red-500 text-xs mt-2 font-medium">{error}</p>}
+          {error && (
+            <div className="mt-3 p-3 bg-red-50 rounded-lg border border-red-100">
+                <p className="text-red-600 text-xs font-medium">{error}</p>
+            </div>
+          )}
         </div>
 
         <form className="space-y-6" onSubmit={handleSubmit}>
@@ -127,39 +168,39 @@ const Login = () => {
           <div className="grid grid-cols-3 gap-3">
             <div 
               onClick={() => setRole('CANDIDATE')}
-              className={`flex flex-col items-center justify-center p-4 rounded-xl border cursor-pointer transition ${role === 'CANDIDATE' ? 'border-[#D60041] bg-red-50' : 'border-gray-200 hover:bg-gray-50'}`}
+              className={`flex flex-col items-center justify-center p-4 rounded-xl border cursor-pointer transition-all duration-200 ${role === 'CANDIDATE' ? 'border-[#D60041] bg-red-50 ring-1 ring-[#D60041]' : 'border-gray-200 hover:bg-gray-50'}`}
             >
               <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
                 <Users size={18} className={role === 'CANDIDATE' ? 'text-[#D60041]' : 'text-gray-600'} />
               </div>
-              <span className="text-[10px] font-medium text-gray-700">Candidate</span>
+              <span className="text-[10px] font-bold text-gray-700 uppercase tracking-tight">Candidate</span>
             </div>
           
             <div 
               onClick={() => setRole('HR')}
-              className={`flex flex-col items-center justify-center p-4 rounded-xl border cursor-pointer transition ${role === 'HR' ? 'border-[#D60041] bg-red-50' : 'border-gray-200 hover:bg-gray-50'}`}
+              className={`flex flex-col items-center justify-center p-4 rounded-xl border cursor-pointer transition-all duration-200 ${role === 'HR' ? 'border-[#D60041] bg-red-50 ring-1 ring-[#D60041]' : 'border-gray-200 hover:bg-gray-50'}`}
             >
               <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
                 <Briefcase size={18} className={role === 'HR' ? 'text-[#D60041]' : 'text-gray-600'} />
               </div>
-              <span className="text-[10px] font-medium text-gray-700">HR Staff</span>
+              <span className="text-[10px] font-bold text-gray-700 uppercase tracking-tight">HR Staff</span>
             </div>
 
             <div 
               onClick={() => setRole('ADMIN')}
-              className={`flex flex-col items-center justify-center p-4 rounded-xl border cursor-pointer transition ${role === 'ADMIN' ? 'border-[#D60041] bg-red-50' : 'border-gray-200 hover:bg-gray-50'}`}
+              className={`flex flex-col items-center justify-center p-4 rounded-xl border cursor-pointer transition-all duration-200 ${role === 'ADMIN' ? 'border-[#D60041] bg-red-50 ring-1 ring-[#D60041]' : 'border-gray-200 hover:bg-gray-50'}`}
             >
               <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
                 <ShieldCheck size={18} className={role === 'ADMIN' ? 'text-[#D60041]' : 'text-gray-600'} />
               </div>
-              <span className="text-[10px] font-medium text-gray-700">Admin</span>
+              <span className="text-[10px] font-bold text-gray-700 uppercase tracking-tight">Admin</span>
             </div>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#D60041] hover:bg-[#b50037] text-white font-semibold py-3 rounded-lg transition text-sm shadow-md active:scale-[0.98] flex justify-center items-center"
+            className="w-full bg-[#D60041] hover:bg-[#b50037] text-white font-semibold py-3 rounded-lg transition-all text-sm shadow-md active:scale-[0.98] flex justify-center items-center disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {loading ? <Loader2 className="animate-spin h-5 w-5" /> : "Sign In to Portal"}
           </button>
