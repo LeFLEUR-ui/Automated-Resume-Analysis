@@ -137,7 +137,6 @@ const CareersPage = () => {
           </p>
         </div>
 
-        {/* Job Grid - Using the 40px rounded style from Landing Page */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-24">
           {filteredJobs.length > 0 ? (
             filteredJobs.map((job) => (
