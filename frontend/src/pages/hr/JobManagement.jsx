@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
-import Header from '../../components/Header';
+import Header from '../../components/layout/Header';
 
 const MOCK_JOBS = [
   {

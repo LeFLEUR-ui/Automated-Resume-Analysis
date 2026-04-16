@@ -20,7 +20,7 @@ import {
   ChevronDown,
   Settings
 } from 'lucide-react';
-import Header from '../../components/Header';
+import Header from '../../components/layout/Header';
 
 const BRAND_RED = "#D10043";
 

@@ -15,7 +15,7 @@ import {
   Calendar,
   Settings2
 } from 'lucide-react';
-import Header from '../../components/Header';
+import Header from '../../components/layout/Header';
 
 const USERS_DATA = [
   { id: 1, name: "Marcus Aurelius", email: "marcus@empire.gov", role: "Super Admin", status: "Active", joined: "Oct 2023", location: "Rome, IT", avatar: "M" },

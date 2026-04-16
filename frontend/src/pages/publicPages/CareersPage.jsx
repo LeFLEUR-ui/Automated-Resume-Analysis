@@ -14,7 +14,7 @@ import {
   ArrowRight,
   CircleDot
 } from 'lucide-react';
-import Header from '../../components/Header';
+import Header from '../../components/layout/Header';
 import { Helmet } from 'react-helmet-async';
 
 const STATIC_JOBS = [

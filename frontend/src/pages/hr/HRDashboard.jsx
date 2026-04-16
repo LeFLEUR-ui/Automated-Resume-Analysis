@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet-async';
 import KeyMetrics from '../../components/hr/dashboard/KeyMetrics';
 import ApplicationTrends from '../../components/hr/dashboard/ApplicationTrends';
 import RecentSubmissions from '../../components/hr/dashboard/RecentSubmissions';
-import Header from '../../components/Header';
+import Header from '../../components/layout/Header';
 
 const STATIC_STATS = {
   total: 1248,
