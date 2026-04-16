@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import Header from '../../components/hr/HRHeader';
+import Header from '../../components/Header';
 
 // --- Static Mock Data ---
 const MOCK_JOBS = [
@@ -111,7 +111,6 @@ const JobCard = ({ job }) => {
   );
 };
 
-// --- MAIN ---
 const JobManagement = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("All Status");

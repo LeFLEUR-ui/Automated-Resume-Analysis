@@ -12,7 +12,7 @@ import {
   Sparkles,
   Filter
 } from 'lucide-react';
-import Header from '../../components/candidate/CandidateHeader';
+import Header from '../../components/Header';
 
 const BRAND_RED = "#D10043";
 

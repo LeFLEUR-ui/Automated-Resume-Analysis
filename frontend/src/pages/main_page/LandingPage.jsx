@@ -1,6 +1,6 @@
 import React from 'react';
-import Header from '../../components/main_page/Header';
 import { ChevronDown, LogIn, UserPlus, Briefcase, Info, FileUp, CheckCircle, ShieldCheck } from 'lucide-react';
+import Header from '../../components/Header';
 
 const LandingPage = () => {
   return (

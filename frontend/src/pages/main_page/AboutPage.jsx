@@ -8,7 +8,7 @@ import {
   ShieldCheck, 
   Cpu 
 } from 'lucide-react';
-import Header from '../../components/main_page/Header';
+import Header from '../../components/Header';
 
 const AboutPage = () => {
   return (

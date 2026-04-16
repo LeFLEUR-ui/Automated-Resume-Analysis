@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Header from '../../components/hr/HRHeader';
+import Header from '../../components/Header';
 
 const MOCK_CANDIDATES = [
   {

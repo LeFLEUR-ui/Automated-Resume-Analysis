@@ -15,7 +15,8 @@ import {
   Search,
   Filter
 } from 'lucide-react';
-import Header from '../../components/admin/AdminHeader';
+import Header from '../../components/Header';
+// import Header from '../../components/admin/AdminHeader';
 
 const SYSTEM_STATS = [
   { label: 'Total Users', value: '14,205', change: '+12%', icon: Users, color: 'text-[#D10043]', bg: 'bg-red-50' },

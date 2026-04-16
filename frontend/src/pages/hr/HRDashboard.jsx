@@ -1,10 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '../../components/hr/HRHeader';
 import KeyMetrics from '../../components/hr/dashboard/KeyMetrics';
 import ApplicationTrends from '../../components/hr/dashboard/ApplicationTrends';
 import RecentSubmissions from '../../components/hr/dashboard/RecentSubmissions';
 import { Download, AlertCircle, Briefcase, BarChart3 } from 'lucide-react';
+import Header from '../../components/Header';
 
 const STATIC_STATS = {
   total: 1248,

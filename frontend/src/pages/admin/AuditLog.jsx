@@ -15,7 +15,8 @@ import {
   CheckCircle2,
   AlertCircle
 } from 'lucide-react';
-import Header from '../../components/admin/AdminHeader';
+import Header from '../../components/Header';
+// import Header from '../../components/admin/AdminHeader';
 
 const AUDIT_LOGS = [
   { id: 'LOG-8821', user: "Marcus Aurelius", role: "Super Admin", action: "Modified Security Policy", target: "Firewall Settings", ip: "192.168.1.1", time: "Oct 24, 2023 14:20:05", status: "Success" },

@@ -10,7 +10,7 @@ const Register = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    managedRegion: '', // Added for Admin
+    managedRegion: '',
   });
 
   const handleChange = (e) => {
