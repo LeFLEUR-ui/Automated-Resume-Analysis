@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 const ApplyPage = () => {
   const navigate = useNavigate();
 
-  // STUBBED DATA: Replacing dynamic fetch with static job info
   const staticJob = {
     title: "Senior Full Stack Developer",
     department: "Engineering",
@@ -13,7 +12,6 @@ const ApplyPage = () => {
     is_active: true
   };
 
-  // STUBBED DATA: Replacing AI extraction results with static info
   const staticResumeData = {
     name: "Juan Dela Cruz",
     email: "juan.delacruz@example.com",
@@ -25,10 +23,8 @@ const ApplyPage = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isExtracting, setIsExtracting] = useState(false);
 
-  // Mock processing function
   const handleProcessStatic = () => {
     setIsExtracting(true);
-    // Simulate a brief delay to mimic AI processing
     setTimeout(() => {
       setIsExtracting(false);
       setStep(2);
@@ -41,7 +37,6 @@ const ApplyPage = () => {
 
   return (
     <div className="text-gray-800 bg-[#fcfbfc] min-h-screen font-['Inter',_sans-serif]">
-      {/* Navigation */}
       <nav className="bg-white border-b border-gray-100 px-10 py-4 flex justify-between items-center sticky top-0 z-50">
         <div className="flex items-center gap-3">
           <div className="h-8 w-8 bg-pink-600 rounded-lg flex items-center justify-center text-white font-bold">R</div>
@@ -57,7 +52,6 @@ const ApplyPage = () => {
 
       <div className={`mx-auto mt-12 px-4 pb-20 transition-all duration-300 ${step === 2 ? 'max-w-6xl' : 'max-w-4xl'}`}>
         
-        {/* Job Header Section */}
         <div className="bg-white border border-gray-100 rounded-3xl p-8 mb-8 flex justify-between items-start shadow-sm">
           <div>
             <h2 className="text-2xl font-bold mb-1">{staticJob.title}</h2>
@@ -70,7 +64,6 @@ const ApplyPage = () => {
           </span>
         </div>
 
-        {/* STEP 1: Static Upload UI */}
         {step === 1 && (
           <div className="bg-white border border-gray-100 rounded-3xl p-8 mb-8 shadow-sm flex flex-col items-center w-full">
             <h3 className="font-bold text-gray-900 mb-8">Upload Your Resume</h3>
@@ -108,7 +101,6 @@ const ApplyPage = () => {
           </div>
         )}
 
-        {/* STEP 2: Static Data Review */}
         {step === 2 && (
           <div className="bg-white border border-gray-200 rounded-2xl p-10 mb-8 shadow-sm">
             <h2 className="font-bold text-slate-800 mb-6 text-xl">Extracted Information</h2>
@@ -143,7 +135,6 @@ const ApplyPage = () => {
           </div>
         )}
 
-        {/* STEP 3: Static Final Submission */}
         {step === 3 && (
           <div className="max-w-md mx-auto text-center py-10 bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
             <div className="w-16 h-16 bg-pink-50 text-pink-500 rounded-full flex items-center justify-center mx-auto mb-6">
