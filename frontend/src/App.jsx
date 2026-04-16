@@ -25,37 +25,37 @@ const App = () => {
   return (
     <HelmetProvider>
       <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/careerspage" element={<CareersPage />} />
-      <Route path="/aboutpage" element={<AboutPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/careerspage" element={<CareersPage />} />
+        <Route path="/aboutpage" element={<AboutPage />} />
 
-      <Route element={<ProtectedRoute allowedRole="ADMIN" />}>
-        <Route path="/admin">
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="users" element={<UsersPage />} />
-          <Route path="auditlog" element={<AuditLogPage />} />
+        <Route element={<ProtectedRoute allowedRole="ADMIN" />}>
+          <Route path="/admin">
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="users" element={<UsersPage />} />
+            <Route path="auditlog" element={<AuditLogPage />} />
+          </Route>
         </Route>
-      </Route>
 
-      <Route element={<ProtectedRoute allowedRole="HR" />}> 
-        <Route path="/hr">
-          <Route path="dashboard" element={<HRDashboard />} />
-          <Route path="screeningportal" element={<ScreeningPortal />} />
-          <Route path="jobmanagement" element={<JobManagement />} />
+        <Route element={<ProtectedRoute allowedRole="HR" />}> 
+          <Route path="/hr">
+            <Route path="dashboard" element={<HRDashboard />} />
+            <Route path="screeningportal" element={<ScreeningPortal />} />
+            <Route path="jobmanagement" element={<JobManagement />} />
+          </Route>
         </Route>
-      </Route>
 
-      <Route element={<ProtectedRoute allowedRole="CANDIDATE" />}> 
-        <Route path="/candidate">
-          <Route path="dashboard" element={<CandidateDashboard />} />
-          <Route path="findjobs" element={<FindJob />} />
-          <Route path="applicationtracking" element={<ApplicationTracking />} />
-          <Route path="applypage" element={<ApplyPage />} />
+        <Route element={<ProtectedRoute allowedRole="CANDIDATE" />}> 
+          <Route path="/candidate">
+            <Route path="dashboard" element={<CandidateDashboard />} />
+            <Route path="findjobs" element={<FindJob />} />
+            <Route path="applicationtracking" element={<ApplicationTracking />} />
+            <Route path="applypage" element={<ApplyPage />} />
+          </Route>
         </Route>
-      </Route>
-    </Routes>
+      </Routes>
     </HelmetProvider>
   )
 }
