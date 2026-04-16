@@ -6,8 +6,8 @@ import ProtectedRoute from './ProtectedRoutes';
 import Login from './pages/publicPages/authenticationPages/Login';
 import Register from './pages/publicPages/authenticationPages/Register';
 
-import LandingPage from './pages/publicPages/LandingPage';
-import AboutPage from './pages/publicPages/AboutPage';
+import LandingPage from './pages/publicPages/site/LandingPage';
+import AboutPage from './pages/publicPages/site/AboutPage';
 import CareersPage from './pages/publicPages/site/CareersPage';
 
 import ApplicationForm from './pages/publicPages/jobApplicationPages/ApplicationForm';

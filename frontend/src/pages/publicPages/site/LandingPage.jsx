@@ -1,8 +1,8 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ChevronDown, LogIn, UserPlus, Briefcase, Info, FileUp, CheckCircle, ShieldCheck } from 'lucide-react';
-import Header from '../../components/layout/Header';
-import Footer from '../../components/layout/Footer';
+import Header from '../../../components/layout/Header';
+import Footer from '../../../components/layout/Footer';
 
 const LandingPage = () => {
   return (
