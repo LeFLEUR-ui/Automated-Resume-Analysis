@@ -15,6 +15,10 @@ import ApplyPage from './pages/candidate/ApplyPage';
 import CandidateDashboard from './pages/candidate/CandidateDashboard';
 
 import AdminDashboard from './pages/admin/AdminDashboard';
+import AuditLogPage from './pages/admin/AuditLog';
+import UsersPage from './pages/admin/Users';
+import ApplicationTracking from './pages/candidate/ApplicationTracking';
+import FindJob from './pages/candidate/FindJob';
 
 function App() {
   return (
@@ -30,6 +34,8 @@ function App() {
       <Route element={<ProtectedRoute allowedRole="ADMIN" />}>
         <Route path="/admin">
           <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="users" element={<UsersPage />} />
+          <Route path="auditlog" element={<AuditLogPage />} />
         </Route>
       </Route>
 
@@ -46,6 +52,8 @@ function App() {
       <Route element={<ProtectedRoute allowedRole="CANDIDATE" />}> 
         <Route path="/candidate">
           <Route path="dashboard" element={<CandidateDashboard />} />
+          <Route path="findjobs" element={<FindJob />} />
+          <Route path="applicationtracking" element={<ApplicationTracking />} />
           <Route path="applypage" element={<ApplyPage />} />
         </Route>
       </Route>
