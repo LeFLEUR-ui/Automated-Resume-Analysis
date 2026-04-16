@@ -7,12 +7,12 @@ import Login from './pages/publicPages/Login';
 import LandingPage from './pages/publicPages/LandingPage';
 import AboutPage from './pages/publicPages/AboutPage';
 import CareersPage from './pages/publicPages/CareersPage';
+import ApplyForJobPage from './pages/publicPages/ApplyForJobPage';
 
 import HRDashboard from './pages/hr/HRDashboard';
 import ScreeningPortal from './pages/hr/ScreeningPortal';
 import JobManagement from './pages/hr/JobManagement';
 
-import ApplyPage from './pages/candidate/ApplyPage';
 import CandidateDashboard from './pages/candidate/CandidateDashboard';
 import ApplicationTracking from './pages/candidate/ApplicationTracking';
 import FindJob from './pages/candidate/FindJob';
@@ -30,6 +30,7 @@ const App = () => {
         <Route path="/" element={<LandingPage />} />
         <Route path="/careerspage" element={<CareersPage />} />
         <Route path="/aboutpage" element={<AboutPage />} />
+        <Route path="/apply/:jobId" element={<ApplyForJobPage />} />
 
         <Route element={<ProtectedRoute allowedRole="ADMIN" />}>
           <Route path="/admin">
@@ -52,7 +53,6 @@ const App = () => {
             <Route path="dashboard" element={<CandidateDashboard />} />
             <Route path="findjobs" element={<FindJob />} />
             <Route path="applicationtracking" element={<ApplicationTracking />} />
-            <Route path="applypage" element={<ApplyPage />} />
           </Route>
         </Route>
       </Routes>
