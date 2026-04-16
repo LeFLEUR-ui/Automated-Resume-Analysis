@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Header from '../../components/layout/Header';
+import ScheduleInterviewModal from '../../components/modals/hr/ScheduleInterviewModal';
+import ViewCandidateDetailsModal from '../../components/modals/hr/ViewCandidateDetailsModal';
+
 
 const MOCK_CANDIDATES = [
   {
@@ -38,36 +41,50 @@ const MOCK_CANDIDATES = [
   },
   {
     id: 4,
-    name: "Elena Rodriguez",
-    status: "Reviewed",
-    preferredJob: "Product Manager",
-    skills: ["Agile", "Scrum", "Jira", "Market Analysis"],
+    name: "Tariq Mahmood",
+    status: "Pending",
+    preferredJob: "Backend Engineer",
+    skills: ["Python", "Django", "PostgreSQL", "AWS"],
     profileImage: null,
-    date: "2026-04-15T09:00:00",
-    location: "Austin, TX",
-    matchScore: 82
+    date: "2026-04-15T11:00:00",
+    location: "Chicago, IL",
+    matchScore: 79
   },
   {
     id: 5,
-    name: "Elena Rodriguez",
+    name: "Jessica Wu",
     status: "Reviewed",
-    preferredJob: "Product Manager",
-    skills: ["Agile", "Scrum", "Jira", "Market Analysis"],
+    preferredJob: "Data Scientist",
+    skills: ["Python", "TensorFlow", "Pandas", "SQL"],
     profileImage: null,
-    date: "2026-04-15T09:00:00",
-    location: "Austin, TX",
-    matchScore: 82
+    date: "2026-04-15T16:45:00",
+    location: "Seattle, WA",
+    matchScore: 91
   },
 ];
 
 const ScreeningPortal = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All Status");
+  
+  const [interviewModalOpen, setInterviewModalOpen] = useState(false);
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
 
   const formatDate = (dateStr) => {
     if (!dateStr) return "N/A";
     const date = new Date(dateStr);
     return date.toISOString().replace('T', ' ').substring(0, 16);
+  };
+
+  const handleOpenInterview = (candidate) => {
+    setSelectedCandidate(candidate);
+    setInterviewModalOpen(true);
+  };
+
+  const handleOpenDetails = (candidate) => {
+    setSelectedCandidate(candidate);
+    setDetailsModalOpen(true);
   };
 
   const filteredCandidates = MOCK_CANDIDATES.filter(c => {
@@ -95,7 +112,6 @@ const ScreeningPortal = () => {
 
       <main className="max-w-[1400px] mx-auto px-10 py-8">
 
-        {/* Top Section */}
         <div className="flex justify-between items-end mb-8">
           <div>
             <h2 className="text-2xl font-semibold tracking-tight text-gray-900">
@@ -113,7 +129,6 @@ const ScreeningPortal = () => {
 
         {/* Filters */}
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm mb-6 flex gap-4">
-          
           <div className="relative flex-grow">
             <input
               type="text"
@@ -137,7 +152,6 @@ const ScreeningPortal = () => {
           </div>
         </div>
 
-        {/* Candidate List */}
         <div className="space-y-4">
           {filteredCandidates.length === 0 ? (
             <div className="text-center py-20 bg-white rounded-2xl border border-dashed text-gray-400">
@@ -146,83 +160,74 @@ const ScreeningPortal = () => {
           ) : (
             filteredCandidates.map(candidate => {
               const status = candidate.status.toLowerCase();
-
-              const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                candidate.name
-              )}&background=fdf2f8&color=d81159&bold=true`;
+              const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(candidate.name)}&background=fdf2f8&color=d81159&bold=true`;
 
               return (
-                <div
-                  key={candidate.id}
-                  className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex justify-between items-center hover:border-pink-100 transition-colors"
-                >
-                  
+                <div key={candidate.id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex justify-between items-center hover:border-pink-100 transition-colors">
                   <div className="flex gap-4">
                     <div className="w-14 h-14 rounded-full overflow-hidden border border-pink-100 bg-pink-50">
-                      <img
-                        src={avatarUrl}
-                        alt={candidate.name}
-                        className="w-full h-full object-cover"
-                      />
+                      <img src={avatarUrl} alt={candidate.name} className="w-full h-full object-cover" />
                     </div>
 
                     <div>
                       <div className="flex items-center gap-3 mb-1">
-                        <h3 className="font-semibold text-gray-900">
-                          {candidate.name}
-                        </h3>
-
+                        <h3 className="font-semibold text-gray-900">{candidate.name}</h3>
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border uppercase ${
-                          status === 'reviewed'
-                            ? 'bg-blue-50 text-blue-400 border-blue-100'
-                            : 'bg-orange-50 text-orange-400 border-orange-100'
+                          status === 'reviewed' ? 'bg-blue-50 text-blue-400 border-blue-100' : 'bg-orange-50 text-orange-400 border-orange-100'
                         }`}>
                           {status}
                         </span>
                       </div>
 
-                      <p className="text-[13px] text-gray-400 mb-2">
-                        Preferred: {candidate.preferredJob}
-                      </p>
+                      <p className="text-[13px] text-gray-400 mb-2">Preferred: {candidate.preferredJob}</p>
 
                       <div className="flex flex-wrap gap-2 mb-3">
                         {candidate.skills.map((skill, idx) => (
-                          <span
-                            key={idx}
-                            className="bg-gray-100 text-gray-600 text-[11px] px-2.5 py-1 rounded-md"
-                          >
-                            {skill}
-                          </span>
+                          <span key={idx} className="bg-gray-100 text-gray-600 text-[11px] px-2.5 py-1 rounded-md">{skill}</span>
                         ))}
                       </div>
 
                       <div className="flex items-center gap-6 text-[12px] text-gray-400">
                         <span>{formatDate(candidate.date)}</span>
                         <span>{candidate.location}</span>
-                        <span className="text-emerald-500 font-semibold">
-                          {candidate.matchScore}% Match
-                        </span>
+                        <span className="text-emerald-500 font-semibold">{candidate.matchScore}% Match</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="flex gap-3">
-                    <button className="px-5 py-2 border border-gray-200 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50">
+                    <button 
+                      onClick={() => handleOpenDetails(candidate)}
+                      className="px-5 py-2 border border-gray-200 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50"
+                    >
                       View Details
                     </button>
 
-                    <button className="px-5 py-2 bg-[#d81159] text-white rounded-lg text-sm font-semibold hover:opacity-90">
+                    <button 
+                      onClick={() => handleOpenInterview(candidate)}
+                      className="px-5 py-2 bg-[#d81159] text-white rounded-lg text-sm font-semibold hover:opacity-90 transition-all"
+                    >
                       Schedule Interview
                     </button>
                   </div>
-
                 </div>
               );
             })
           )}
         </div>
-
       </main>
+
+      <ScheduleInterviewModal 
+        isOpen={interviewModalOpen} 
+        onClose={() => setInterviewModalOpen(false)} 
+        candidate={selectedCandidate}
+      />
+
+      <ViewCandidateDetailsModal 
+        isOpen={detailsModalOpen} 
+        onClose={() => setDetailsModalOpen(false)} 
+        candidate={selectedCandidate}
+      />
     </div>
   );
 };
