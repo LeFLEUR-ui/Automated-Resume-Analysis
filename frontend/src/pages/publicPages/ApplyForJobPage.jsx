@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate, useParams } from 'react-router-dom';
-import Header from '../../components/layout/Header';
 import { 
   FileUp, 
   X, 
@@ -12,8 +11,9 @@ import {
   Briefcase,
   Info
 } from 'lucide-react';
+import Header from '../../components/layout/Header';
+import Footer from '../../components/layout/Footer';
 
-// Mock data
 const STATIC_JOBS = [
   { id: 1, title: "Production Supervisor", department: "Manufacturing" },
   { id: 2, title: "Quality Control Analyst", department: "Quality Assurance" },
@@ -227,12 +227,8 @@ const ApplyForJobPage = () => {
           ))}
         </div>
 
-        <footer className="mt-20 text-center">
-          <p className="text-slate-400 text-[11px] font-medium tracking-wide">
-            © 2026 MARIWASA SIAM CERAMICS INC. <span className="mx-2">•</span> SMART RECRUITMENT SYSTEMS
-          </p>
-        </footer>
       </main>
+       <Footer />
     </div>
   );
 };
