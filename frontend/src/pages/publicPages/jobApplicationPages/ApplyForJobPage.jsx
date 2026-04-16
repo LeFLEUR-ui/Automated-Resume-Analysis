@@ -11,8 +11,8 @@ import {
   Briefcase,
   Info
 } from 'lucide-react';
-import Header from '../../components/layout/Header';
-import Footer from '../../components/layout/Footer';
+import Header from '../../../components/layout/Header';
+import Footer from '../../../components/layout/Footer';
 
 const STATIC_JOBS = [
   { id: 1, title: "Production Supervisor", department: "Manufacturing" },

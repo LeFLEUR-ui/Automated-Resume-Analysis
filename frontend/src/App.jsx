@@ -2,23 +2,26 @@ import { Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 
 import ProtectedRoute from './ProtectedRoutes';
-import Register from './pages/publicPages/Register';
-import Login from './pages/publicPages/Login';
+
+import Login from './pages/publicPages/authenticationPages/Login';
+import Register from './pages/publicPages/authenticationPages/Register';
+
 import LandingPage from './pages/publicPages/LandingPage';
 import AboutPage from './pages/publicPages/AboutPage';
-import CareersPage from './pages/publicPages/CareersPage';
-import ApplyForJobPage from './pages/publicPages/ApplyForJobPage';
-import PreviewAndVerifyPage from './pages/publicPages/PreviewAndVerify';
-import ApplicationForm from './pages/publicPages/ApplicationForm';
-import SubmissionSuccessPage from './pages/publicPages/SubmissionSuccess';
+import CareersPage from './pages/publicPages/site/CareersPage';
+
+import ApplicationForm from './pages/publicPages/jobApplicationPages/ApplicationForm';
+import ApplyForJobPage from './pages/publicPages/jobApplicationPages/ApplyForJobPage';
+import PreviewAndVerifyPage from './pages/publicPages/jobApplicationPages/PreviewAndVerify';
+import SubmissionSuccessPage from './pages/publicPages/jobApplicationPages/SubmissionSuccess';
+
+import ApplicationTracking from './pages/candidate/ApplicationTracking';
+import CandidateDashboard from './pages/candidate/CandidateDashboard';
+import FindJob from './pages/candidate/FindJob';
 
 import HRDashboard from './pages/hr/HRDashboard';
-import ScreeningPortal from './pages/hr/ScreeningPortal';
 import JobManagement from './pages/hr/JobManagement';
-
-import CandidateDashboard from './pages/candidate/CandidateDashboard';
-import ApplicationTracking from './pages/candidate/ApplicationTracking';
-import FindJob from './pages/candidate/FindJob';
+import ScreeningPortal from './pages/hr/ScreeningPortal';
 
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AuditLogPage from './pages/admin/AuditLog';
