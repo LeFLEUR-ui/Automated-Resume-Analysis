@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Briefcase, MapPin, Building2, DollarSign, ListChecks, FileText } from 'lucide-react';
 
-const CreateJobModal = ({ isOpen, onClose, onSubmit }) => {
+const EditJobModal = ({ isOpen, onClose, onSubmit, jobData }) => {
   const [formData, setFormData] = useState({
     job_id: '',
     title: '',
@@ -15,11 +15,16 @@ const CreateJobModal = ({ isOpen, onClose, onSubmit }) => {
   });
 
   useEffect(() => {
-    if (isOpen && !formData.job_id) {
-      const generatedId = `JOB-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
-      setFormData(prev => ({ ...prev, job_id: generatedId }));
+    if (isOpen && jobData) {
+      setFormData({
+        ...jobData,
+
+        skills_requirements: Array.isArray(jobData.skills_requirements) 
+          ? jobData.skills_requirements.join(', ') 
+          : jobData.skills_requirements || ''
+      });
     }
-  }, [isOpen]);
+  }, [isOpen, jobData]);
 
   if (!isOpen) return null;
 
@@ -27,17 +32,6 @@ const CreateJobModal = ({ isOpen, onClose, onSubmit }) => {
     e.preventDefault();
     onSubmit(formData);
     onClose();
-    setFormData({
-      job_id: '',
-      title: '',
-      department: 'Information Technology',
-      location: '',
-      job_type: 'Full-time',
-      salary_range: '',
-      description: '',
-      skills_requirements: '',
-      is_active: true
-    });
   };
 
   const inputClasses = "w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:outline-none focus:border-[#d81159] focus:ring-2 focus:ring-pink-50 transition-all";
@@ -49,8 +43,8 @@ const CreateJobModal = ({ isOpen, onClose, onSubmit }) => {
         
         <div className="px-8 py-5 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-10">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Create New Job Posting</h2>
-            <p className="text-sm text-gray-400 font-medium">Configure the details for your new position</p>
+            <h2 className="text-xl font-bold text-gray-900">Edit Job Posting</h2>
+            <p className="text-sm text-gray-400 font-medium">Update the details for {formData.job_id}</p>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400">
             <X size={20} />
@@ -61,13 +55,12 @@ const CreateJobModal = ({ isOpen, onClose, onSubmit }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             <div>
-              <label className={labelClasses}>Job ID</label>
+              <label className={labelClasses}>Job ID (Read-only)</label>
               <input
-                required
+                disabled
                 type="text"
-                className={inputClasses}
+                className={`${inputClasses} opacity-60 cursor-not-allowed`}
                 value={formData.job_id}
-                onChange={(e) => setFormData({...formData, job_id: e.target.value})}
               />
             </div>
 
@@ -76,7 +69,6 @@ const CreateJobModal = ({ isOpen, onClose, onSubmit }) => {
               <input
                 required
                 type="text"
-                placeholder="e.g. Senior Product Designer"
                 className={inputClasses}
                 value={formData.title}
                 onChange={(e) => setFormData({...formData, title: e.target.value})}
@@ -118,7 +110,6 @@ const CreateJobModal = ({ isOpen, onClose, onSubmit }) => {
               <input
                 required
                 type="text"
-                placeholder="e.g. Manila, PH or Remote"
                 className={inputClasses}
                 value={formData.location}
                 onChange={(e) => setFormData({...formData, location: e.target.value})}
@@ -130,7 +121,6 @@ const CreateJobModal = ({ isOpen, onClose, onSubmit }) => {
               <input
                 required
                 type="text"
-                placeholder="e.g. ₱60,000 - ₱90,000"
                 className={inputClasses}
                 value={formData.salary_range}
                 onChange={(e) => setFormData({...formData, salary_range: e.target.value})}
@@ -142,7 +132,6 @@ const CreateJobModal = ({ isOpen, onClose, onSubmit }) => {
               <textarea
                 required
                 rows="4"
-                placeholder="Describe the role, responsibilities, and day-to-day tasks..."
                 className={`${inputClasses} resize-none`}
                 value={formData.description}
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
@@ -150,11 +139,10 @@ const CreateJobModal = ({ isOpen, onClose, onSubmit }) => {
             </div>
 
             <div className="md:col-span-2">
-              <label className={labelClasses}><ListChecks size={14}/> Skills Requirements (Comma separated)</label>
+              <label className={labelClasses}><ListChecks size={14}/> Skills Requirements</label>
               <input
                 required
                 type="text"
-                placeholder="React, Tailwind CSS, Project Management..."
                 className={inputClasses}
                 value={formData.skills_requirements}
                 onChange={(e) => setFormData({...formData, skills_requirements: e.target.value})}
@@ -164,7 +152,7 @@ const CreateJobModal = ({ isOpen, onClose, onSubmit }) => {
             <div className="md:col-span-2 bg-gray-50 p-4 rounded-xl flex items-center justify-between border border-gray-100">
               <div>
                 <span className="text-sm font-bold text-gray-700 block">Active Status</span>
-                <span className="text-xs text-gray-400 font-medium">Toggle whether this job is visible to applicants</span>
+                <span className="text-xs text-gray-400 font-medium">Toggle visibility for applicants</span>
               </div>
               <div className="flex items-center gap-3">
                 <span className={`text-[10px] font-bold uppercase tracking-widest ${formData.is_active ? 'text-emerald-500' : 'text-gray-400'}`}>
@@ -187,13 +175,13 @@ const CreateJobModal = ({ isOpen, onClose, onSubmit }) => {
               onClick={onClose}
               className="px-6 py-2.5 border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
             >
-              Discard
+              Cancel
             </button>
             <button
               type="submit"
               className="px-10 py-2.5 bg-[#d81159] text-white rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-md shadow-pink-100"
             >
-              Publish Post
+              Save Changes
             </button>
           </div>
         </form>
@@ -202,4 +190,4 @@ const CreateJobModal = ({ isOpen, onClose, onSubmit }) => {
   );
 };
 
-export default CreateJobModal;
+export default EditJobModal;
