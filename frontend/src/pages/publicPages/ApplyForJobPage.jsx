@@ -28,6 +28,7 @@ const ApplyForJobPage = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [isComplete, setIsComplete] = useState(false);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
@@ -47,6 +48,8 @@ const ApplyForJobPage = () => {
     
     if (selectedFile && validTypes.includes(selectedFile.type)) {
       setFile(selectedFile);
+      setIsComplete(false);
+      setUploadProgress(0);
     } else {
       alert("Invalid file type. Please upload a PDF or Word document.");
     }
@@ -73,15 +76,14 @@ const ApplyForJobPage = () => {
     setIsUploading(true);
     let progress = 0;
     const interval = setInterval(() => {
-      progress += 5;
+      progress += 10;
       setUploadProgress(progress);
       if (progress >= 100) {
         clearInterval(interval);
         setTimeout(() => {
           setIsUploading(false);
-          alert(`Application for ${job?.title} submitted successfully!`);
-          navigate('/careers');
-        }, 800);
+          setIsComplete(true);
+        }, 500);
       }
     }, 100);
   };
@@ -162,7 +164,7 @@ const ApplyForJobPage = () => {
                     <h4 className="font-bold text-slate-900 truncate">{file.name}</h4>
                     <p className="text-xs text-slate-500 font-medium">{(file.size / (1024 * 1024)).toFixed(2)} MB • Ready to submit</p>
                   </div>
-                  {!isUploading && (
+                  {!isUploading && !isComplete && (
                     <button 
                       onClick={() => setFile(null)}
                       className="p-2.5 hover:bg-white hover:text-red-500 rounded-full transition-all text-slate-400 border border-transparent hover:border-slate-100"
@@ -190,7 +192,29 @@ const ApplyForJobPage = () => {
                   </div>
                 )}
 
-                {!isUploading && (
+                {isComplete && (
+                  <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="bg-green-50 border border-green-100 p-6 rounded-[24px] flex items-center gap-4">
+                      <div className="bg-white text-green-500 p-3 rounded-xl shadow-sm">
+                        <CheckCircle2 size={24} />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-slate-900">Analysis Complete</h4>
+                        <p className="text-sm text-slate-600">We've successfully extracted your data.</p>
+                      </div>
+                    </div>
+                    
+                    <button 
+                      onClick={() => navigate('/preview-and-verify', { state: { job, fileName: file.name } })}
+                      className="w-full bg-slate-900 hover:bg-[#D10043] text-white py-5 rounded-[20px] font-bold flex items-center justify-center gap-3 transition-all shadow-xl"
+                    >
+                      <span>Proceed to Review Information</span>
+                      <ArrowLeft size={20} className="rotate-180" />
+                    </button>
+                  </div>
+                )}
+
+                {!isUploading && !isComplete && (
                   <button 
                     onClick={simulateUpload}
                     className="w-full bg-[#D10043] hover:bg-slate-900 text-white py-5 rounded-[20px] font-bold flex items-center justify-center gap-3 transition-all transform active:scale-[0.98] shadow-xl shadow-pink-100"

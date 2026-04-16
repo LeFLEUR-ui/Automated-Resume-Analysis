@@ -8,6 +8,9 @@ import LandingPage from './pages/publicPages/LandingPage';
 import AboutPage from './pages/publicPages/AboutPage';
 import CareersPage from './pages/publicPages/CareersPage';
 import ApplyForJobPage from './pages/publicPages/ApplyForJobPage';
+import PreviewAndVerifyPage from './pages/publicPages/PreviewAndVerify';
+import ApplicationForm from './pages/publicPages/ApplicationForm';
+import SubmissionSuccessPage from './pages/publicPages/SubmissionSuccess';
 
 import HRDashboard from './pages/hr/HRDashboard';
 import ScreeningPortal from './pages/hr/ScreeningPortal';
@@ -31,6 +34,9 @@ const App = () => {
         <Route path="/careerspage" element={<CareersPage />} />
         <Route path="/aboutpage" element={<AboutPage />} />
         <Route path="/apply/:jobId" element={<ApplyForJobPage />} />
+        <Route path="/preview-and-verify" element={<PreviewAndVerifyPage />} />
+        <Route path="/applicationform" element={<ApplicationForm />} />
+        <Route path="/submissionsuccess" element={<SubmissionSuccessPage />} />
 
         <Route element={<ProtectedRoute allowedRole="ADMIN" />}>
           <Route path="/admin">
