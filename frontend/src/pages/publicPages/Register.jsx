@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Users, Briefcase, ShieldCheck, ArrowLeft, Loader2 } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 
 const Register = () => {
   const [role, setRole] = useState('CANDIDATE');
@@ -76,7 +77,9 @@ const Register = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8 bg-gradient-to-br from-white via-[#fff5f7] to-[#ffeef2] font-sans antialiased text-gray-800">
-      
+      <Helmet>
+        <title>Mariwasa - Register</title>
+      </Helmet>
       <a href="/login" className="text-gray-500 hover:text-gray-900 text-sm flex items-center mb-10 transition-colors group">
         <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
         Back to Login

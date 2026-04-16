@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; 
+import { Helmet } from 'react-helmet-async';
 import { 
   ChevronDown, 
   Briefcase, 
@@ -79,6 +80,9 @@ const FindJob = () => {
 
   return (
     <div className="bg-[#FCFCFC] text-gray-800 antialiased font-['Inter',_sans-serif] min-h-screen">
+      <Helmet>
+        <title>Candidate Page - Find Jobs</title>
+      </Helmet>
       <Header />
 
       <main className="max-w-[1400px] mx-auto px-10 py-12">

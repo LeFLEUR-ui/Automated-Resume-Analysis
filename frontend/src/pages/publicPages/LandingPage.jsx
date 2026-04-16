@@ -1,10 +1,15 @@
 import React from 'react';
-import { ChevronDown, LogIn, UserPlus, Briefcase, Info, FileUp, CheckCircle, ShieldCheck } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 import Header from '../../components/Header';
+import { ChevronDown, LogIn, UserPlus, Briefcase, Info, FileUp, CheckCircle, ShieldCheck } from 'lucide-react';
 
 const LandingPage = () => {
   return (
     <div className="bg-gray-50 text-gray-800 antialiased font-['Inter',_sans-serif]">
+      <Helmet>
+        <title>Mariwasa - Portal</title>
+      </Helmet>
+
       <Header />
 
       <main className="max-w-6xl mx-auto px-6 py-16 text-center">

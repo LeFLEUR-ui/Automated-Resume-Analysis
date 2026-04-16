@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { 
   ArrowLeft, 
   Briefcase, 
@@ -68,6 +69,10 @@ const ApplicationTracking = () => {
 
   return (
     <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter']">
+      <Helmet>
+        <title>Candidate Page - Application Tracking</title>
+      </Helmet>
+
       <Header />
       
       <main className="max-w-[1400px] mx-auto px-10 py-8">

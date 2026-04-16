@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { 
   Search, 
   Filter, 
@@ -16,7 +17,6 @@ import {
   AlertCircle
 } from 'lucide-react';
 import Header from '../../components/Header';
-// import Header from '../../components/admin/AdminHeader';
 
 const AUDIT_LOGS = [
   { id: 'LOG-8821', user: "Marcus Aurelius", role: "Super Admin", action: "Modified Security Policy", target: "Firewall Settings", ip: "192.168.1.1", time: "Oct 24, 2023 14:20:05", status: "Success" },
@@ -30,6 +30,9 @@ const AUDIT_LOGS = [
 const AuditLogPage = () => {
   return (
     <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter']">
+      <Helmet>
+        <title>Admin Page - Audit Log</title>
+      </Helmet>
       <Header />
 
       <main className="max-w-[1400px] mx-auto px-10 py-10">

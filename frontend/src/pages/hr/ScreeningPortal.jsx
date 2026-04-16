@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import Header from '../../components/Header';
 
 const MOCK_CANDIDATES = [
@@ -86,6 +87,9 @@ const ScreeningPortal = () => {
 
   return (
     <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter']">
+      <Helmet>
+        <title>HR - Screening Portal</title>
+      </Helmet>
       
       <Header />
 

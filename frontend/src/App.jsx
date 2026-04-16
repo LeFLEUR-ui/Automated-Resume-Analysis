@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 
 import ProtectedRoute from './ProtectedRoutes';
 import Register from './pages/publicPages/Register';
@@ -22,7 +23,8 @@ import UsersPage from './pages/admin/Users';
 
 const App = () => {
   return (
-    <Routes>
+    <HelmetProvider>
+      <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/" element={<LandingPage />} />
@@ -54,6 +56,7 @@ const App = () => {
         </Route>
       </Route>
     </Routes>
+    </HelmetProvider>
   )
 }
 

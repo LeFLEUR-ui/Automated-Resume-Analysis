@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { 
   Search, 
   Filter, 
@@ -15,7 +16,6 @@ import {
   Settings2
 } from 'lucide-react';
 import Header from '../../components/Header';
-// import Header from '../../components/admin/AdminHeader';
 
 const USERS_DATA = [
   { id: 1, name: "Marcus Aurelius", email: "marcus@empire.gov", role: "Super Admin", status: "Active", joined: "Oct 2023", location: "Rome, IT", avatar: "M" },
@@ -29,6 +29,9 @@ const USERS_DATA = [
 const UsersPage = () => {
   return (
     <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter']">
+      <Helmet>
+        <title>Admin Page - User Management</title>
+      </Helmet>
       <Header />
 
       <main className="max-w-[1400px] mx-auto px-10 py-10">

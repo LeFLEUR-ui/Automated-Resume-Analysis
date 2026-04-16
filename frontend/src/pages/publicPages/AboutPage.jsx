@@ -1,4 +1,6 @@
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
+import Header from '../../components/Header';
 import { 
   CheckCircle, 
   Target, 
@@ -8,11 +10,13 @@ import {
   ShieldCheck, 
   Cpu 
 } from 'lucide-react';
-import Header from '../../components/Header';
 
 const AboutPage = () => {
   return (
     <div className="bg-gray-50 text-gray-800 antialiased font-['Inter',_sans-serif] min-h-screen">
+      <Helmet>
+        <title>Mariwasa - Register</title>
+      </Helmet>
       <Header />
 
       <main className="max-w-6xl mx-auto px-6 py-16">

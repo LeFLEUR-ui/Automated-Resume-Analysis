@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-
+import { Helmet } from 'react-helmet-async';
 import { 
   Bell, 
   FileText, 
@@ -52,6 +52,9 @@ const CandidateDashboard = () => {
 
   return (
     <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter']">
+      <Helmet>
+        <title>Candidate Page - Dashboard</title>
+      </Helmet>
       <Header />
       <main className="max-w-[1400px] mx-auto px-10 py-8">
         

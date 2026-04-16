@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 
 const ApplyPage = () => {
@@ -37,6 +38,9 @@ const ApplyPage = () => {
 
   return (
     <div className="text-gray-800 bg-[#fcfbfc] min-h-screen font-['Inter',_sans-serif]">
+      <Helmet>
+        <title>Candidate Page - Apply Page</title>
+      </Helmet>
       <nav className="bg-white border-b border-gray-100 px-10 py-4 flex justify-between items-center sticky top-0 z-50">
         <div className="flex items-center gap-3">
           <div className="h-8 w-8 bg-pink-600 rounded-lg flex items-center justify-center text-white font-bold">R</div>

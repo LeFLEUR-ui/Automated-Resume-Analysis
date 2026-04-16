@@ -15,6 +15,7 @@ import {
   CircleDot
 } from 'lucide-react';
 import Header from '../../components/Header';
+import { Helmet } from 'react-helmet-async';
 
 const STATIC_JOBS = [
   {
@@ -79,6 +80,9 @@ const CareersPage = () => {
 
   return (
     <div className="bg-gray-50 text-gray-800 antialiased font-['Inter',_sans-serif] min-h-screen">
+      <Helmet>
+        <title>Mariwasa - Careers Page</title>
+      </Helmet>
       <Header />
 
       <main className="max-w-6xl mx-auto px-6 py-16">

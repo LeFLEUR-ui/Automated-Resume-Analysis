@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
+import { Helmet } from 'react-helmet-async';
 import Header from '../../components/Header';
 
-// --- Static Mock Data ---
 const MOCK_JOBS = [
   {
     id: 1,
@@ -35,7 +35,6 @@ const MOCK_JOBS = [
   }
 ];
 
-// --- Job Card ---
 const JobCard = ({ job }) => {
   const skillsArray = typeof job.skills_requirements === 'string'
     ? job.skills_requirements.split(',').map(s => s.trim())
@@ -49,7 +48,6 @@ const JobCard = ({ job }) => {
       
       <div className="flex flex-col md:flex-row justify-between gap-6">
 
-        {/* LEFT */}
         <div className="w-full">
 
           <div className="flex items-center gap-3 mb-3">
@@ -93,7 +91,6 @@ const JobCard = ({ job }) => {
 
         </div>
 
-        {/* RIGHT */}
         <div className="flex gap-3 md:flex-col lg:flex-row">
 
           <button className="px-4 py-2 border border-gray-200 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50">
@@ -146,12 +143,14 @@ const JobManagement = () => {
 
   return (
     <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter']">
+      <Helmet>
+        <title>HR - Job Management</title>
+      </Helmet>
       
       <Header />
 
       <main className="max-w-[1400px] mx-auto px-10 py-8">
 
-        {/* TOP HEADER */}
         <div className="flex justify-between items-end mb-8">
           <div>
             <h2 className="text-2xl font-semibold tracking-tight text-gray-900">
@@ -167,7 +166,6 @@ const JobManagement = () => {
           </button>
         </div>
 
-        {/* FILTERS */}
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm mb-6 flex gap-4">
 
           <input
@@ -200,7 +198,6 @@ const JobManagement = () => {
 
         </div>
 
-        {/* JOB LIST */}
         <div className="space-y-4">
 
           {filteredJobs.length > 0 ? (

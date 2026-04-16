@@ -1,9 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Download, AlertCircle, Briefcase, BarChart3 } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 import KeyMetrics from '../../components/hr/dashboard/KeyMetrics';
 import ApplicationTrends from '../../components/hr/dashboard/ApplicationTrends';
 import RecentSubmissions from '../../components/hr/dashboard/RecentSubmissions';
-import { Download, AlertCircle, Briefcase, BarChart3 } from 'lucide-react';
 import Header from '../../components/Header';
 
 const STATIC_STATS = {
@@ -66,11 +67,13 @@ const HRDashboard = () => {
 
   return (
     <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter']">
+      <Helmet>
+        <title>HR - Dashboard</title>
+      </Helmet>
       <Header />
 
       <main className="max-w-[1400px] mx-auto px-10 py-8">
         
-        {/* 🔹 Top Section */}
         <div className="flex justify-between items-end mb-8">
           <div>
             <h2 className="text-2xl font-semibold tracking-tight text-gray-900">
@@ -94,12 +97,10 @@ const HRDashboard = () => {
           </div>
         </div>
 
-        {/* 🔹 Components */}
         <KeyMetrics stats={STATIC_STATS} />
         <ApplicationTrends />
         <RecentSubmissions candidates={STATIC_CANDIDATES} />
 
-        {/* 🔹 Bottom Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           
           <div

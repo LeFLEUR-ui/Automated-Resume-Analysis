@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { 
   ChevronDown, 
   LayoutDashboard, 
@@ -16,7 +17,6 @@ import {
   Filter
 } from 'lucide-react';
 import Header from '../../components/Header';
-// import Header from '../../components/admin/AdminHeader';
 
 const SYSTEM_STATS = [
   { label: 'Total Users', value: '14,205', change: '+12%', icon: Users, color: 'text-[#D10043]', bg: 'bg-red-50' },
@@ -35,6 +35,9 @@ const RECENT_ACTIVITIES = [
 const AdminDashboard = () => {
   return (
     <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter']">
+      <Helmet>
+        <title>Admin Page - Dashboard</title>
+      </Helmet>
       
       <Header />
 
