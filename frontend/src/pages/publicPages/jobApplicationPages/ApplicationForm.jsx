@@ -56,7 +56,7 @@ const ApplicationForm = () => {
     e.preventDefault();
     console.log("Form Submitted:", formData);
     
-    navigate('/preview-and-verify', { 
+    navigate('/submissionsuccess', { 
       state: { 
         updatedData: formData,
         fileName: location.state?.fileName 
