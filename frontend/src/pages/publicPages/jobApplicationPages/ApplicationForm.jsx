@@ -57,7 +57,7 @@ const ApplicationForm = () => {
     e.preventDefault();
     console.log("Form Submitted:", formData);
 
-    navigate('/submissionsuccess', {
+    navigate(`/submissionsuccess/${jobId}`, {
       state: {
         updatedData: formData,
         fileName: location.state?.fileName
@@ -280,7 +280,7 @@ const ApplicationForm = () => {
               id="btn-save-application"
               onClick={() => {
                 alert("Final application submitted successfully!");
-                navigate('/submissionsuccess');
+                navigate(`/submissionsuccess/${jobId}`);
               }}
               type="submit"
               className="px-10 py-4 bg-[#D10043] hover:bg-slate-900 text-white rounded-[20px] font-bold flex items-center justify-center gap-3 transition-all shadow-xl shadow-pink-100 active:scale-[0.98]"
