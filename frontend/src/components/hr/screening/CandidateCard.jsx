@@ -1,0 +1,84 @@
+import React from 'react';
+
+const CandidateCard = ({ candidate, onOpenDetails, onOpenInterview }) => {
+  const status = candidate.status.toLowerCase();
+  const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(candidate.name)}&background=fdf2f8&color=d81159&bold=true`;
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "N/A";
+    const date = new Date(dateStr);
+    return date.toISOString().replace('T', ' ').substring(0, 16);
+  };
+
+  return (
+    <div className="bg-white p-6 md:p-8 rounded-[32px] border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-pink-100 transition-all duration-300 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 lg:gap-8 group">
+      <div className="flex flex-col sm:flex-row gap-5 lg:gap-6 w-full lg:w-auto">
+        <div className="w-16 h-16 rounded-2xl overflow-hidden border border-pink-100 bg-gradient-to-br from-pink-50 to-red-50 shadow-inner group-hover:scale-105 transition-transform duration-300 shrink-0">
+          <img src={avatarUrl} alt={candidate.name} className="w-full h-full object-cover" />
+        </div>
+
+        <div className="flex-grow">
+          <div className="flex flex-wrap items-center gap-3 mb-1.5">
+            <h3 className="text-xl font-bold text-gray-900 group-hover:text-[#D60041] transition-colors">{candidate.name}</h3>
+            <span className={`text-[10px] font-bold px-3 py-1 rounded-full border uppercase tracking-wide shadow-sm ${status === 'reviewed' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-amber-50 text-amber-600 border-amber-100'
+              }`}>
+              {status}
+            </span>
+          </div>
+
+          <p className="text-sm text-gray-500 font-medium mb-3">Preferred: {candidate.preferredJob}</p>
+
+          <div className="flex flex-wrap gap-2 mb-4">
+            {candidate.skills.slice(0, 4).map((skill, idx) => (
+              <span key={idx} className="bg-gray-50 border border-gray-200 text-gray-600 text-[11px] font-bold px-3 py-1.5 rounded-lg group-hover:border-pink-100 transition-colors shadow-sm">
+                {skill}
+              </span>
+            ))}
+            {candidate.skills.length > 4 && (
+              <span className="bg-gray-50 border border-gray-100 text-gray-400 text-[11px] font-bold px-2 py-1.5 rounded-lg">
+                +{candidate.skills.length - 4}
+              </span>
+            )}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-gray-400">
+            <span className="flex items-center gap-1.5">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              {formatDate(candidate.date)}
+            </span>
+            <span className="hidden sm:block text-gray-300">•</span>
+            <span className="flex items-center gap-1.5">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              {candidate.location}
+            </span>
+            <span className="hidden sm:block text-gray-300">•</span>
+            <span className="text-[#D60041] font-extrabold px-2 py-0.5 bg-red-50 rounded-md">{candidate.matchScore}% Match</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-row lg:flex-col xl:flex-row gap-3 w-full lg:w-auto shrink-0 mt-4 lg:mt-0 pt-4 lg:pt-0 border-t lg:border-t-0 border-gray-100">
+        <button
+          onClick={() => onOpenDetails(candidate)}
+          className="flex-1 lg:flex-none px-6 py-3 bg-white border border-gray-200 rounded-xl text-xs font-bold text-gray-700 hover:bg-[#D60041] hover:text-white hover:border-[#D60041] transition-all duration-300 shadow-sm text-center"
+        >
+          View Details
+        </button>
+
+        <button
+          onClick={() => onOpenInterview(candidate)}
+          className="flex-1 lg:flex-none px-6 py-3 bg-[#D60041] border border-[#D60041] text-white rounded-xl text-xs font-bold hover:bg-[#b50037] hover:border-[#b50037] transition-all duration-300 shadow-sm text-center"
+        >
+          Schedule Interview
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default CandidateCard;
