@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import {
   CheckCircle,
@@ -16,7 +16,21 @@ import {
 import Header from '../../../components/layout/Header';
 import Footer from '../../../components/layout/Footer';
 
+const BANNERS = [
+  'src/assets/banner.jpg',
+  'src/assets/banner2.png',
+  'src/assets/banner3.png'
+];
+
 const AboutPage = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % BANNERS.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
   return (
     <div className="bg-[transparent] text-gray-800 antialiased font-sans min-h-screen flex flex-col">
       <Helmet>
@@ -24,20 +38,33 @@ const AboutPage = () => {
       </Helmet>
       <Header />
 
-      <main className="flex-grow pt-16">
-        <section className="relative w-full h-[400px] md:h-[500px] flex items-center justify-center overflow-hidden">
-          <div 
-            className="absolute inset-0 w-full h-full bg-fixed bg-cover bg-center z-0"
-            style={{ backgroundImage: `url('src/assets/banner.jpg')` }}
-          ></div>
+      <main className="flex-grow">
+        <section className="relative w-full h-[500px] md:h-[650px] flex items-center justify-center overflow-hidden">
+          {BANNERS.map((bg, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-1000 z-0 ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}
+              style={{ backgroundImage: `url('${bg}')` }}
+            ></div>
+          ))}
           <div className="absolute inset-0 bg-gray-900/75 z-10"></div>
           <div className="relative z-20 text-center px-6 max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-6xl font-normal tracking-tight text-white mb-6">
+            <h1 className="text-4xl md:text-6xl font-normal tracking-tight text-white mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
               Empowering the Future of <span className="text-[#D60041] font-semibold">Manufacturing</span>
             </h1>
-            <p className="text-lg md:text-xl text-gray-200 font-normal leading-relaxed max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-gray-200 font-normal leading-relaxed max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-6 duration-700">
               Merging decades of ceramic excellence with cutting-edge AI technology to build the workforce of tomorrow.
             </p>
+          </div>
+
+          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 flex gap-2">
+            {BANNERS.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentSlide(i)}
+                className={`w-2.5 h-2.5 rounded-full transition-all ${i === currentSlide ? 'bg-[#D60041] w-8' : 'bg-white/30 hover:bg-white/50'}`}
+              />
+            ))}
           </div>
         </section>
 
