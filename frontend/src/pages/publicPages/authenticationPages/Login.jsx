@@ -222,7 +222,7 @@ const Login = () => {
             </div>
 
             <div className="mb-10 mt-2">
-              <a href="#" className="text-sm font-medium text-[#D60041] hover:bg-red-50 px-2 py-1.5 -ml-2 rounded-md transition-colors inline-block">
+              <a href="/forgot-password" className="text-sm font-medium text-[#D60041] hover:bg-red-50 px-2 py-1.5 -ml-2 rounded-md transition-colors inline-block">
                 Forgot password?
               </a>
             </div>
