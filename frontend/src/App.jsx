@@ -36,10 +36,11 @@ const App = () => {
         <Route path="/" element={<LandingPage />} />
         <Route path="/careerspage" element={<CareersPage />} />
         <Route path="/aboutpage" element={<AboutPage />} />
+        
         <Route path="/apply/:jobId" element={<ApplyForJobPage />} />
         <Route path="/preview-and-verify/:jobId" element={<PreviewAndVerifyPage />} />
         <Route path="/applicationform/:jobId" element={<ApplicationForm />} />
-        <Route path="/submissionsuccess" element={<SubmissionSuccessPage />} />
+        <Route path="/submissionsuccess/:jobId" element={<SubmissionSuccessPage />} />
 
         <Route element={<ProtectedRoute allowedRole="ADMIN" />}>
           <Route path="/admin">
