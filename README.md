@@ -1,29 +1,115 @@
-# Automated Resume Analysis Job Recommendation
+# Mariwasa Automated Resume Analysis System
+
+A comprehensive, role-based recruitment portal and resume analysis system designed for Mariwasa Siam Ceramics Inc. The platform utilizes advanced NLP and machine learning to optimize the recruitment process, providing specialized interfaces for candidates, HR personnel, and system administrators.
+
+---
+
+## System Overview
+
+### Candidate Features
+*   Automated Application Flow: Resume upload with AI-driven parsing for PDF and DOCX formats.
+*   Candidate Dashboard: Real-time application tracking, upcoming interview schedules, and profile strength analytics.
+*   Application Tracking System (ATS): Detailed timeline view of the recruitment lifecycle.
+*   Unified Profile Management: Centralized control for personal information, professional experience, and account security.
+
+### HR and Recruitment Features
+*   Candidate Screening Portal: AI-powered "Match Score" calculation comparing candidate profiles against job requirements.
+*   Job Management: Centralized control for job postings, including status management (Active/Inactive) and departmental categorization.
+*   HR Dashboard: Overview of recruitment metrics, pipeline status, and candidate distribution.
+*   Interview Orchestration: Integrated modals for scheduling interviews and reviewing detailed candidate profiles.
+
+### Administrative Features
+*   User Access Control: Management of portal access levels (Admin, HR, Candidate).
+*   System Monitoring: Oversight of system-wide activities and audit logs.
+
+---
 
 ## Core Intelligence: Job Recommendation Engine
 
-The system features an advanced matching engine that compares resumes against job descriptions using Natural Language Processing (NLP):
+The matching engine utilizes Natural Language Processing (NLP) to perform contextual analysis of resumes against job descriptions.
 
-* **Skill Extraction**: Utilizes **SpaCy** for Named Entity Recognition (NER) to identify technical skills, certifications, and experience levels from raw text.
-* **Semantic Similarity**: Implements **RoBERTa** (Robustly Optimized BERT Approach) to understand the context of a resume. It doesn't just look for keywords; it understands the *meaning* behind professional experience.
-* **Scoring System**: Calculates a compatibility score by embedding text into high-dimensional vectors and measuring the distance between candidate profiles and job requirements.
+*   Skill Extraction: Implements SpaCy for Named Entity Recognition (NER) to identify technical competencies, certifications, and experience levels from unstructured text.
+*   Semantic Analysis: Utilizes RoBERTa (Robustly Optimized BERT Approach) for contextual understanding of professional experience.
+*   Compatibility Scoring: Text is embedded into high-dimensional vectors, and similarity is measured to determine the alignment between candidates and requirements.
 
+---
 
-This project provides a **unified development CLI** to manage the frontend, backend, and related dependencies for the Mariwasa project. Instead of opening multiple terminals, you can use the provided automation scripts.
+## Technical Stack
 
-## 🛠 System Tech Stack
+### Frontend
+*   Core: React.js (Vite)
+*   Styling: Tailwind CSS (Custom glassmorphism design system)
+*   Iconography: Lucide React
+*   State Management: React Hooks / Local Storage
+*   Routing: React Router
 
-The Mariwasa project is built using modern technologies:
+### Backend
+*   API Framework: FastAPI (Python)
+*   Language Processing: SpaCy, Transformers (RoBERTa)
+*   Containerization: Docker
 
-* **Frontend**: React.js & Tailwind CSS
-* **Backend**: FastAPI (Python) & Swagger (OpenAPI)
-* **Database**: PostgreSQL & Supabase (Auth/Storage/DB)
-* **Dev Ops**: Custom Bash/PowerShell CLI Orchestrator, Docker
+### Database and Infrastructure
+*   Database: PostgreSQL
+*   BaaS: Supabase (Authentication, Storage, Real-time DB)
+
+---
+
+## Project Structure
+
+### Frontend Directory Structure
+```text
+frontend/
+├── public/                # Static assets
+├── src/
+│   ├── assets/            # Project images and icons
+│   ├── components/
+│   │   ├── admin/         # Admin-specific components
+│   │   ├── candidate/     # Candidate dashboard and tracking components
+│   │   ├── hr/            # HR screening, dashboard, and job management
+│   │   ├── layout/        # Header and Footer components
+│   │   └── modals/        # Reusable modal components
+│   │       ├── hr/        # HR-specific modals
+│   │       └── shared/    # Application and Recruitment terms modals
+│   ├── data/              # Mock data and constants
+│   ├── pages/
+│   │   ├── admin/         # Admin portal pages
+│   │   ├── candidate/     # Candidate portal pages
+│   │   ├── hr/            # HR portal pages
+│   │   ├── publicPages/   # Authentication and Site-wide pages
+│   │   └── shared/        # Unified Profile and Settings pages
+│   ├── App.jsx            # Main application component and routing
+│   ├── main.jsx           # Application entry point
+│   └── index.css          # Global styles and Tailwind directives
+├── index.html             # HTML template
+├── package.json           # Frontend dependencies
+└── vite.config.js         # Vite configuration
+```
+
+### Backend Directory Structure
+```text
+backend/
+├── app/                   # FastAPI application source
+│   ├── controllers/       # API endpoints
+│   ├── services/          # Core business logic
+│   ├── models/            # Database schemas
+|   ├── schemas/           # Represents the API
+|   ├── utils/             # Auths, and others
+|   ├── extractors/        # Email, Phone Number, Education, Experience extractors
+|   ├── ml/                # NLP, SpaCy, Sentence-Transformers
+│   └── main.py            # Backend entry point
+|   └── database.py        # Interacts with Async PostgreSQL
+├── Dockerfile             # Container configuration
+└── requirements.txt       # Python dependencies
+└── .env                   # Environment Variables
+```
+
+---
+
+## Development Environment
+
+The system includes a Unified Development CLI to manage the frontend, backend, and infrastructure concurrently.
 
 ### System Architecture
-
-The CLI acts as an orchestrator to launch and sync your development environment:
-
 ```text
        +---------------------------------------+
        |       Mariwasa Smart Dev CLI          |
@@ -38,44 +124,43 @@ The CLI acts as an orchestrator to launch and sync your development environment:
                                               |
                                      _________V_________
                                     |                   |
-                                    |   pgAdmin / DB    |
-                                    |   Port: 5050      |
+                                    |   Supabase / DB   |
+                                    |   PostgreSQL      |
                                     |___________________|
 ```
 
-### Linux / macOS
+---
 
-* Git: ```sudo apt install git```
-* Python 3.10+: ```sudo apt install python3 python3-venv```
-* Node.js & npm: ```sudo apt install nodejs npm```
-* Terminal: ```gnome-terminal (or compatible)```
+## Installation and Setup
 
-### Windows
+### Prerequisites
+*   Node.js v18.0 or higher
+*   Python v3.10 or higher
+*   PostgreSQL v14.0 or higher
 
-* Git: [Download here](https://git-scm.com)
-* Python 3.10+: [Download here](https://www.python.org)
-* Node.js: [Download here](https://nodejs.org)
-* PowerShell 7+: Recommended for the best experience.
+### Deployment Instructions
 
-### 1. Linux / macOS (Bash)
-* Open your terminal in the project root.
-* Give execution permission to the script:
+#### Linux / macOS
 ```bash
 chmod +x start.sh
-```
-
-* Run the CLI
-```bash
 ./start.sh
 ```
 
-### 2. Windows (PowerShell)
-* Open PowerShell as Administrator.
-* Enable script execution (if you haven't before):
-```bash
+#### Windows (PowerShell)
+```powershell
 Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
-```
-* Run the CLI
-```bash
 ./start.ps1
 ```
+
+---
+
+## Design Standards
+
+The platform adheres to a Premium Enterprise Design System:
+*   Brand Integration: Centralized around the Mariwasa Corporate Palette (#D10043).
+*   Glassmorphism: Use of layered shadows and backdrop blurs to establish visual hierarchy.
+*   Responsive Architecture: Optimized for a consistent experience across desktop and mobile devices.
+*   Interactive Feedback: High-fidelity micro-animations and transition effects for enhanced engagement.
+
+---
+Mariwasa Siam Ceramics Inc. Recruitment Portal
