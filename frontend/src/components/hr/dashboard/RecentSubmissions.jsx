@@ -1,15 +1,15 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronUp, Users } from 'lucide-react';
+import { ChevronUp, Users, ArrowRight, User } from 'lucide-react';
 
 const BASE_URL = "http://localhost:8000";
 
 const CandidateRow = ({ name, role, skills, match, status, profileImage }) => {
   const statusStyles = {
-    pending: "bg-gray-100 text-gray-500",
-    reviewed: "bg-white border border-gray-100 text-gray-400",
-    approved: "bg-[#D60041] text-white",
-    rejected: "bg-red-50 text-red-400"
+    pending: "bg-amber-50 text-amber-700 ring-1 ring-amber-600/20",
+    reviewed: "bg-blue-50 text-blue-700 ring-1 ring-blue-600/20",
+    approved: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20",
+    rejected: "bg-red-50 text-red-700 ring-1 ring-red-600/20"
   };
 
   const skillsList = Array.isArray(skills)
@@ -17,43 +17,51 @@ const CandidateRow = ({ name, role, skills, match, status, profileImage }) => {
     : (typeof skills === 'string' ? skills.split(',').map(s => s.trim()) : []);
 
   return (
-    <div className="flex items-center justify-between p-4 border border-gray-50 rounded-[24px] hover:border-pink-100 hover:shadow-md transition-all group">
-      <div className="flex items-center gap-4">
-        <div className="w-12 h-12 bg-pink-50 rounded-xl flex items-center justify-center overflow-hidden border border-gray-50">
+    <div className="flex flex-col lg:flex-row lg:items-center justify-between p-4 border border-gray-100 bg-white rounded-[20px] hover:border-[#D60041]/30 hover:shadow-md transition-all duration-300 group gap-4 lg:gap-0">
+      <div className="flex items-center gap-4 w-full lg:w-[30%]">
+        <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center overflow-hidden shrink-0 group-hover:bg-[#D60041] transition-colors duration-300">
           {profileImage ? (
             <img src={profileImage.startsWith('http') ? profileImage : `${BASE_URL}${profileImage}`} alt={name} className="w-full h-full object-cover" />
           ) : (
-            <Users className="text-pink-600 h-5 w-5" />
+            <User className="text-[#D60041] h-5 w-5 group-hover:text-white transition-colors" />
           )}
         </div>
 
-        <div>
-          <h3 className="font-semibold text-[15px] tracking-tight text-gray-900">{name}</h3>
-          <p className="text-[12px] text-gray-400 font-medium tracking-wide">{role}</p>
+        <div className="min-w-0">
+          <h3 className="font-semibold text-[15px] text-gray-900 truncate group-hover:text-[#D60041] transition-colors">{name}</h3>
+          <p className="text-xs text-gray-500 font-medium truncate">{role}</p>
         </div>
       </div>
 
-      <div className="flex items-center gap-8">
-        <div className="flex gap-2">
+      <div className="flex flex-wrap lg:flex-nowrap items-center gap-4 lg:gap-8 w-full lg:w-[70%] justify-between lg:justify-end">
+        <div className="flex gap-2 hidden md:flex min-w-[120px] lg:min-w-[150px]">
           {skillsList.slice(0, 2).map((skill, i) => (
-            <span key={i} className="px-4 py-1.5 bg-gray-50 border border-gray-100 rounded-full text-[10px] font-semibold text-gray-600">
+            <span key={i} className="px-2.5 py-1 bg-gray-50 rounded-md text-[10px] font-medium text-gray-600 border border-gray-100 whitespace-nowrap">
               {skill}
             </span>
           ))}
+          {skillsList.length > 2 && (
+            <span className="px-2 py-1 bg-gray-50 rounded-md text-[10px] font-medium text-gray-400 border border-gray-100">
+              +{skillsList.length - 2}
+            </span>
+          )}
         </div>
 
-        <div className="text-center w-20">
-          <p className="text-[#D60041] font-extrabold text-lg">{match}%</p>
-          <p className="text-[9px] text-gray-400 uppercase font-semibold mt-1">Match</p>
+        <div className="flex flex-col items-center justify-center min-w-[60px]">
+          <div className="flex items-baseline gap-0.5">
+            <span className="text-lg font-semibold text-gray-900 group-hover:text-[#D60041] transition-colors">{match}</span>
+            <span className="text-xs font-semibold text-gray-400">%</span>
+          </div>
+          <span className="text-[9px] font-medium text-gray-400 uppercase tracking-wider">Match</span>
         </div>
 
-        <div className="w-24 flex justify-center">
-          <span className={`px-5 py-1.5 rounded-full text-[10px] font-semibold uppercase ${statusStyles[status]}`}>
+        <div className="min-w-[80px] flex justify-center">
+          <span className={`px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wide ${statusStyles[status.toLowerCase()] || statusStyles.pending}`}>
             {status}
           </span>
         </div>
 
-        <button className="px-6 py-2 border border-gray-200 rounded-xl text-xs font-semibold text-gray-800 hover:bg-gray-50">
+        <button className="px-5 py-2 bg-white border border-gray-200 rounded-full text-xs font-semibold text-gray-700 hover:bg-[#D60041] hover:text-white hover:border-[#D60041] transition-all duration-300 shadow-sm shrink-0">
           Review
         </button>
       </div>
@@ -65,24 +73,25 @@ const RecentSubmissions = ({ candidates }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-white border border-gray-100 rounded-[24px] shadow-sm p-8 mb-8">
-      <div className="flex justify-between items-center mb-8">
+    <div className="bg-white border border-gray-100 rounded-[24px] shadow-sm p-6 lg:p-8 mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 sm:gap-0">
         <div>
-          <h3 className="text-[15px] font-semibold tracking-tight text-gray-900">Recent Submissions</h3>
-          <p className="text-sm text-gray-400 mt-1 font-medium tracking-wide">
-            Latest resume submissions from the database
+          <h3 className="text-xl font-semibold text-gray-900 tracking-tight">Recent Submissions</h3>
+          <p className="text-sm text-gray-500 mt-1">
+            Review the latest candidate applications
           </p>
         </div>
 
-        <div className="flex items-center gap-4">
-          <button onClick={() => navigate('/screening')} className="bg-gray-50 text-gray-700 px-5 py-2 rounded-xl text-xs font-semibold hover:bg-gray-100">
-            View All
-          </button>
-          <ChevronUp className="text-xs text-gray-300" />
-        </div>
+        <button 
+          onClick={() => navigate('/screening')} 
+          className="group flex items-center gap-1.5 text-sm font-medium text-[#D60041] hover:text-[#b50037] transition-colors"
+        >
+          <span>View All</span>
+          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+        </button>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {candidates.map((can) => (
           <CandidateRow
             key={can.id}

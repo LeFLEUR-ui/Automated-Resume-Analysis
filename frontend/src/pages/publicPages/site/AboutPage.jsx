@@ -1,142 +1,196 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { 
-  CheckCircle, 
-  Target, 
-  Users, 
-  History, 
-  Globe, 
-  ShieldCheck, 
-  Cpu 
+import {
+  CheckCircle,
+  Target,
+  Users,
+  History,
+  Globe,
+  ShieldCheck,
+  Cpu,
+  ArrowRight,
+  FileText,
+  Search,
+  Award
 } from 'lucide-react';
 import Header from '../../../components/layout/Header';
 import Footer from '../../../components/layout/Footer';
 
-
 const AboutPage = () => {
   return (
-    <div className="bg-gray-50 text-gray-800 antialiased font-['Inter',_sans-serif] min-h-screen">
+    <div className="bg-[transparent] text-gray-800 antialiased font-sans min-h-screen flex flex-col">
       <Helmet>
-        <title>Mariwasa - Register</title>
+        <title>About Us - Mariwasa Portal</title>
       </Helmet>
       <Header />
 
-      <main className="max-w-6xl mx-auto px-6 py-16">
-        <section className="text-center mb-24">
-          <div className="inline-block p-3 rounded-2xl bg-white shadow-sm border border-gray-100 mb-6">
-            <History className="text-[#D10043]" size={28} />
+      <main className="flex-grow pt-16">
+        <section className="relative w-full h-[400px] md:h-[500px] flex items-center justify-center overflow-hidden">
+          <div className="absolute inset-0 bg-gray-900/75 z-10"></div>
+          <img
+            src="src/assets/banner.jpg"
+            alt="Mariwasa Manufacturing"
+            className="absolute inset-0 w-full h-full object-cover z-0"
+          />
+          <div className="relative z-20 text-center px-6 max-w-4xl mx-auto">
+            <h1 className="text-4xl md:text-6xl font-normal tracking-tight text-white mb-6">
+              Empowering the Future of <span className="text-[#D60041] font-semibold">Manufacturing</span>
+            </h1>
+            <p className="text-lg md:text-xl text-gray-200 font-normal leading-relaxed max-w-2xl mx-auto">
+              Merging decades of ceramic excellence with cutting-edge AI technology to build the workforce of tomorrow.
+            </p>
           </div>
-          <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tight text-gray-900">
-            Our Story & <span className="text-[#D10043]">Legacy</span>
-          </h2>
-          <p className="text-gray-500 text-lg md:text-xl max-w-3xl mx-auto font-medium leading-relaxed">
-            Founded on a commitment to quality, Mariwasa Siam Ceramics Inc. has grown into the Philippines' 
-            premier ceramic manufacturer, merging local craftsmanship with global technology.
-          </p>
         </section>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-24">
-          <div className="bg-white p-12 rounded-[40px] border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500">
-            <div className="w-14 h-14 bg-pink-50 text-[#D10043] rounded-2xl flex items-center justify-center mb-8">
-              <Target size={30} />
-            </div>
-            <h3 className="text-3xl font-black mb-4 text-gray-900">Our Mission</h3>
-            <p className="text-gray-500 text-base leading-relaxed font-medium">
-              To provide world-class ceramic products that enhance the Filipino living space, 
-              driven by a passion for excellence, environmental sustainability, and 
-              technological advancement.
-            </p>
-          </div>
+        <div className="max-w-7xl mx-auto px-6 py-20">
 
-          <div className="bg-white p-12 rounded-[40px] border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500">
-            <div className="w-14 h-14 bg-gray-900 text-white rounded-2xl flex items-center justify-center mb-8">
-              <Globe size={30} />
+          <section className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-10 md:p-16 mb-20 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-pink-50 rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/2"></div>
+            <div className="relative z-10 flex flex-col md:flex-row gap-12 items-center">
+              <div className="flex-1">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 text-[#D60041] text-xs font-semibold uppercase tracking-wider mb-6">
+                  <History size={14} /> Our Legacy
+                </div>
+                <h2 className="text-3xl md:text-4xl font-normal tracking-tight text-gray-900 mb-6">
+                  A History of <span className="font-semibold text-[#D60041]">Uncompromising Quality</span>
+                </h2>
+                <p className="text-gray-600 leading-relaxed mb-4">
+                  Founded in 1966, Mariwasa Siam Ceramics Inc. has grown from a visionary local enterprise into the Philippines' premier ceramic tile manufacturer. We revolutionized the industry by introducing European technology and design while maintaining the rich heritage of Filipino craftsmanship.
+                </p>
+                <p className="text-gray-600 leading-relaxed">
+                  Today, as a proud member of the SCG (Siam Cement Group), we continue to push boundaries. Our commitment to sustainable manufacturing, product innovation, and community development has solidified our position as a trusted household name for over five decades.
+                </p>
+              </div>
+              <div className="flex-1">
+                <img
+                  src="src/assets/sub header.jpg"
+                  alt="Corporate Office"
+                  className="rounded-[24px] object-cover w-full h-[300px] shadow-sm"
+                />
+              </div>
             </div>
-            <h3 className="text-3xl font-black mb-4 text-gray-900">Our Vision</h3>
-            <p className="text-gray-500 text-base leading-relaxed font-medium">
-              To be the leading innovator in the ceramic industry across Southeast Asia, 
-              setting the standard for aesthetic beauty, durability, and customer satisfaction 
-              in every tile we produce.
-            </p>
-          </div>
-        </div>
+          </section>
 
-        <section className="bg-gray-900 rounded-[40px] p-10 md:p-20 text-white mb-24 overflow-hidden relative">
-          <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
-            <div className="flex-1 text-left">
-              <h2 className="text-3xl md:text-5xl font-black mb-6 leading-tight">
-                Modernizing the <br />
-                <span className="text-[#D10043]">Talent Experience</span>
+          <section className="mb-20">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-normal tracking-tight text-gray-900 mb-4">
+                The Mariwasa <span className="font-semibold text-[#D60041]">Resume Analysis System</span>
               </h2>
-              <p className="text-gray-400 text-lg mb-8 leading-relaxed">
-                This portal represents our shift toward Industry 4.0. By utilizing our 
-                Automated Resume Analysis System, we ensure that every applicant's 
-                unique skills are accurately matched with our technical requirements 
-                without human bias.
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                We believe that great companies are built by great people. This portal utilizes advanced AI to ensure a fair, skill-based, and highly efficient hiring process, removing human bias from initial screenings.
               </p>
-              <div className="grid grid-cols-2 gap-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-white/10 rounded-lg text-[#D10043]"><ShieldCheck size={20} /></div>
-                  <span className="text-sm font-bold">Unbiased Review</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-white/10 rounded-lg text-[#D10043]"><Cpu size={20} /></div>
-                  <span className="text-sm font-bold">Smart Matching</span>
-                </div>
-              </div>
             </div>
-            <div className="flex-1 flex justify-center">
-              <div className="w-64 h-64 bg-gradient-to-tr from-[#D10043] to-pink-500 rounded-full blur-3xl opacity-20 absolute top-0 right-0 animate-pulse"></div>
-              <img 
-                src="src/assets/logo.png" 
-                alt="Technology" 
-                className="h-48 w-48 object-contain relative z-20 brightness-200 opacity-20"
-              />
+
+            <div className="grid md:grid-cols-4 gap-6">
+              {[
+                {
+                  icon: Users,
+                  title: "1. Create Profile",
+                  desc: "Candidates register and upload their resumes to our secure portal."
+                },
+                {
+                  icon: Cpu,
+                  title: "2. AI Analysis",
+                  desc: "Our automated system extracts skills, experience, and key metrics without bias."
+                },
+                {
+                  icon: Search,
+                  title: "3. Smart Matching",
+                  desc: "Candidates are instantly matched with job openings that fit their unique profile."
+                },
+                {
+                  icon: Award,
+                  title: "4. Get Hired",
+                  desc: "HR seamlessly reviews top matches and schedules interviews efficiently."
+                }
+              ].map((step, idx) => (
+                <div key={idx} className="bg-white p-8 rounded-[24px] border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-gray-100 group-hover:bg-[#D60041] transition-colors"></div>
+                  <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <step.icon className="text-[#D60041]" size={24} />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">{step.title}</h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">{step.desc}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <div className="grid md:grid-cols-2 gap-8 mb-20">
+            <div className="bg-white p-10 md:p-12 rounded-[32px] border border-gray-100 shadow-sm flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-red-50 text-[#D60041] rounded-2xl flex items-center justify-center mb-6">
+                <Target size={32} />
+              </div>
+              <h3 className="text-2xl font-semibold mb-4 text-gray-900">Our Mission</h3>
+              <p className="text-gray-600 text-base leading-relaxed">
+                To provide world-class ceramic products that enhance the Filipino living space,
+                driven by a passion for excellence, environmental sustainability, and
+                technological advancement.
+              </p>
+            </div>
+
+            <div className="bg-[#1A1A1A] p-10 md:p-12 rounded-[32px] shadow-sm flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-white/10 text-white rounded-2xl flex items-center justify-center mb-6">
+                <Globe size={32} />
+              </div>
+              <h3 className="text-2xl font-semibold mb-4 text-white">Our Vision</h3>
+              <p className="text-gray-400 text-base leading-relaxed">
+                To be the leading innovator in the ceramic industry across Southeast Asia,
+                setting the standard for aesthetic beauty, durability, and customer satisfaction
+                in every tile we produce.
+              </p>
             </div>
           </div>
-        </section>
 
-        <h3 className="text-center text-3xl font-black mb-12">Our Core Values</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
-          {[
-            { 
-              title: "Innovation", 
-              desc: "Constantly evolving our processes and products to lead the market.",
-              icon: <Cpu size={24} /> 
-            },
-            { 
-              title: "Quality", 
-              desc: "Adhering to strict Siam-standards to ensure lifelong durability.",
-              icon: <CheckCircle size={24} /> 
-            },
-            { 
-              title: "People-First", 
-              desc: "Empowering our employees and candidates through fair technology.",
-              icon: <Users size={24} /> 
-            }
-          ].map((value, idx) => (
-            <div key={idx} className="bg-white p-8 rounded-3xl border border-gray-100 hover:border-pink-100 transition-colors text-center group">
-              <div className="text-[#D10043] mb-5 flex justify-center">
-                <div className="p-4 bg-pink-50 rounded-2xl group-hover:scale-110 transition-transform">
-                  {value.icon}
+          <section className="mb-20">
+            <h3 className="text-center text-2xl font-semibold mb-10 text-gray-900">Our Core Values</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                {
+                  title: "Innovation",
+                  desc: "Constantly evolving our processes and products to lead the market.",
+                  icon: Cpu
+                },
+                {
+                  title: "Quality",
+                  desc: "Adhering to strict Siam-standards to ensure lifelong durability.",
+                  icon: CheckCircle
+                },
+                {
+                  title: "People-First",
+                  desc: "Empowering our employees and candidates through fair technology.",
+                  icon: Users
+                }
+              ].map((value, idx) => (
+                <div key={idx} className="bg-white p-8 rounded-[24px] border border-gray-100 text-center flex flex-col items-center">
+                  <div className="text-[#D60041] mb-5 bg-red-50 p-3 rounded-xl">
+                    <value.icon size={24} />
+                  </div>
+                  <h4 className="font-semibold text-gray-900 text-lg mb-2">{value.title}</h4>
+                  <p className="text-sm text-gray-600 leading-relaxed">{value.desc}</p>
                 </div>
-              </div>
-              <h4 className="font-bold text-gray-900 text-xl mb-3">{value.title}</h4>
-              <p className="text-sm text-gray-500 leading-relaxed font-medium">{value.desc}</p>
+              ))}
             </div>
-          ))}
-        </div>
+          </section>
 
-        <section className="text-center py-20 bg-white rounded-[40px] border border-gray-100 shadow-sm">
-          <h2 className="text-4xl font-black mb-6">Want to be part of our legacy?</h2>
-          <p className="text-gray-500 mb-10 font-medium">Browse our current career opportunities and join the team.</p>
-          <a 
-            href="/careerspage" 
-            className="inline-flex items-center space-x-3 bg-[#D10043] text-white px-10 py-4 rounded-2xl font-bold hover:bg-gray-900 transition-all shadow-lg shadow-pink-100"
-          >
-            <span>View Openings</span>
-          </a>
-        </section>
+          <section className="text-center py-16 px-6 bg-white rounded-[32px] border border-gray-100 shadow-sm relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-white via-white to-pink-50/50 z-0"></div>
+            <div className="relative z-10 max-w-2xl mx-auto">
+              <h2 className="text-3xl font-normal tracking-tight mb-4 text-gray-900">Ready to join our team?</h2>
+              <p className="text-gray-600 mb-8">
+                Take the next step in your career. Upload your resume and let our AI match you with your perfect role at Mariwasa.
+              </p>
+              <a
+                href="/careerspage"
+                className="inline-flex items-center space-x-2 bg-[#D60041] text-white px-8 py-3 rounded-full font-medium hover:bg-[#b50037] transition-colors shadow-sm"
+              >
+                <span>View Openings</span>
+                <ArrowRight size={18} />
+              </a>
+            </div>
+          </section>
+
+        </div>
       </main>
 
       <Footer />

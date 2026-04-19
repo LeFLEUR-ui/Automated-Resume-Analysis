@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Helmet } from 'react-helmet-async';
-import { 
-  Users, 
-  Briefcase, 
-  ShieldCheck, 
-  ArrowLeft, 
-  Eye, 
-  EyeOff, 
-  Loader2, 
-  CheckCircle2 
+import {
+  Users,
+  Briefcase,
+  ShieldCheck,
+  Eye,
+  EyeOff,
+  Loader2,
+  CheckCircle2,
+  XCircle
 } from 'lucide-react';
 
 const Login = () => {
@@ -20,9 +20,13 @@ const Login = () => {
   const [role, setRole] = useState('CANDIDATE');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const [modalState, setModalState] = useState({
+    isOpen: false,
+    type: 'success',
+    title: '',
+    message: ''
+  });
   const [verifiedUserRole, setVerifiedUserRole] = useState('');
 
   const handleEmailChange = (e) => {
@@ -34,7 +38,6 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
     try {
       const response = await axios.post('http://127.0.0.1:8000/auth/login', {
@@ -45,20 +48,35 @@ const Login = () => {
       const { access_token, role: verifiedRole } = response.data;
 
       if (role.toUpperCase() !== verifiedRole.toUpperCase()) {
-        setError(`Account mismatch: This email is registered as ${verifiedRole}.`);
+        setModalState({
+          isOpen: true,
+          type: 'error',
+          title: 'Login Failed',
+          message: `Account mismatch: This email is registered as ${verifiedRole}.`
+        });
         setLoading(false);
         return;
       }
 
       localStorage.setItem('token', access_token);
       localStorage.setItem('role', verifiedRole);
-      
+
       setVerifiedUserRole(verifiedRole);
-      setShowSuccessModal(true);
-      
+      setModalState({
+        isOpen: true,
+        type: 'success',
+        title: 'Success!',
+        message: `Authentication successful. Welcome back to the ${verifiedRole} portal.`
+      });
+
     } catch (err) {
       const message = err.response?.data?.detail || "Invalid email or password";
-      setError(message);
+      setModalState({
+        isOpen: true,
+        type: 'error',
+        title: 'Login Failed',
+        message: message
+      });
     } finally {
       setLoading(false);
     }
@@ -75,154 +93,176 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8 bg-gradient-to-br from-white via-[#fff5f7] to-[#ffeef2] font-sans antialiased text-gray-800 relative">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8 bg-[#F0F4F9] font-sans antialiased text-gray-800">
       <Helmet>
-        <title>Mariwasa - Login</title>
+        <title>Sign in - Mariwasa Portal</title>
       </Helmet>
-      {showSuccessModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/40">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-8 text-center animate-in fade-in zoom-in duration-300">
-            <div className="flex justify-center mb-4">
-              <div className="bg-green-50 p-3 rounded-full">
-                <CheckCircle2 size={48} className="text-green-600" />
+
+      {modalState.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-8 transform transition-all animate-in zoom-in-95 duration-200">
+            <div className="flex flex-col items-center text-center">
+              <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-5 ${modalState.type === 'success' ? 'bg-green-50' : 'bg-red-50'}`}>
+                {modalState.type === 'success' ? (
+                  <CheckCircle2 className="w-8 h-8 text-green-500" />
+                ) : (
+                  <XCircle className="w-8 h-8 text-red-500" />
+                )}
               </div>
+              <h3 className="text-xl font-normal text-gray-900 mb-2 tracking-tight">
+                {modalState.title}
+              </h3>
+              <p className="text-sm text-gray-600 mb-8 px-2 leading-relaxed">
+                {modalState.message}
+              </p>
+              <button
+                onClick={() => {
+                  if (modalState.type === 'success') {
+                    handleRedirect();
+                  } else {
+                    setModalState({ ...modalState, isOpen: false });
+                  }
+                }}
+                className={`w-full font-medium py-2.5 px-4 rounded-full transition-all duration-200 text-sm ${modalState.type === 'success'
+                    ? 'bg-[#D60041] hover:bg-[#b50037] text-white'
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
+                  }`}
+              >
+                {modalState.type === 'success' ? 'Continue' : 'Try Again'}
+              </button>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Success!</h3>
-            <p className="text-gray-500 text-sm mb-8">
-              Authentication successful. Welcome back to the {verifiedUserRole} portal.
-            </p>
-            <button
-              onClick={handleRedirect}
-              className="w-full bg-[#D60041] hover:bg-[#b50037] text-white font-semibold py-3 rounded-lg transition-all shadow-lg active:scale-95"
-            >
-              Go to Dashboard
-            </button>
           </div>
         </div>
       )}
 
-      <a href="/" className="text-gray-500 hover:text-gray-900 text-sm flex items-center mb-10 transition-colors group">
-        <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
-        Back to Home
-      </a>
+      <div className="bg-white rounded-[28px] shadow-sm w-full max-w-[1040px] flex flex-col md:flex-row overflow-hidden min-h-[400px]">
 
-      <div className="text-center mb-10">
-        <div className="flex justify-center mb-6">
-          <img src="src/assets/logo.png" alt="Logo" className="h-12 w-12 object-contain" />
-        </div>
-        <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Welcome Back</h1>
-        <p className="mt-2 text-sm text-gray-500">Sign in to access the Resume Analysis System</p>
-      </div>
-
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-10 border border-gray-100">
-        <div className="text-center mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 tracking-tight">Sign In</h2>
-          {error && (
-            <div className="mt-3 p-3 bg-red-50 rounded-lg border border-red-100">
-                <p className="text-red-600 text-xs font-medium">{error}</p>
-            </div>
-          )}
-        </div>
-
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          <div>
-            <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
-              Email Address
-            </label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={handleEmailChange}
-              placeholder="name@company.com"
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-100 focus:border-[#D60041] transition text-sm"
-            />
+        <div className="w-full md:w-[45%] p-10 md:p-14 flex flex-col justify-start">
+          <div className="mb-6">
+            <img src="src/assets/logo.png" alt="Mariwasa Logo" className="h-10 w-10 object-contain" />
           </div>
-
-          <div>
-            <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
-              Password
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-100 focus:border-[#D60041] transition text-sm"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-          </div>
-
-          <div className="flex justify-end">
-            <a href="#" className="text-xs font-medium text-[#D60041] hover:underline">
-              Forgot password?
-            </a>
-          </div>
-
-          <div className="grid grid-cols-3 gap-3">
-            <div 
-              onClick={() => setRole('CANDIDATE')}
-              className={`flex flex-col items-center justify-center p-4 rounded-xl border cursor-pointer transition-all duration-200 ${role === 'CANDIDATE' ? 'border-[#D60041] bg-red-50 ring-1 ring-[#D60041]' : 'border-gray-200 hover:bg-gray-50'}`}
-            >
-              <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
-                <Users size={18} className={role === 'CANDIDATE' ? 'text-[#D60041]' : 'text-gray-600'} />
-              </div>
-              <span className="text-[10px] font-bold text-gray-700 uppercase tracking-tight">Candidate</span>
-            </div>
-          
-            <div 
-              onClick={() => setRole('HR')}
-              className={`flex flex-col items-center justify-center p-4 rounded-xl border cursor-pointer transition-all duration-200 ${role === 'HR' ? 'border-[#D60041] bg-red-50 ring-1 ring-[#D60041]' : 'border-gray-200 hover:bg-gray-50'}`}
-            >
-              <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
-                <Briefcase size={18} className={role === 'HR' ? 'text-[#D60041]' : 'text-gray-600'} />
-              </div>
-              <span className="text-[10px] font-bold text-gray-700 uppercase tracking-tight">HR Staff</span>
-            </div>
-
-            <div 
-              onClick={() => setRole('ADMIN')}
-              className={`flex flex-col items-center justify-center p-4 rounded-xl border cursor-pointer transition-all duration-200 ${role === 'ADMIN' ? 'border-[#D60041] bg-red-50 ring-1 ring-[#D60041]' : 'border-gray-200 hover:bg-gray-50'}`}
-            >
-              <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
-                <ShieldCheck size={18} className={role === 'ADMIN' ? 'text-[#D60041]' : 'text-gray-600'} />
-              </div>
-              <span className="text-[10px] font-bold text-gray-700 uppercase tracking-tight">Admin</span>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-[#D60041] hover:bg-[#b50037] text-white font-semibold py-3 rounded-lg transition-all text-sm shadow-md active:scale-[0.98] flex justify-center items-center disabled:opacity-70 disabled:cursor-not-allowed"
-          >
-            {loading ? <Loader2 className="animate-spin h-5 w-5" /> : "Sign In to Portal"}
-          </button>
-        </form>
-
-        <div className="mt-10 text-center">
-          <p className="text-sm text-gray-600">
-            Don’t have an account?
-            <a href="/register" className="text-[#D60041] font-semibold hover:underline ml-1">
-              Create Account
-            </a>
+          <h1 className="text-[36px] leading-[44px] font-normal tracking-normal text-gray-900 mb-4">
+            Sign in
+          </h1>
+          <p className="text-base font-normal text-gray-800 mb-8 md:mb-0">
+            to Mariwasa Resume Analysis System. Select your portal role to continue.
           </p>
         </div>
+
+        <div className="w-full md:w-[55%] p-10 md:p-14 flex flex-col justify-center">
+          <form onSubmit={handleSubmit} className="w-full max-w-[400px] mx-auto md:mx-0 md:ml-auto">
+
+            <div className="mb-8">
+              <label className="block text-xs font-medium text-gray-600 mb-3 ml-1">Portal Access Level</label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { id: 'CANDIDATE', label: 'Candidate', icon: Users },
+                  { id: 'HR', label: 'HR Staff', icon: Briefcase },
+                  { id: 'ADMIN', label: 'Admin', icon: ShieldCheck }
+                ].map((r) => (
+                  <button
+                    key={r.id}
+                    type="button"
+                    onClick={() => setRole(r.id)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors border ${role === r.id
+                        ? 'border-[#D60041] bg-red-50 text-[#D60041]'
+                        : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                      }`}
+                  >
+                    <r.icon size={16} className={role === r.id ? 'text-[#D60041]' : 'text-gray-500'} />
+                    {r.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-4 mb-2">
+              <div className="relative">
+                <input
+                  type="email"
+                  id="email"
+                  required
+                  value={email}
+                  onChange={handleEmailChange}
+                  className="peer w-full px-4 py-3.5 border border-gray-400 rounded-[4px] text-base text-gray-900 focus:outline-none focus:border-[#D60041] focus:border-2 focus:py-[13px] focus:px-[15px] transition-all placeholder-transparent bg-transparent"
+                  placeholder="Email or phone"
+                />
+                <label
+                  htmlFor="email"
+                  className="absolute left-3.5 -top-2.5 bg-white px-1 text-xs font-normal text-gray-600 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-600 peer-placeholder-shown:top-3.5 peer-focus:-top-2.5 peer-focus:text-xs peer-focus:text-[#D60041] transition-all cursor-text pointer-events-none"
+                >
+                  Email address
+                </label>
+              </div>
+
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="peer w-full pl-4 pr-12 py-3.5 border border-gray-400 rounded-[4px] text-base text-gray-900 focus:outline-none focus:border-[#D60041] focus:border-2 focus:py-[13px] focus:pl-[15px] transition-all placeholder-transparent bg-transparent"
+                  placeholder="Enter your password"
+                />
+                <label
+                  htmlFor="password"
+                  className="absolute left-3.5 -top-2.5 bg-white px-1 text-xs font-normal text-gray-600 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-600 peer-placeholder-shown:top-3.5 peer-focus:-top-2.5 peer-focus:text-xs peer-focus:text-[#D60041] transition-all cursor-text pointer-events-none"
+                >
+                  Password
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-900 p-1 rounded-full hover:bg-gray-100 transition-colors"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+            </div>
+
+            <div className="mb-10 mt-2">
+              <a href="#" className="text-sm font-medium text-[#D60041] hover:bg-red-50 px-2 py-1.5 -ml-2 rounded-md transition-colors inline-block">
+                Forgot password?
+              </a>
+            </div>
+
+            <p className="text-sm text-gray-600 mb-10 leading-relaxed pr-4">
+              Not your computer? Use a private browsing window to sign in. <a href="#" className="text-[#D60041] font-medium hover:underline">Learn more</a>
+            </p>
+
+            <div className="flex flex-col-reverse sm:flex-row justify-between items-center gap-4 sm:gap-0 mt-8">
+              <a
+                href="/register"
+                className="text-sm font-medium text-[#D60041] hover:bg-red-50 px-3 py-2 rounded-md transition-colors w-full sm:w-auto text-center"
+              >
+                Create account
+              </a>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full sm:w-auto bg-[#D60041] hover:bg-[#b50037] text-white text-sm font-medium px-6 py-2.5 rounded-full transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center min-w-[100px]"
+              >
+                {loading ? <Loader2 className="animate-spin h-5 w-5" /> : "Next"}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
 
-      <footer className="mt-12 text-center text-xs text-gray-400 space-y-1 tracking-wide">
-        <p>&copy; 2026 Mariwasa Siam Ceramics Inc.</p>
-        <p className="opacity-60">Secure Enterprise Portal v2.0</p>
-      </footer>
+      <div className="w-full max-w-[1040px] mt-4 flex flex-col sm:flex-row justify-between items-center text-xs text-gray-600 px-2">
+        <div className="mb-4 sm:mb-0">
+          <select className="bg-transparent border-none focus:ring-0 cursor-pointer outline-none hover:bg-gray-200 py-1 px-2 rounded-md transition-colors">
+            <option>English (United States)</option>
+            <option>Filipino</option>
+          </select>
+        </div>
+        <div className="flex space-x-6">
+          <a href="#" className="hover:bg-gray-200 px-2 py-1 rounded-md transition-colors">Help</a>
+          <a href="#" className="hover:bg-gray-200 px-2 py-1 rounded-md transition-colors">Privacy</a>
+          <a href="#" className="hover:bg-gray-200 px-2 py-1 rounded-md transition-colors">Terms</a>
+        </div>
+      </div>
     </div>
   );
 };

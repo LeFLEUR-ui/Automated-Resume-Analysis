@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { 
-  ChevronDown, 
-  LogIn, 
-  UserPlus, 
-  Briefcase, 
-  Info, 
-  Search, 
-  X, 
-  Building2, 
-  MapPin, 
-  Clock, 
+import {
+  ChevronDown,
+  Briefcase,
+  Search,
+  X,
+  MapPin,
+  Clock,
   ArrowRight,
   CircleDot
 } from 'lucide-react';
@@ -65,66 +61,100 @@ const CareersPage = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDept, setSelectedDept] = useState('All Departments');
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const departments = ['All Departments', ...new Set(STATIC_JOBS.map(job => job.department))];
 
   const filteredJobs = STATIC_JOBS.filter(job => {
-    const matchesSearch = 
+    const matchesSearch =
       job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       job.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
       job.skills_requirements.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesDept = selectedDept === 'All Departments' || job.department === selectedDept;
-    
+
     return matchesSearch && matchesDept;
   });
 
+  const searchSuggestions = searchTerm
+    ? [...new Set(STATIC_JOBS
+      .filter(job => job.title.toLowerCase().includes(searchTerm.toLowerCase()))
+      .map(job => job.title))]
+    : [];
+
   return (
-    <div className="bg-gray-50 text-gray-800 antialiased font-['Inter',_sans-serif] min-h-screen">
+    <div className="bg-[transparent] text-gray-800 antialiased font-sans min-h-screen flex flex-col selection:bg-pink-100 selection:text-pink-900">
       <Helmet>
-        <title>Mariwasa - Careers Page</title>
+        <title>Careers - Mariwasa Portal</title>
       </Helmet>
       <Header />
 
-      <main className="max-w-6xl mx-auto px-6 py-16">
-        <div className="text-center mb-16">
-          <div className="inline-block p-3 rounded-2xl bg-white shadow-sm border border-gray-100 mb-6">
-            <Briefcase className="text-[#D10043]" size={28} />
+      <main className="flex-grow max-w-6xl mx-auto px-6 py-16 lg:py-24 w-full">
+
+        <div className="text-center mb-16 relative">
+          <div className="inline-block p-1.5 rounded-full bg-white shadow-sm border border-gray-100 mb-8">
+            <div className="flex items-center gap-3 px-3 py-1">
+              <Briefcase size={16} className="text-[#D60041]" />
+              <span className="text-xs font-semibold uppercase tracking-wider text-gray-600">Open Positions</span>
+            </div>
           </div>
-          <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight text-gray-900">
-            Find Your <span className="text-[#D10043]">Career</span> at Mariwasa
-          </h2>
-          <p className="text-gray-500 text-lg max-w-2xl mx-auto font-medium">
-            Explore exciting opportunities in ceramic manufacturing. Join our team and build the homes of tomorrow.
+          <h1 className="text-5xl md:text-6xl font-normal tracking-tight text-gray-900 mb-6">
+            Find Your <span className="font-semibold text-[#D60041]">Career</span> at Mariwasa
+          </h1>
+          <p className="text-gray-600 text-lg md:text-xl max-w-2xl mx-auto font-normal leading-relaxed">
+            Explore exciting opportunities in ceramic manufacturing. Join our team of innovators and help build the homes of tomorrow.
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto -mt-4 mb-16">
-          <div className="bg-white p-4 rounded-[30px] shadow-xl shadow-gray-200/50 border border-gray-100 flex flex-col md:flex-row gap-3">
+        <div className="w-full mb-16 relative z-20">
+          <div className="bg-white p-3 rounded-full shadow-sm border border-gray-100 flex flex-col md:flex-row gap-3 relative">
             <div className="relative flex-grow">
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-              <input 
-                type="text" 
-                placeholder="Search jobs by title or skills..." 
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+              <input
+                type="text"
+                placeholder="Search jobs by title or skills..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-10 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-pink-100 transition-all text-sm font-medium"
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setShowSuggestions(true);
+                }}
+                onFocus={() => setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                className={`w-full pl-14 pr-12 py-3.5 bg-gray-50/50 border border-transparent hover:bg-gray-50 focus:bg-white focus:ring-2 focus:ring-[#D60041]/20 focus:border-[#D60041] transition-all text-sm font-medium outline-none z-30 relative rounded-full`}
               />
               {searchTerm && (
-                <button 
+                <button
                   onClick={() => setSearchTerm('')}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 bg-gray-200/50 hover:bg-gray-200 p-1.5 rounded-full transition-colors z-40"
                 >
-                  <X size={18} />
+                  <X size={14} />
                 </button>
               )}
+
+              {showSuggestions && searchSuggestions.length > 0 && (
+                <div className="absolute top-[calc(100%+8px)] left-0 w-full bg-white border border-gray-100 rounded-[24px] shadow-lg z-20 overflow-hidden flex flex-col animate-in fade-in duration-200 py-2">
+                  {searchSuggestions.map((suggestion, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        setSearchTerm(suggestion);
+                        setShowSuggestions(false);
+                      }}
+                      className="w-full text-left px-6 py-3 hover:bg-red-50 text-sm font-medium text-gray-700 transition-colors flex items-center gap-3"
+                    >
+                      <Search size={14} className="text-gray-400" />
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-            
-            <div className="relative w-full md:w-64">
-              <select 
+
+            <div className="relative w-full md:w-64 shrink-0">
+              <select
                 value={selectedDept}
                 onChange={(e) => setSelectedDept(e.target.value)}
-                className="w-full appearance-none px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-pink-100 text-sm font-bold text-gray-700 cursor-pointer"
+                className="w-full appearance-none px-6 py-3.5 bg-gray-50/50 border border-transparent hover:bg-gray-50 rounded-full focus:bg-white focus:ring-2 focus:ring-[#D60041]/20 focus:border-[#D60041] text-sm font-medium text-gray-700 cursor-pointer outline-none transition-all"
               >
                 {departments.map(dept => (
                   <option key={dept} value={dept}>{dept}</option>
@@ -133,71 +163,91 @@ const CareersPage = () => {
               <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
             </div>
           </div>
-          <p className="mt-4 text-center text-xs font-bold text-gray-400 uppercase tracking-widest">
-            Showing {filteredJobs.length} Career Opportunities
-          </p>
+
+          <div className="mt-8 flex items-center justify-center gap-4">
+            <div className="h-px flex-grow max-w-[60px] bg-gray-200"></div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              Showing {filteredJobs.length} Career Opportunities
+            </p>
+            <div className="h-px flex-grow max-w-[60px] bg-gray-200"></div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-24 items-stretch">
           {filteredJobs.length > 0 ? (
             filteredJobs.map((job) => (
-              <div key={job.id} className="bg-white p-8 rounded-[40px] border border-gray-100 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 group flex flex-col">
-                <div className="flex justify-between items-start mb-6">
+              <div key={job.id} className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group flex flex-col relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-bl-[100px] opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>
+
+                <div className="flex justify-between items-start mb-6 relative z-10">
                   <div>
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#D10043] mb-1 block">
+                    <span className="inline-block px-3 py-1 rounded-full bg-red-50 text-[10px] font-bold uppercase tracking-wider text-[#D60041] mb-4">
                       {job.department}
                     </span>
-                    <h3 className="text-xl font-black text-gray-900 group-hover:text-[#D10043] transition-colors">
+                    <h3 className="text-2xl font-semibold text-gray-900 group-hover:text-[#D60041] transition-colors leading-tight pr-2 tracking-tight">
                       {job.title}
                     </h3>
                   </div>
-                  <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${job.is_active ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'}`}>
-                    <CircleDot size={10} />
+                  <div className={`shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${job.is_active ? 'bg-green-50 text-green-700 ring-1 ring-green-600/20' : 'bg-gray-100 text-gray-500 ring-1 ring-gray-200'}`}>
+                    <CircleDot size={10} className={job.is_active ? "animate-pulse" : ""} />
                     {job.is_active ? 'Active' : 'Closed'}
                   </div>
                 </div>
-                
-                <p className="text-gray-500 text-sm leading-relaxed mb-8 font-medium line-clamp-3">
+
+                <p className="text-gray-600 text-sm leading-relaxed mb-8 font-normal line-clamp-3 relative z-10 flex-grow">
                   {job.skills_requirements}
                 </p>
 
-                <div className="grid grid-cols-2 gap-y-3 mb-8 mt-auto">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-gray-400">
-                    <MapPin size={14} className="text-[#D10043]" /> {job.location}
-                  </div>
-                  <div className="flex items-center gap-2 text-xs font-semibold text-gray-400">
-                    <Clock size={14} className="text-[#D10043]" /> {job.job_type}
-                  </div>
-                  <div className="col-span-2 flex items-center gap-2 text-xs font-bold text-gray-900">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#D10043]" /> {job.salary_range}
+                <div className="bg-gray-50/50 rounded-[24px] p-5 mb-8 mt-auto relative z-10 border border-gray-100">
+                  <div className="grid grid-cols-2 gap-y-4">
+                    <div className="flex items-center gap-3 text-xs font-medium text-gray-600">
+                      <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
+                        <MapPin size={14} className="text-gray-400" />
+                      </div>
+                      {job.location}
+                    </div>
+                    <div className="flex items-center gap-3 text-xs font-medium text-gray-600">
+                      <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
+                        <Clock size={14} className="text-gray-400" />
+                      </div>
+                      {job.job_type}
+                    </div>
+                    <div className="col-span-2 flex items-center gap-3 text-xs font-semibold text-gray-900">
+                      <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
+                        <div className="w-2.5 h-2.5 rounded-full bg-[#D60041]" />
+                      </div>
+                      {job.salary_range}
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex gap-3 pt-6 border-t border-gray-50">
-                  <button className="flex-1 py-3.5 rounded-2xl border border-gray-100 font-bold text-xs text-gray-600 hover:bg-gray-50 transition-all">
-                    View Details
+                <div className="flex gap-3 relative z-10">
+                  <button className="flex-1 py-3.5 rounded-full border border-gray-200 font-medium text-sm text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all">
+                    Details
                   </button>
-                  <button 
+                  <button
                     onClick={() => navigate(`/apply/${job.id}`)}
-                    className="flex-1 py-3.5 rounded-2xl bg-gray-900 text-white font-bold text-xs flex items-center justify-center gap-2 hover:bg-[#D10043] transition-all shadow-lg shadow-gray-100"
+                    disabled={!job.is_active}
+                    className="flex-[2] py-3.5 rounded-full bg-[#1A1A1A] text-white font-medium text-sm flex items-center justify-center gap-2 hover:bg-[#D60041] transition-colors disabled:opacity-50 disabled:cursor-not-allowed group/btn"
                   >
-                    Apply Now <ArrowRight size={14} />
+                    {job.is_active ? 'Apply Now' : 'Closed'}
+                    {job.is_active && <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />}
                   </button>
                 </div>
               </div>
             ))
           ) : (
-            <div className="col-span-full py-20 text-center bg-white rounded-[40px] border border-dashed border-gray-200">
-              <div className="w-16 h-16 bg-gray-50 text-gray-300 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <div className="col-span-full py-24 text-center bg-white rounded-[32px] border border-dashed border-gray-200 shadow-sm">
+              <div className="w-20 h-20 bg-gray-50 text-gray-300 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Search size={32} />
               </div>
-              <h3 className="text-gray-900 font-bold text-lg">No matching roles found</h3>
-              <p className="text-gray-400 text-sm mt-1 mb-6">Try adjusting your filters to find more opportunities.</p>
-              <button 
-                onClick={() => {setSearchTerm(''); setSelectedDept('All Departments');}} 
-                className="text-[#D10043] font-bold text-xs uppercase tracking-widest hover:underline"
+              <h3 className="text-gray-900 font-semibold text-xl mb-2">No matching roles found</h3>
+              <p className="text-gray-500 text-sm mb-8 max-w-sm mx-auto">We couldn't find any positions matching your search. Try adjusting your filters or search terms.</p>
+              <button
+                onClick={() => { setSearchTerm(''); setSelectedDept('All Departments'); }}
+                className="px-8 py-3 rounded-full bg-red-50 text-[#D60041] font-medium text-sm hover:bg-red-100 transition-colors"
               >
-                Reset All Filters
+                Clear All Filters
               </button>
             </div>
           )}
