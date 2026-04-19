@@ -26,12 +26,11 @@ const AboutPage = () => {
 
       <main className="flex-grow pt-16">
         <section className="relative w-full h-[400px] md:h-[500px] flex items-center justify-center overflow-hidden">
+          <div 
+            className="absolute inset-0 w-full h-full bg-fixed bg-cover bg-center z-0"
+            style={{ backgroundImage: `url('src/assets/banner.jpg')` }}
+          ></div>
           <div className="absolute inset-0 bg-gray-900/75 z-10"></div>
-          <img
-            src="src/assets/banner.jpg"
-            alt="Mariwasa Manufacturing"
-            className="absolute inset-0 w-full h-full object-cover z-0"
-          />
           <div className="relative z-20 text-center px-6 max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-normal tracking-tight text-white mb-6">
               Empowering the Future of <span className="text-[#D60041] font-semibold">Manufacturing</span>
