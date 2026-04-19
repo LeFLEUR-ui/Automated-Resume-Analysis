@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Users, Briefcase, ShieldCheck, Eye, EyeOff, Loader2, CheckCircle2, XCircle } from 'lucide-react';
+import { Users, Briefcase, ShieldCheck, Eye, EyeOff, Loader2, CheckCircle2, XCircle, ArrowLeft } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 
 const Register = () => {
@@ -130,6 +130,14 @@ const Register = () => {
       <Helmet>
         <title>Create Account - Mariwasa Portal</title>
       </Helmet>
+
+      <button 
+        onClick={() => window.location.href = '/'}
+        className="fixed top-8 left-8 flex items-center gap-2 text-gray-600 hover:text-[#D60041] transition-all group font-bold text-xs uppercase tracking-widest bg-white/50 backdrop-blur-sm py-3 px-5 rounded-2xl border border-gray-200 hover:border-pink-100 hover:shadow-lg active:scale-95 z-50"
+      >
+        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+        Back to Home
+      </button>
 
       {modalState.isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm animate-in fade-in duration-200">
