@@ -58,8 +58,8 @@ const PreviewAndVerifyPage = () => {
               Verify the information extracted from <span className="text-slate-900 font-bold">{state?.fileName || "your resume"}</span>.
             </p>
           </div>
-          <button 
-            id="btn-edit-details" 
+          <button
+            id="btn-edit-details"
             onClick={() => navigate(`/applicationform/${jobId}`, { state: { ...extractedData, fileName: state?.fileName } })}
             className="flex items-center text-sm font-bold text-[#D10043] hover:underline bg-pink-50 px-4 py-2 rounded-xl transition-colors"
           >

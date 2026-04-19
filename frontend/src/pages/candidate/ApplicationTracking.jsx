@@ -1,20 +1,25 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { 
   ArrowLeft, 
   Briefcase, 
   MapPin, 
   Calendar, 
-  Clock, 
   CheckCircle2, 
   Circle,
   FileText,
   Download,
   ExternalLink,
   MessageSquare,
-  AlertCircle
+  AlertCircle,
+  ChevronRight,
+  Sparkles,
+  ShieldCheck,
+  Building2,
+  Clock
 } from 'lucide-react';
 import Header from '../../components/layout/Header';
+import Footer from '../../components/layout/Footer';
 
 const BRAND_RED = "#D10043";
 
@@ -25,127 +30,159 @@ const ApplicationTracking = () => {
     location: "Sto. Tomas, Batangas (Hybrid)",
     appliedDate: "Oct 12, 2023",
     status: "Interview Stage",
-    statusColor: "text-blue-500 bg-blue-50",
+    statusColor: "text-blue-600 bg-blue-50 border-blue-100",
   };
 
   const TIMELINE_STEPS = [
     {
       label: "Application Submitted",
       date: "Oct 12, 2023 • 09:15 AM",
-      description: "Your application was successfully received by the recruitment team.",
+      description: "Your application was successfully received by the recruitment team and assigned an ID #ARA-2023-882.",
       status: "completed"
     },
     {
       label: "Initial Screening",
       date: "Oct 15, 2023 • 02:30 PM",
-      description: "Recruiter reviewed your profile and resume.",
+      description: "Recruiter reviewed your profile and resume. Your skills matched 92% of our requirements.",
       status: "completed"
     },
     {
       label: "Technical Interview",
       date: "Oct 20, 2023 • 10:00 AM",
-      description: "Live coding and architectural discussion with the Engineering Lead.",
+      description: "Live coding and architectural discussion with the Engineering Lead. This is your current active stage.",
       status: "current"
     },
     {
       label: "Final Interview",
       date: "Pending",
-      description: "Interview with the Head of Digital Transformation.",
+      description: "Interview with the Head of Digital Transformation. Schedule will be sent via Twilio AI Caller.",
       status: "upcoming"
     },
     {
       label: "Job Offer",
       date: "Pending",
-      description: "Final decision and salary negotiation.",
+      description: "Final decision and salary negotiation phase.",
       status: "upcoming"
     }
   ];
 
   const ATTACHMENTS = [
-    { name: "Resume_Updated.pdf", size: "1.2 MB", date: "Oct 12" },
-    { name: "Portfolio_Link.url", size: "External", date: "Oct 12" },
-    { name: "Technical_Assessment.zip", size: "4.5 MB", date: "Oct 18" }
+    { name: "Resume_Updated.pdf", size: "1.2 MB", date: "Oct 12", type: "PDF" },
+    { name: "Portfolio_Link.url", size: "External", date: "Oct 12", type: "LINK" },
+    { name: "Technical_Assessment.zip", size: "4.5 MB", date: "Oct 18", type: "ZIP" }
   ];
 
   return (
-    <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter']">
+    <div className="bg-[#F8FAFC] text-slate-900 antialiased min-h-screen font-['Inter',_sans-serif] flex flex-col">
       <Helmet>
-        <title>Candidate Page - Application Tracking</title>
+        <title>Mariwasa - Application Tracking</title>
       </Helmet>
 
       <Header />
       
-      <main className="max-w-[1400px] mx-auto px-10 py-8">
-        <div className="mb-8">
-          <button className="flex items-center text-sm font-bold text-gray-400 hover:text-gray-900 transition-colors mb-6 group">
+      <main className="max-w-[1400px] mx-auto px-6 py-12 w-full flex-grow">
+        
+        {/* Navigation & Header */}
+        <div className="mb-12">
+          <button className="flex items-center text-xs font-black text-slate-400 uppercase tracking-widest hover:text-[#D10043] transition-colors mb-8 group">
             <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
             Back to Dashboard
           </button>
           
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white border border-gray-100 p-8 rounded-[24px] shadow-sm">
-            <div className="flex gap-6 items-center">
-              <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center border border-gray-100">
-                <Briefcase className="w-8 h-8 text-[#D10043]" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">{jobDetails.role}</h1>
-                <div className="flex flex-wrap gap-y-2 gap-x-4 mt-1 text-sm text-gray-400 font-medium">
-                  <span className="flex items-center"><Briefcase className="w-3.5 h-3.5 mr-1.5" /> {jobDetails.company}</span>
-                  <span className="flex items-center"><MapPin className="w-3.5 h-3.5 mr-1.5" /> {jobDetails.location}</span>
-                  <span className="flex items-center"><Calendar className="w-3.5 h-3.5 mr-1.5" /> Applied on {jobDetails.appliedDate}</span>
+          <div className="relative overflow-hidden bg-white border border-slate-100 p-10 rounded-[40px] shadow-2xl shadow-slate-200/50 animate-in fade-in slide-in-from-top-4 duration-700">
+            <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-pink-50/30 to-transparent pointer-events-none" />
+            
+            <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+              <div className="flex gap-8 items-center">
+                <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center border border-slate-100 shadow-sm group hover:bg-[#D10043]/5 transition-colors duration-500">
+                  <Briefcase className="w-10 h-10 text-[#D10043]" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="bg-[#D10043]/10 text-[#D10043] text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider">Active Process</span>
+                    <span className="w-1 h-1 bg-slate-300 rounded-full" />
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">ID: #ARA-882</span>
+                  </div>
+                  <h1 className="text-3xl font-black text-slate-900 tracking-tight leading-none mb-4">{jobDetails.role}</h1>
+                  <div className="flex flex-wrap gap-y-3 gap-x-6 text-xs text-slate-500 font-bold uppercase tracking-widest">
+                    <span className="flex items-center"><Building2 className="w-4 h-4 mr-2 text-slate-300" /> {jobDetails.company}</span>
+                    <span className="flex items-center"><MapPin className="w-4 h-4 mr-2 text-slate-300" /> {jobDetails.location}</span>
+                    <span className="flex items-center"><Clock className="w-4 h-4 mr-2 text-slate-300" /> Applied {jobDetails.appliedDate}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className={`px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase ${jobDetails.statusColor}`}>
-                {jobDetails.status}
-              </span>
-              <button className="p-2.5 border border-gray-100 rounded-xl hover:bg-gray-50 transition-all">
-                <MessageSquare className="w-5 h-5 text-gray-400" />
-              </button>
+              
+              <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-3xl border border-slate-100">
+                <div className="text-right mr-2 hidden sm:block">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Current Status</p>
+                  <p className="text-sm font-black text-slate-900 tracking-tight">{jobDetails.status}</p>
+                </div>
+                <div className={`w-3 h-3 rounded-full animate-pulse ${jobDetails.status.includes('Interview') ? 'bg-blue-500' : 'bg-green-500'}`} />
+                <button className="p-4 bg-white hover:bg-[#D10043] hover:text-white rounded-2xl shadow-sm border border-slate-100 transition-all active:scale-[0.95] text-slate-400">
+                  <MessageSquare size={20} />
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           
+          {/* Main Timeline Panel */}
           <div className="lg:col-span-2">
-            <div className="bg-white border border-gray-100 rounded-[24px] p-8 shadow-sm">
-              <h3 className="font-semibold text-gray-900 mb-8">Application Timeline</h3>
+            <div className="bg-white border border-slate-100 rounded-[48px] p-10 shadow-xl shadow-slate-200/40 animate-in fade-in slide-in-from-left-6 duration-700">
+              <div className="flex items-center justify-between mb-12">
+                <h3 className="text-xl font-black text-slate-900 tracking-tight">Application Journey</h3>
+                <div className="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-xl text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-100">
+                  <Sparkles size={14} className="text-[#D10043]" />
+                  AI Tracking Enabled
+                </div>
+              </div>
               
-              <div className="relative">
+              <div className="relative ml-4">
                 {TIMELINE_STEPS.map((step, index) => (
-                  <div key={index} className="relative pl-10 pb-10 last:pb-0">
+                  <div key={index} className="relative pl-14 pb-14 last:pb-0 group">
+                    {/* Connection Line */}
                     {index !== TIMELINE_STEPS.length - 1 && (
-                      <div className="absolute left-[11px] top-7 bottom-0 w-0.5 bg-gray-100"></div>
+                      <div className={`absolute left-[13px] top-8 bottom-0 w-0.5 ${step.status === 'completed' ? 'bg-[#D10043]/20' : 'bg-slate-100'} transition-colors duration-500`}></div>
                     )}
                     
-                    <div className="absolute left-0 top-1">
+                    {/* Status Indicator */}
+                    <div className="absolute left-0 top-1 transition-transform duration-500 group-hover:scale-110">
                       {step.status === 'completed' ? (
-                        <div className="bg-red-50 p-1 rounded-full">
-                          <CheckCircle2 className="w-5 h-5 text-[#D10043]" />
+                        <div className="bg-pink-50 w-7 h-7 rounded-full flex items-center justify-center border-4 border-white shadow-sm">
+                          <CheckCircle2 className="w-4 h-4 text-[#D10043]" />
                         </div>
                       ) : step.status === 'current' ? (
-                        <div className="bg-white border-2 border-[#D10043] w-5 h-5 rounded-full flex items-center justify-center">
-                          <div className="w-2 h-2 bg-[#D10043] rounded-full animate-pulse"></div>
+                        <div className="bg-white border-2 border-[#D10043] w-7 h-7 rounded-full flex items-center justify-center shadow-lg shadow-pink-100">
+                          <div className="w-2.5 h-2.5 bg-[#D10043] rounded-full animate-ping"></div>
                         </div>
                       ) : (
-                        <Circle className="w-5 h-5 text-gray-200 fill-white" />
+                        <div className="bg-white border-2 border-slate-100 w-7 h-7 rounded-full flex items-center justify-center">
+                          <div className="w-2 h-2 bg-slate-100 rounded-full"></div>
+                        </div>
                       )}
                     </div>
 
-                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
-                      <div>
-                        <h4 className={`font-bold text-sm ${step.status === 'upcoming' ? 'text-gray-400' : 'text-gray-900'}`}>
-                          {step.label}
-                        </h4>
-                        <p className="text-sm text-gray-400 mt-1 max-w-md leading-relaxed">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+                      <div className="max-w-md">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h4 className={`text-lg font-black tracking-tight ${step.status === 'upcoming' ? 'text-slate-300' : 'text-slate-900'}`}>
+                            {step.label}
+                          </h4>
+                          {step.status === 'current' && (
+                            <span className="bg-[#D10043] text-white text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-widest">Active</span>
+                          )}
+                        </div>
+                        <p className={`text-sm font-medium leading-relaxed ${step.status === 'upcoming' ? 'text-slate-300' : 'text-slate-500'}`}>
                           {step.description}
                         </p>
                       </div>
-                      <span className="text-[11px] font-bold text-gray-300 uppercase tracking-widest whitespace-nowrap">
-                        {step.date}
-                      </span>
+                      <div className="text-right">
+                        <span className={`text-[10px] font-black uppercase tracking-[0.2em] whitespace-nowrap px-3 py-1 rounded-lg ${step.status === 'upcoming' ? 'text-slate-200 bg-slate-50/50' : 'text-[#D10043] bg-pink-50/50'}`}>
+                          {step.date}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -153,49 +190,68 @@ const ApplicationTracking = () => {
             </div>
           </div>
 
-          <div className="space-y-8">
+          {/* Sidebar Section */}
+          <div className="space-y-10 animate-in fade-in slide-in-from-right-6 duration-700">
             
-            <div className="bg-white border border-gray-100 rounded-[24px] p-8 shadow-sm">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="font-semibold text-gray-900">Documents</h3>
-                <button style={{ color: BRAND_RED }} className="text-xs font-bold">Add New</button>
+            {/* Documents Card */}
+            <div className="bg-white border border-slate-100 rounded-[40px] p-10 shadow-xl shadow-slate-200/40">
+              <div className="flex justify-between items-center mb-8">
+                <h3 className="text-lg font-black text-slate-900 tracking-tight">Documents</h3>
+                <button className="text-[10px] font-black text-[#D10043] uppercase tracking-widest hover:underline decoration-2 underline-offset-4">Upload New</button>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {ATTACHMENTS.map((doc, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-4 rounded-xl border border-gray-50 bg-gray-50/50 group hover:border-red-100 transition-all">
-                    <div className="flex items-center gap-3">
-                      <FileText className="w-4 h-4 text-gray-400 group-hover:text-[#D10043]" />
-                      <div>
-                        <p className="text-[13px] font-semibold text-gray-700 truncate max-w-[120px]">{doc.name}</p>
-                        <p className="text-[10px] text-gray-400 font-bold uppercase">{doc.size}</p>
+                  <div key={idx} className="flex items-center justify-between p-5 rounded-3xl border border-slate-50 bg-slate-50/50 group hover:border-[#D10043]/20 hover:bg-white transition-all duration-300">
+                    <div className="flex items-center gap-4 min-w-0">
+                      <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-slate-300 group-hover:text-[#D10043] border border-slate-100 transition-colors">
+                        <FileText size={18} />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-black text-slate-800 truncate">{doc.name}</p>
+                        <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest mt-0.5">{doc.type} • {doc.size}</p>
                       </div>
                     </div>
-                    <button className="p-1.5 hover:bg-white rounded-lg transition-colors">
-                      <Download className="w-3.5 h-3.5 text-gray-400" />
+                    <button className="p-2.5 hover:bg-slate-50 rounded-xl transition-all text-slate-300 hover:text-slate-900 border border-transparent hover:border-slate-100">
+                      <Download size={16} />
                     </button>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="bg-orange-50 border border-orange-100 rounded-[24px] p-8">
-              <div className="flex items-center gap-3 mb-4">
-                <AlertCircle className="w-5 h-5 text-orange-500" />
-                <h3 className="font-bold text-orange-900 text-sm">Next Step Reminder</h3>
-              </div>
-              <p className="text-sm text-orange-800/80 leading-relaxed font-medium">
-                Please ensure you have a stable internet connection and a working webcam for your Technical Interview tomorrow.
-              </p>
-              <div className="mt-6 pt-6 border-t border-orange-200/50">
-                <button className="w-full flex items-center justify-center gap-2 text-xs font-bold text-orange-900 uppercase tracking-widest hover:opacity-70 transition-opacity">
-                  Review Interview Tips <ExternalLink className="w-3 h-3" />
-                </button>
+            {/* Smart Reminder Card */}
+            <div className="bg-slate-900 rounded-[40px] p-10 shadow-2xl shadow-slate-900/20 overflow-hidden relative group">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#D10043]/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
+              
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-3 bg-orange-500/10 rounded-2xl">
+                    <AlertCircle className="w-5 h-5 text-orange-500" />
+                  </div>
+                  <h3 className="font-black text-white text-sm uppercase tracking-widest">Priority Task</h3>
+                </div>
+                
+                <p className="text-sm text-slate-400 leading-relaxed font-bold mb-8">
+                  Your Technical Interview is confirmed for <span className="text-white">tomorrow at 10:00 AM</span>. Please ensure your environment is set up.
+                </p>
+                
+                <div className="space-y-3">
+                  <button className="w-full py-4 bg-[#D10043] hover:bg-white hover:text-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 group/btn shadow-lg shadow-pink-900/20">
+                    Check Environment <ExternalLink size={12} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
+                  </button>
+                  <div className="flex items-center justify-center gap-2 text-[9px] font-black text-slate-500 uppercase tracking-widest pt-2">
+                    <ShieldCheck size={12} className="text-green-500" />
+                    Twilio AI Confirmed
+                  </div>
+                </div>
               </div>
             </div>
 
           </div>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 };
