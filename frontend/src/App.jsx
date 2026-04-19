@@ -5,6 +5,7 @@ import ProtectedRoute from './ProtectedRoutes';
 
 import Login from './pages/publicPages/authenticationPages/Login';
 import Register from './pages/publicPages/authenticationPages/Register';
+import ForgotPassword from './pages/publicPages/authenticationPages/ForgotPassword';
 
 import LandingPage from './pages/publicPages/site/LandingPage';
 import AboutPage from './pages/publicPages/site/AboutPage';
@@ -33,6 +34,7 @@ const App = () => {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/" element={<LandingPage />} />
         <Route path="/careerspage" element={<CareersPage />} />
         <Route path="/aboutpage" element={<AboutPage />} />
