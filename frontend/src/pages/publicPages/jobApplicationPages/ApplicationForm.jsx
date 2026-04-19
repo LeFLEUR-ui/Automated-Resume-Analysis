@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import Header from '../../../components/layout/Header';
 import Footer from '../../../components/layout/Footer';
+import ApplicationSuccessModal from '../../../components/modals/shared/ApplicationSuccessModal';
 
 const ApplicationForm = () => {
   const navigate = useNavigate();
@@ -29,6 +30,7 @@ const ApplicationForm = () => {
   });
 
   const [currentSkill, setCurrentSkill] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -55,8 +57,10 @@ const ApplicationForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form Submitted:", formData);
+    setShowSuccessModal(true);
+  };
 
+  const handleFinalRedirect = () => {
     navigate(`/submissionsuccess/${jobId}`, {
       state: {
         updatedData: formData,
@@ -278,10 +282,6 @@ const ApplicationForm = () => {
             </button>
             <button
               id="btn-save-application"
-              onClick={() => {
-                alert("Final application submitted successfully!");
-                navigate(`/submissionsuccess/${jobId}`);
-              }}
               type="submit"
               className="px-10 py-4 bg-[#D10043] hover:bg-slate-900 text-white rounded-[20px] font-bold flex items-center justify-center gap-3 transition-all shadow-xl shadow-pink-100 active:scale-[0.98]"
             >
@@ -291,6 +291,11 @@ const ApplicationForm = () => {
           </div>
 
         </form>
+
+        <ApplicationSuccessModal 
+          isOpen={showSuccessModal} 
+          onConfirm={handleFinalRedirect} 
+        />
       </main>
 
       <Footer />
