@@ -1,0 +1,37 @@
+import React from 'react';
+import { Calendar, Clock } from 'lucide-react';
+
+const UpcomingInterviews = () => {
+  return (
+    <div className="bg-white border border-slate-100 rounded-[40px] p-10 shadow-xl shadow-slate-200/40">
+      <div className="flex items-center gap-4 mb-8">
+        <div className="w-12 h-12 bg-pink-50 rounded-2xl flex items-center justify-center text-[#D10043] border border-pink-100">
+          <Calendar size={22} />
+        </div>
+        <h3 className="text-xl font-black text-slate-900 tracking-tight">Interviews</h3>
+      </div>
+
+      <div className="bg-slate-50/50 rounded-[32px] p-6 border border-slate-100 relative group overflow-hidden">
+        <div className="absolute top-0 right-0 w-2 h-full bg-[#D10043] opacity-0 group-hover:opacity-100 transition-opacity" />
+
+        <div className="flex items-center gap-2 mb-4">
+          <span className="bg-orange-100 text-orange-600 text-[8px] font-black px-2 py-0.5 rounded-md uppercase tracking-widest">Upcoming</span>
+        </div>
+
+        <h4 className="font-black text-lg text-slate-900 mb-1 leading-none tracking-tight">Technical Interview</h4>
+        <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-6">Sarah Miller • HR Manager</p>
+
+        <div className="flex items-center text-xs text-slate-700 font-black uppercase tracking-widest mb-6 bg-white w-fit px-4 py-2.5 rounded-xl border border-slate-100 shadow-sm">
+          <Clock className="w-4 h-4 mr-3 text-[#D10043]" />
+          Tomorrow, 10:00 AM
+        </div>
+
+        <button className="w-full py-4 bg-slate-900 hover:bg-[#D10043] text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-lg active:scale-[0.95]">
+          Prepare for Session
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default UpcomingInterviews;
