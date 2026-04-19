@@ -58,7 +58,11 @@ const PreviewAndVerifyPage = () => {
               Verify the information extracted from <span className="text-slate-900 font-bold">{state?.fileName || "your resume"}</span>.
             </p>
           </div>
-          <button id="btn-edit-details" className="flex items-center text-sm font-bold text-[#D10043] hover:underline bg-pink-50 px-4 py-2 rounded-xl transition-colors">
+          <button 
+            id="btn-edit-details" 
+            onClick={() => navigate(`/applicationform/${jobId}`, { state: { ...extractedData, fileName: state?.fileName } })}
+            className="flex items-center text-sm font-bold text-[#D10043] hover:underline bg-pink-50 px-4 py-2 rounded-xl transition-colors"
+          >
             <Edit3 size={16} className="mr-2" /> Edit Details
           </button>
         </div>
@@ -132,10 +136,7 @@ const PreviewAndVerifyPage = () => {
             </button>
             <button
               id="btn-confirm-submit"
-              onClick={() => {
-                alert("Final application submitted successfully!");
-                navigate('/applicationform');
-              }}
+              onClick={() => navigate(`/applicationform/${jobId}`, { state: { ...extractedData, fileName: state?.fileName } })}
               className="flex-[2] bg-[#D10043] hover:bg-slate-900 text-white py-5 rounded-[20px] font-bold flex items-center justify-center gap-3 transition-all shadow-xl shadow-pink-100 active:scale-[0.98]"
             >
               <CheckCircle size={22} />
