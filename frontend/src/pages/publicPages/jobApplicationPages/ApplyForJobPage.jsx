@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate, useParams } from 'react-router-dom';
-import { 
-  FileUp, 
-  X, 
-  FileText, 
-  CheckCircle2, 
-  ArrowLeft, 
+import {
+  FileUp,
+  X,
+  FileText,
+  CheckCircle2,
+  ArrowLeft,
   ShieldCheck,
   Briefcase,
   Info
@@ -20,6 +20,7 @@ const STATIC_JOBS = [
   { id: 3, title: "HR Generalist", department: "Human Resources" },
   { id: 4, title: "Maintenance Technician", department: "Engineering" }
 ];
+
 
 const ApplyForJobPage = () => {
   const { jobId } = useParams();
@@ -41,11 +42,11 @@ const ApplyForJobPage = () => {
 
   const validateAndSetFile = (selectedFile) => {
     const validTypes = [
-      "application/pdf", 
-      "application/msword", 
+      "application/pdf",
+      "application/msword",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     ];
-    
+
     if (selectedFile && validTypes.includes(selectedFile.type)) {
       setFile(selectedFile);
       setIsComplete(false);
@@ -97,7 +98,7 @@ const ApplyForJobPage = () => {
       <Header />
 
       <main className="max-w-7xl mx-auto px-6 py-12">
-        <button 
+        <button
           onClick={() => navigate(-1)}
           className="flex items-center text-slate-500 hover:text-[#D10043] transition-all mb-10 font-semibold text-sm group"
         >
@@ -106,7 +107,7 @@ const ApplyForJobPage = () => {
         </button>
 
         <div className="bg-white rounded-[40px] shadow-xl shadow-slate-200/60 border border-slate-100 overflow-hidden">
-          
+
           <div className="p-8 md:p-12 border-b border-slate-50 bg-gradient-to-b from-slate-50/50 to-transparent">
             <div className="flex items-center gap-5 mb-6">
               <div className="w-14 h-14 bg-[#D10043] rounded-2xl flex items-center justify-center text-white shadow-lg shadow-pink-100">
@@ -132,17 +133,16 @@ const ApplyForJobPage = () => {
                 onDragLeave={handleDrag}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current.click()}
-                className={`group relative border-2 border-dashed rounded-[32px] p-12 text-center cursor-pointer transition-all duration-300 ${
-                  isDragging 
-                  ? "border-[#D10043] bg-pink-50/50" 
-                  : "border-slate-200 hover:border-[#D10043]/30 hover:bg-slate-50"
-                }`}
+                className={`group relative border-2 border-dashed rounded-[32px] p-12 text-center cursor-pointer transition-all duration-300 ${isDragging
+                    ? "border-[#D10043] bg-pink-50/50"
+                    : "border-slate-200 hover:border-[#D10043]/30 hover:bg-slate-50"
+                  }`}
               >
-                <input 
-                  type="file" 
+                <input
+                  type="file"
                   ref={fileInputRef}
                   onChange={(e) => validateAndSetFile(e.target.files[0])}
-                  className="hidden" 
+                  className="hidden"
                   accept=".pdf,.doc,.docx"
                 />
                 <div className="w-20 h-20 bg-slate-100 text-slate-400 group-hover:text-[#D10043] group-hover:bg-pink-50 rounded-3xl mb-6 flex items-center justify-center mx-auto transition-all duration-300">
@@ -165,7 +165,7 @@ const ApplyForJobPage = () => {
                     <p className="text-xs text-slate-500 font-medium">{(file.size / (1024 * 1024)).toFixed(2)} MB • Ready to submit</p>
                   </div>
                   {!isUploading && !isComplete && (
-                    <button 
+                    <button
                       onClick={() => setFile(null)}
                       className="p-2.5 hover:bg-white hover:text-red-500 rounded-full transition-all text-slate-400 border border-transparent hover:border-slate-100"
                     >
@@ -184,7 +184,7 @@ const ApplyForJobPage = () => {
                       <span>{uploadProgress}%</span>
                     </div>
                     <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
-                      <div 
+                      <div
                         className="bg-[#D10043] h-full transition-all duration-300 ease-out"
                         style={{ width: `${uploadProgress}%` }}
                       />
@@ -203,9 +203,9 @@ const ApplyForJobPage = () => {
                         <p className="text-sm text-slate-600">We've successfully extracted your data.</p>
                       </div>
                     </div>
-                    
-                    <button 
-                      onClick={() => navigate('/preview-and-verify', { state: { job, fileName: file.name } })}
+
+                    <button
+                      onClick={() => navigate(`/preview-and-verify/${job.id}`, { state: { job, fileName: file.name } })}
                       className="w-full bg-slate-900 hover:bg-[#D10043] text-white py-5 rounded-[20px] font-bold flex items-center justify-center gap-3 transition-all shadow-xl"
                     >
                       <span>Proceed to Review Information</span>
@@ -215,7 +215,7 @@ const ApplyForJobPage = () => {
                 )}
 
                 {!isUploading && !isComplete && (
-                  <button 
+                  <button
                     onClick={simulateUpload}
                     className="w-full bg-[#D10043] hover:bg-slate-900 text-white py-5 rounded-[20px] font-bold flex items-center justify-center gap-3 transition-all transform active:scale-[0.98] shadow-xl shadow-pink-100"
                   >
@@ -252,7 +252,7 @@ const ApplyForJobPage = () => {
         </div>
 
       </main>
-       <Footer />
+      <Footer />
     </div>
   );
 };

@@ -1,10 +1,10 @@
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { 
-  User, Mail, Phone, MapPin, 
-  Cpu, Briefcase, GraduationCap, 
-  CheckCircle, ArrowLeft, Edit3 
+import {
+  User, Mail, Phone, MapPin,
+  Cpu, Briefcase, GraduationCap,
+  CheckCircle, ArrowLeft, Edit3
 } from 'lucide-react';
 import Header from '../../../components/layout/Header';
 import Footer from '../../../components/layout/Footer';
@@ -12,6 +12,7 @@ import Footer from '../../../components/layout/Footer';
 const PreviewAndVerifyPage = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
+  const { jobId } = useParams();
 
   const extractedData = {
     personal: {
@@ -22,8 +23,8 @@ const PreviewAndVerifyPage = () => {
     },
     skills: ["Process Optimization", "Team Leadership", "Lean Manufacturing", "Safety Compliance", "ERP Systems"],
     experience: {
-      title: "Senior Operations Lead",
-      company: "Global Tech Manufacturing",
+      title: state?.job?.title || "Senior Operations Lead",
+      company: state?.job?.department || "Global Tech Manufacturing",
       relevance: "7+ years in high-volume production environments"
     },
     education: {
@@ -37,11 +38,12 @@ const PreviewAndVerifyPage = () => {
       <Helmet>
         <title>Verify Information | Careers</title>
       </Helmet>
-      
+
       <Header />
 
       <main className="max-w-7xl mx-auto px-6 py-12">
-        <button 
+        <button
+          id="btn-back"
           onClick={() => navigate(-1)}
           className="flex items-center text-slate-500 hover:text-[#D10043] transition-all mb-10 font-semibold text-sm group"
         >
@@ -56,7 +58,7 @@ const PreviewAndVerifyPage = () => {
               Verify the information extracted from <span className="text-slate-900 font-bold">{state?.fileName || "your resume"}</span>.
             </p>
           </div>
-          <button className="flex items-center text-sm font-bold text-[#D10043] hover:underline bg-pink-50 px-4 py-2 rounded-xl transition-colors">
+          <button id="btn-edit-details" className="flex items-center text-sm font-bold text-[#D10043] hover:underline bg-pink-50 px-4 py-2 rounded-xl transition-colors">
             <Edit3 size={16} className="mr-2" /> Edit Details
           </button>
         </div>
@@ -70,12 +72,12 @@ const PreviewAndVerifyPage = () => {
               <h2 className="font-bold uppercase tracking-widest text-xs">Personal Information</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <InfoItem icon={<User size={16}/>} label="Full Name" value={extractedData.personal.name} />
-              <InfoItem icon={<Mail size={16}/>} label="Email Address" value={extractedData.personal.email} />
-              <InfoItem icon={<Phone size={16}/>} label="Phone" value={extractedData.personal.phone} />
-              <InfoItem icon={<MapPin size={16}/>} label="Location" value={extractedData.personal.location} />
+              <InfoItem icon={<User size={16} />} label="Full Name" value={extractedData.personal.name} />
+              <InfoItem icon={<Mail size={16} />} label="Email Address" value={extractedData.personal.email} />
+              <InfoItem icon={<Phone size={16} />} label="Phone" value={extractedData.personal.phone} />
+              <InfoItem icon={<MapPin size={16} />} label="Location" value={extractedData.personal.location} />
             </div>
-            
+
             <div className="mt-8 pt-8 border-t border-slate-50">
               <div className="flex items-center gap-3 mb-4 text-[#D10043]">
                 <div className="p-2.5 bg-pink-50 rounded-xl">
@@ -121,13 +123,15 @@ const PreviewAndVerifyPage = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 pt-6">
-            <button 
+            <button
+              id="btn-cancel"
               onClick={() => navigate(-1)}
               className="flex-1 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 py-5 rounded-[20px] font-bold transition-all"
             >
               Cancel
             </button>
-            <button 
+            <button
+              id="btn-confirm-submit"
               onClick={() => {
                 alert("Final application submitted successfully!");
                 navigate('/applicationform');
@@ -140,7 +144,7 @@ const PreviewAndVerifyPage = () => {
           </div>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );

@@ -1,11 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { 
-  CheckCircle, 
-  ArrowRight, 
-  Home, 
-  Search, 
+import {
+  CheckCircle,
+  ArrowRight,
+  Home,
+  Search,
   BellRing,
   ExternalLink
 } from 'lucide-react';
@@ -20,7 +20,7 @@ const SubmissionSuccessPage = () => {
       <Helmet>
         <title>Application Submitted | Success</title>
       </Helmet>
-      
+
       <Header />
 
       <main className="max-w-7xl mx-auto px-6 py-20 flex flex-col items-center">
@@ -46,40 +46,40 @@ const SubmissionSuccessPage = () => {
               <BellRing size={16} />
               What's Next?
             </h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <StepItem 
-                number="01" 
-                title="Review" 
-                desc="Our team will evaluate your skills and experience." 
+              <StepItem
+                number="01"
+                title="Review"
+                desc="Our team will evaluate your skills and experience."
               />
-              <StepItem 
-                number="02" 
-                title="Notification" 
-                desc="You'll receive an email update within 3-5 business days." 
+              <StepItem
+                number="02"
+                title="Notification"
+                desc="You'll receive an email update within 3-5 business days."
               />
-              <StepItem 
-                number="03" 
-                title="Interview" 
-                desc="If it's a match, we'll schedule a virtual call." 
+              <StepItem
+                number="03"
+                title="Interview"
+                desc="If it's a match, we'll schedule a virtual call."
               />
             </div>
           </div>
-          
+
           <div className="bg-slate-50 p-6 border-t border-slate-100 flex items-center justify-center gap-2 text-slate-400 font-bold text-xs">
             <p>Application ID: #APP-{Math.floor(Math.random() * 900000 + 100000)}</p>
           </div>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
-          <button 
+          <button
             onClick={() => navigate('/careers')}
             className="flex-1 bg-slate-900 hover:bg-black text-white py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 transition-all shadow-xl active:scale-[0.98]"
           >
             <Search size={20} />
             Explore More Jobs
           </button>
-          <button 
+          <button
             onClick={() => navigate('/')}
             className="flex-1 bg-white border border-slate-200 hover:border-[#D10043] hover:text-[#D10043] text-slate-700 py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 transition-all shadow-sm active:scale-[0.98]"
           >
@@ -88,15 +88,15 @@ const SubmissionSuccessPage = () => {
           </button>
         </div>
 
-        <a 
-          href="#" 
+        <a
+          href="#"
           className="mt-12 text-slate-400 hover:text-[#D10043] text-sm font-bold flex items-center gap-2 transition-colors group"
         >
           Follow us on LinkedIn for updates
           <ExternalLink size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
         </a>
       </main>
-      
+
       <Footer />
     </div>
   );
