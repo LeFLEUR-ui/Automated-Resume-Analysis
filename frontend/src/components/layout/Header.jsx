@@ -21,6 +21,11 @@ const Header = () => {
   const isAdmin = location.pathname.startsWith('/admin');
   const isHR = location.pathname.startsWith('/hr');
   const isCandidate = location.pathname.startsWith('/candidate');
+  const isApplicationPage = 
+    location.pathname.includes('/apply/') || 
+    location.pathname.includes('/preview-and-verify/') || 
+    location.pathname.includes('/applicationform/') || 
+    location.pathname.includes('/submissionsuccess/');
 
   const handleLogout = () => {
     localStorage.clear();
@@ -86,8 +91,9 @@ const Header = () => {
         </div>
 
         {/* Desktop Navigation */}
-        <div className={`hidden lg:flex flex-1 items-center ${isLanding ? 'justify-end pr-8' : 'justify-center'}`}>
-          <nav className="flex items-center space-x-1 bg-gray-50/50 p-1 rounded-2xl border border-gray-100">
+        <div className={`hidden lg:flex flex-1 items-center ${isLanding || isApplicationPage ? 'justify-end pr-8' : 'justify-center'}`}>
+          {!isApplicationPage && (
+            <nav className="flex items-center space-x-1 bg-gray-50/50 p-1 rounded-2xl border border-gray-100">
             {navItems.map((item, index) => {
               const isActive = location.pathname === item.path;
               return (
@@ -108,11 +114,20 @@ const Header = () => {
               );
             })}
           </nav>
+          )}
         </div>
 
         {/* Right Action Area */}
         <div className="flex items-center space-x-4 relative shrink-0" ref={dropdownRef}>
-            {isLanding ? (
+            {isApplicationPage ? (
+              <button 
+                onClick={() => navigate('/')}
+                className="hidden lg:flex items-center space-x-2 bg-white border border-gray-200 text-gray-600 px-6 py-2.5 rounded-full text-sm font-bold hover:bg-red-50 hover:text-[#D10043] hover:border-pink-200 transition-all shadow-sm"
+              >
+                <X size={18} />
+                <span>Cancel Application</span>
+              </button>
+            ) : isLanding ? (
               <div className="hidden lg:block relative group">
                 <button className="flex items-center space-x-2 bg-[#D10043] text-white px-6 py-3 rounded-full text-sm font-bold hover:bg-[#b50037] transition-all shadow-md shadow-pink-200">
                   <span>Access Portal</span>
@@ -166,7 +181,7 @@ const Header = () => {
       {isMobileMenuOpen && (
         <div className="lg:hidden absolute top-[100%] left-0 w-full bg-white border-b border-gray-100 shadow-2xl py-4 px-6 space-y-2 z-[100] animate-in slide-in-from-top-2 duration-300">
           
-          {!isLanding && (
+          {!isLanding && !isApplicationPage && (
             <div className="flex items-center space-x-4 p-4 mb-4 bg-gray-50 rounded-2xl border border-gray-100">
               <div className="w-12 h-12 bg-[#D10043] rounded-full flex items-center justify-center text-white shadow-md shadow-pink-200">
                 {isAdmin ? <ShieldCheck size={20} /> : <User size={20} />}
@@ -178,6 +193,7 @@ const Header = () => {
             </div>
           )}
 
+          {!isApplicationPage && (
           <div className="space-y-1.5">
             {navItems.map((item, index) => (
               <button
@@ -196,9 +212,14 @@ const Header = () => {
               </button>
             ))}
           </div>
+          )}
 
           <div className="pt-4 mt-4 border-t border-gray-100">
-            {isLanding ? (
+            {isApplicationPage ? (
+              <button onClick={() => navigate('/')} className="w-full flex items-center justify-center space-x-2 p-4 bg-red-50 text-[#D10043] rounded-2xl font-bold text-sm border border-pink-100 hover:bg-red-100 transition-all">
+                <X size={20}/> <span>Cancel Application</span>
+              </button>
+            ) : isLanding ? (
               <div className="grid grid-cols-2 gap-3 p-2">
                 <button onClick={() => navigate('/login')} className="flex items-center justify-center space-x-2 p-3.5 bg-gray-50 text-gray-700 rounded-xl font-bold text-sm border border-gray-200 hover:bg-gray-100"><LogIn size={16}/> <span>Login</span></button>
                 <button onClick={() => navigate('/register')} className="flex items-center justify-center space-x-2 p-3.5 bg-[#D10043] text-white rounded-xl font-bold text-sm shadow-md shadow-red-100 hover:bg-[#b50037]"><UserPlus size={16}/> <span>Register</span></button>
