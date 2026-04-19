@@ -30,6 +30,8 @@ const ApplyForJobPage = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
+  const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
@@ -73,7 +75,7 @@ const ApplyForJobPage = () => {
   };
 
   const simulateUpload = () => {
-    if (!file) return;
+    if (!file || !isTermsAccepted) return;
     setIsUploading(true);
     let progress = 0;
     const interval = setInterval(() => {
@@ -134,8 +136,8 @@ const ApplyForJobPage = () => {
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current.click()}
                 className={`group relative border-2 border-dashed rounded-[32px] p-12 text-center cursor-pointer transition-all duration-300 ${isDragging
-                    ? "border-[#D10043] bg-pink-50/50"
-                    : "border-slate-200 hover:border-[#D10043]/30 hover:bg-slate-50"
+                  ? "border-[#D10043] bg-pink-50/50"
+                  : "border-slate-200 hover:border-[#D10043]/30 hover:bg-slate-50"
                   }`}
               >
                 <input
@@ -215,13 +217,34 @@ const ApplyForJobPage = () => {
                 )}
 
                 {!isUploading && !isComplete && (
-                  <button
-                    onClick={simulateUpload}
-                    className="w-full bg-[#D10043] hover:bg-slate-900 text-white py-5 rounded-[20px] font-bold flex items-center justify-center gap-3 transition-all transform active:scale-[0.98] shadow-xl shadow-pink-100"
-                  >
-                    <ShieldCheck size={22} />
-                    <span>Submit My Application</span>
-                  </button>
+                  <div className="space-y-6">
+                    <div className="flex items-start gap-3 px-2">
+                      <div className="flex items-center h-5">
+                        <input
+                          id="terms"
+                          type="checkbox"
+                          checked={isTermsAccepted}
+                          onChange={(e) => setIsTermsAccepted(e.target.checked)}
+                          className="w-5 h-5 text-[#D10043] border-slate-300 rounded focus:ring-[#D10043] cursor-pointer"
+                        />
+                      </div>
+                      <label htmlFor="terms" className="text-sm text-slate-600 font-medium cursor-pointer">
+                        I agree to the <button type="button" onClick={() => setShowTermsModal(true)} className="text-[#D10043] hover:underline font-bold">Recruitment Terms & Conditions</button> and data processing policy.
+                      </label>
+                    </div>
+
+                    <button
+                      onClick={simulateUpload}
+                      disabled={!isTermsAccepted}
+                      className={`w-full py-5 rounded-[20px] font-bold flex items-center justify-center gap-3 transition-all transform active:scale-[0.98] shadow-xl ${isTermsAccepted
+                        ? "bg-[#D10043] hover:bg-slate-900 text-white shadow-pink-100"
+                        : "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none"
+                        }`}
+                    >
+                      <ShieldCheck size={22} />
+                      <span>Submit My Application</span>
+                    </button>
+                  </div>
                 )}
               </div>
             )}
@@ -229,7 +252,7 @@ const ApplyForJobPage = () => {
             <div className="mt-10 flex items-start p-5 bg-slate-50 rounded-2xl border border-slate-100">
               <Info size={18} className="text-slate-400 mr-4 mt-0.5 shrink-0" />
               <p className="text-[13px] text-slate-600 leading-relaxed font-medium">
-                Your privacy matters. We use secure encryption to process your resume. By submitting, you agree to our recruitment terms and data processing policy.
+                Your privacy matters. We use secure encryption to process your resume. By submitting, you agree to our <button type="button" onClick={() => setShowTermsModal(true)} className="text-[#D10043] hover:underline">recruitment terms</button> and data processing policy.
               </p>
             </div>
           </div>
@@ -252,6 +275,59 @@ const ApplyForJobPage = () => {
         </div>
 
       </main>
+
+      {showTermsModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white rounded-[40px] shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-8 duration-300">
+            <div className="p-8 border-b border-slate-50 flex items-center justify-between bg-slate-50/50">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-pink-50 text-[#D10043] rounded-xl flex items-center justify-center">
+                  <FileText size={20} />
+                </div>
+                <h3 className="text-xl font-black text-slate-900 tracking-tight">Recruitment Terms</h3>
+              </div>
+              <button
+                onClick={() => setShowTermsModal(false)}
+                className="p-2 hover:bg-white rounded-full transition-all text-slate-400 hover:text-slate-900 border border-transparent hover:border-slate-100"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-8 overflow-y-auto text-slate-600 space-y-6 leading-relaxed">
+              <section>
+                <h4 className="font-bold text-slate-900 mb-2">1. Data Collection</h4>
+                <p className="text-sm">By submitting your resume, you authorize Mariwasa Siam Ceramics Inc. to collect, store, and process your personal and professional information for recruitment purposes. This includes data extraction using our AI-powered analysis system.</p>
+              </section>
+              <section>
+                <h4 className="font-bold text-slate-900 mb-2">2. AI Analysis</h4>
+                <p className="text-sm">Our system automatically parses resume data to match candidates with suitable job openings. This automated process is designed to ensure a fair, skill-based assessment. Final hiring decisions are always made by our human HR staff.</p>
+              </section>
+              <section>
+                <h4 className="font-bold text-slate-900 mb-2">3. Data Retention</h4>
+                <p className="text-sm">Your data will be kept in our secure talent pool for a period of 12 months, unless you request its removal earlier. This allows us to consider you for future opportunities that match your profile.</p>
+              </section>
+              <section>
+                <h4 className="font-bold text-slate-900 mb-2">4. Accuracy of Information</h4>
+                <p className="text-sm">You certify that all information provided in your resume and application form is true and correct. Provision of false information may lead to disqualification from the recruitment process.</p>
+              </section>
+            </div>
+
+            <div className="p-8 border-t border-slate-50 bg-slate-50/50 flex justify-end">
+              <button
+                onClick={() => {
+                  setIsTermsAccepted(true);
+                  setShowTermsModal(false);
+                }}
+                className="bg-[#D10043] hover:bg-slate-900 text-white px-10 py-4 rounded-2xl font-bold transition-all shadow-lg shadow-pink-100"
+              >
+                I Accept These Terms
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </div>
   );
