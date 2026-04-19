@@ -28,6 +28,9 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AuditLogPage from './pages/admin/AuditLog';
 import UsersPage from './pages/admin/Users';
 
+import AccountSettings from './pages/shared/AccountSettings';
+import ViewProfile from './pages/shared/ViewProfile';
+
 const App = () => {
   return (
     <HelmetProvider>
@@ -38,7 +41,7 @@ const App = () => {
         <Route path="/" element={<LandingPage />} />
         <Route path="/careerspage" element={<CareersPage />} />
         <Route path="/aboutpage" element={<AboutPage />} />
-        
+
         <Route path="/apply/:jobId" element={<ApplyForJobPage />} />
         <Route path="/preview-and-verify/:jobId" element={<PreviewAndVerifyPage />} />
         <Route path="/applicationform/:jobId" element={<ApplicationForm />} />
@@ -49,22 +52,28 @@ const App = () => {
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="users" element={<UsersPage />} />
             <Route path="auditlog" element={<AuditLogPage />} />
+            <Route path="settings" element={<AccountSettings />} />
+            <Route path="profile" element={<ViewProfile />} />
           </Route>
         </Route>
 
-        <Route element={<ProtectedRoute allowedRole="HR" />}> 
+        <Route element={<ProtectedRoute allowedRole="HR" />}>
           <Route path="/hr">
             <Route path="dashboard" element={<HRDashboard />} />
             <Route path="screeningportal" element={<ScreeningPortal />} />
             <Route path="jobmanagement" element={<JobManagement />} />
+            <Route path="settings" element={<AccountSettings />} />
+            <Route path="profile" element={<ViewProfile />} />
           </Route>
         </Route>
 
-        <Route element={<ProtectedRoute allowedRole="CANDIDATE" />}> 
+        <Route element={<ProtectedRoute allowedRole="CANDIDATE" />}>
           <Route path="/candidate">
             <Route path="dashboard" element={<CandidateDashboard />} />
             <Route path="findjobs" element={<FindJob />} />
             <Route path="applicationtracking" element={<ApplicationTracking />} />
+            <Route path="settings" element={<AccountSettings />} />
+            <Route path="profile" element={<ViewProfile />} />
           </Route>
         </Route>
       </Routes>
