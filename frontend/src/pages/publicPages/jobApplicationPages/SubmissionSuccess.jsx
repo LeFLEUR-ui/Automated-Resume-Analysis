@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import {
   CheckCircle,
@@ -14,6 +14,7 @@ import Footer from '../../../components/layout/Footer';
 
 const SubmissionSuccessPage = () => {
   const navigate = useNavigate();
+  const { jobId } = useParams();
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900 antialiased font-['Inter',_sans-serif]">
@@ -73,7 +74,7 @@ const SubmissionSuccessPage = () => {
 
         <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
           <button
-            onClick={() => navigate('/careers')}
+            onClick={() => navigate('/careerspage')}
             className="flex-1 bg-slate-900 hover:bg-black text-white py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 transition-all shadow-xl active:scale-[0.98]"
           >
             <Search size={20} />
