@@ -33,7 +33,7 @@ const LandingPage = () => {
             </div>
             <h3 className="text-2xl font-bold mb-4 text-gray-900">Apply for Specific Job</h3>
             <p className="text-gray-500 text-sm mb-10 leading-relaxed">Browse our current openings and find the perfect role for your expertise.</p>
-            <a href="#" className="w-full bg-[#D10043] hover:bg-gray-900 text-white py-4 rounded-2xl font-bold flex items-center justify-center space-x-3 transition-all shadow-lg shadow-pink-100">
+            <a href="/careerspage" className="w-full bg-[#D10043] hover:bg-gray-900 text-white py-4 rounded-2xl font-bold flex items-center justify-center space-x-3 transition-all shadow-lg shadow-pink-100">
               <span>View Open Positions</span>
             </a>
           </div>
