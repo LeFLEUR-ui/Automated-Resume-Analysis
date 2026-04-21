@@ -1,56 +1,25 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import Header from '../../components/layout/Header';
-import CreateJobModal from '../../components/modals/hr/CreateJobModal';
-import EditJobModal from '../../components/modals/hr/EditJobModal';
-import ViewJobDetailsModal from '../../components/modals/hr/ViewJobDetailsModal';
+import axios from 'axios';
 
-// Job management components
+// Layout components
+import Header from '../../components/layout/Header';
 import JobManagementHeader from '../../components/hr/jobManagement/JobManagementHeader';
 import JobSearchAndFilter from '../../components/hr/jobManagement/JobSearchAndFilter';
 import JobList from '../../components/hr/jobManagement/JobList';
 
-const MOCK_JOBS = [
-  {
-    id: 1,
-    job_id: "JOB-2024-001",
-    title: "Senior Software Engineer",
-    department: "Information Technology",
-    location: "Manila, Philippines",
-    salary_range: "₱80,000 - ₱120,000",
-    is_active: true,
-    skills_requirements: "React, Node.js, TypeScript, AWS, PostgreSQL",
-    description: "We are seeking an experienced Software Engineer to lead our frontend development efforts. You will be responsible for architecting scalable UI components and mentoring junior developers.",
-    job_type: "Full-time"
-  },
-  {
-    id: 2,
-    job_id: "JOB-2024-002",
-    title: "HR Generalist",
-    department: "Human Resources",
-    location: "Laguna, Philippines",
-    salary_range: "₱35,000 - ₱50,000",
-    is_active: true,
-    skills_requirements: "Recruitment, Payroll, Employee Relations, Labor Laws",
-    description: "Manage end-to-end recruitment processes and maintain healthy employee relations across the Laguna branch.",
-    job_type: "Full-time"
-  },
-  {
-    id: 3,
-    job_id: "JOB-2024-003",
-    title: "Marketing Coordinator",
-    department: "Marketing",
-    location: "Remote",
-    salary_range: "₱40,000 - ₱60,000",
-    is_active: false,
-    skills_requirements: "Social Media, Content Writing, SEO, Google Analytics",
-    description: "Support our digital marketing strategy by coordinating content calendars and analyzing campaign performance metrics.",
-    job_type: "Contract"
-  }
-];
+// Modals
+import CreateJobModal from '../../components/modals/hr/CreateJobModal';
+import EditJobModal from '../../components/modals/hr/EditJobModal';
+import ViewJobDetailsModal from '../../components/modals/hr/ViewJobDetailsModal';
 
 const JobManagementPage = () => {
-  const [jobs, setJobs] = useState(MOCK_JOBS);
+  // State for database data
+  const [jobs, setJobs] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Filter States
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [deptFilter, setDeptFilter] = useState("All Departments");
@@ -63,31 +32,69 @@ const JobManagementPage = () => {
 
   const departments = ["All Departments", "Information Technology", "Human Resources", "Marketing", "Finance", "Operations"];
 
+  const fetchJobs = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axios.get('http://localhost:8000/hr/read-jobs');
+
+      const rawData = Array.isArray(response.data) ? response.data : [];
+
+      const transformedData = rawData.map(job => {
+        return {
+          ...job,
+
+          title: job.job_title || "Untitled Position",
+
+          department: job.department || "General",
+
+          location: job.location || "Remote / Not Specified",
+
+          salary_range: job.salary_range || "Competitive / TBD",
+
+          is_active: Boolean(job.is_active)
+        };
+      });
+
+      setJobs(transformedData);
+      setError(null);
+    } catch (err) {
+      console.error("Critical Error fetching jobs:", err);
+      setError("Failed to sync with database. Please try again later.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
+
   const filteredJobs = useMemo(() => {
     return jobs.filter(job => {
+      const titleMatch = job.job_title?.toLowerCase() || "";
+      const idMatch = job.job_id?.toLowerCase() || "";
+
       const matchesSearch = !searchQuery ||
-        job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.job_id.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesStatus = statusFilter === "All Status" || (statusFilter === "Active" ? job.is_active : !job.is_active);
-      const matchesDept = deptFilter === "All Departments" || job.department === deptFilter;
+        titleMatch.includes(searchQuery.toLowerCase()) ||
+        idMatch.includes(searchQuery.toLowerCase());
+
+      const matchesStatus = statusFilter === "All Status" ||
+        (statusFilter === "Active" ? job.is_active : !job.is_active);
+
+      const matchesDept = deptFilter === "All Departments" ||
+        job.department === deptFilter;
+
       return matchesSearch && matchesStatus && matchesDept;
     });
   }, [jobs, searchQuery, statusFilter, deptFilter]);
 
-  const suggestions = searchQuery.length > 0
-    ? Array.from(new Set(MOCK_JOBS.filter(j => j.title.toLowerCase().includes(searchQuery.toLowerCase())).map(j => j.title)))
-    : [];
-
-  const handleCreate = (newJobData) => {
-    const newJob = { ...newJobData, id: Date.now() };
-    setJobs([newJob, ...jobs]);
-  };
-
-  const handleUpdate = (updatedJob) => {
-    setJobs(jobs.map(j => j.id === updatedJob.id ? updatedJob : j));
-  };
-
   const closeModal = () => setModalState({ type: null, selectedJob: null });
+
+  const handleMutationSuccess = () => {
+    fetchJobs();
+    closeModal();
+  };
 
   return (
     <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter'] pb-12">
@@ -97,7 +104,7 @@ const JobManagementPage = () => {
       <main className="max-w-[1400px] mx-auto px-6 md:px-10 py-8">
         <JobManagementHeader onCreateJob={() => setModalState({ type: 'create', selectedJob: null })} />
 
-        <JobSearchAndFilter 
+        <JobSearchAndFilter
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           statusFilter={statusFilter}
@@ -107,27 +114,38 @@ const JobManagementPage = () => {
           departments={departments}
           showSuggestions={showSuggestions}
           setShowSuggestions={setShowSuggestions}
-          suggestions={suggestions}
+          suggestions={[]}
         />
 
-        <JobList 
-          jobs={filteredJobs}
-          onEdit={(job) => setModalState({ type: 'edit', selectedJob: job })}
-          onView={(job) => setModalState({ type: 'view', selectedJob: job })}
-        />
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-20 text-gray-500">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+            <p>Fetching latest job openings...</p>
+          </div>
+        ) : error ? (
+          <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-lg text-center">
+            {error}
+          </div>
+        ) : (
+          <JobList
+            jobs={filteredJobs}
+            onEdit={(job) => setModalState({ type: 'edit', selectedJob: job })}
+            onView={(job) => setModalState({ type: 'view', selectedJob: job })}
+          />
+        )}
       </main>
 
       <CreateJobModal
         isOpen={modalState.type === 'create'}
         onClose={closeModal}
-        onSubmit={handleCreate}
+        onSuccess={handleMutationSuccess}
       />
 
       <EditJobModal
         isOpen={modalState.type === 'edit'}
         jobData={modalState.selectedJob}
         onClose={closeModal}
-        onSubmit={handleUpdate}
+        onSuccess={handleMutationSuccess}
       />
 
       <ViewJobDetailsModal
