@@ -1,0 +1,24 @@
+from sqlalchemy import Column, Integer, String, Boolean, Enum
+import enum
+from app.database import Base
+
+class JobType(str, enum.Enum):
+    PART_TIME = "Part-Time"
+    FULL_TIME = "Full-Time"
+    FREELANCE = "Freelance"
+    CONTRACT = "Contract"
+    INTERNSHIP = "Internship"
+
+class JobDescription(Base):
+    __tablename__ = "job_descriptions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    job_id = Column(String, unique=True, index=True, nullable=False) 
+    job_title = Column(String, nullable=False)
+    department = Column(String, nullable=False)
+    job_type = Column(Enum(JobType), nullable=False)
+    location = Column(String, nullable=False)
+    salary_range = Column(String)
+    description = Column(String, nullable=False)
+    skills_requirements = Column(String)
+    is_active = Column(Boolean, default=True)
