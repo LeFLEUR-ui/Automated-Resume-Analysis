@@ -1,3 +1,4 @@
+from sqlalchemy import desc
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from app.models.job_description import JobDescription
@@ -11,7 +12,14 @@ async def create_job(db: AsyncSession, job: JobCreate):
     return db_job
 
 async def get_job(db: AsyncSession, job_id: str):
-    result = await db.execute(select(JobDescription).filter(JobDescription.job_id == job_id))
+    # ung jobs naka pabaligtad ung order niya, mauuna ung nasa pinaka huli na record which is ung newly created.
+    query = (
+        select(JobDescription)
+        .filter(JobDescription.job_id == job_id)
+        .order_by(desc(JobDescription.job_id))
+    )
+    
+    result = await db.execute(query)
     return result.scalars().first()
 
 async def get_all_active_jobs(db: AsyncSession, skip: int = 0, limit: int = 100):
