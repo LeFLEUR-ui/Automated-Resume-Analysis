@@ -59,7 +59,7 @@ const LandingPage = () => {
                 Not sure where you fit? Upload your resume and let our Automated AI Analysis System match you with future opportunities.
               </p>
             </div>
-            <a href="/register" className="w-full bg-[#D60041] hover:bg-[#b50037] text-white py-3.5 rounded-full font-medium flex items-center justify-center space-x-2 transition-all relative z-10">
+            <a href="/smart-upload" className="w-full bg-[#D60041] hover:bg-[#b50037] text-white py-3.5 rounded-full font-medium flex items-center justify-center space-x-2 transition-all relative z-10">
               <span>Upload Resume</span>
               <ArrowRight size={18} />
             </a>

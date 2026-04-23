@@ -42,14 +42,6 @@ const PreviewAndVerifyPage = () => {
       <Header />
 
       <main className="max-w-7xl mx-auto px-6 py-12">
-        <button
-          id="btn-back"
-          onClick={() => navigate(-1)}
-          className="flex items-center text-slate-500 hover:text-[#D10043] transition-all mb-10 font-semibold text-sm group"
-        >
-          <ArrowLeft size={18} className="mr-2 group-hover:-translate-x-1 transition-transform" />
-          Back to upload
-        </button>
 
         <div className="flex justify-between items-end mb-8">
           <div>
@@ -61,7 +53,7 @@ const PreviewAndVerifyPage = () => {
           <button
             id="btn-edit-details"
             onClick={() => navigate(`/applicationform/${jobId}`, { state: { ...extractedData, fileName: state?.fileName } })}
-            className="flex items-center text-sm font-bold text-[#D10043] hover:underline bg-pink-50 px-4 py-2 rounded-xl transition-colors"
+            className="flex items-center text-sm font-bold text-[#D60041] hover:underline bg-pink-50 px-4 py-2 rounded-xl transition-colors"
           >
             <Edit3 size={16} className="mr-2" /> Edit Details
           </button>
@@ -69,7 +61,7 @@ const PreviewAndVerifyPage = () => {
 
         <div className="space-y-6">
           <section className="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-3 mb-6 text-[#D10043]">
+            <div className="flex items-center gap-3 mb-6 text-[#D60041]">
               <div className="p-2.5 bg-pink-50 rounded-xl">
                 <User size={20} />
               </div>
@@ -83,7 +75,7 @@ const PreviewAndVerifyPage = () => {
             </div>
 
             <div className="mt-8 pt-8 border-t border-slate-50">
-              <div className="flex items-center gap-3 mb-4 text-[#D10043]">
+              <div className="flex items-center gap-3 mb-4 text-[#D60041]">
                 <div className="p-2.5 bg-pink-50 rounded-xl">
                   <Cpu size={20} />
                 </div>
@@ -101,7 +93,7 @@ const PreviewAndVerifyPage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <section className="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-              <div className="flex items-center gap-3 mb-6 text-[#D10043]">
+              <div className="flex items-center gap-3 mb-6 text-[#D60041]">
                 <div className="p-2.5 bg-pink-50 rounded-xl">
                   <Briefcase size={20} />
                 </div>
@@ -115,7 +107,7 @@ const PreviewAndVerifyPage = () => {
             </section>
 
             <section className="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-              <div className="flex items-center gap-3 mb-6 text-[#D10043]">
+              <div className="flex items-center gap-3 mb-6 text-[#D60041]">
                 <div className="p-2.5 bg-pink-50 rounded-xl">
                   <GraduationCap size={20} />
                 </div>
@@ -130,14 +122,14 @@ const PreviewAndVerifyPage = () => {
             <button
               id="btn-cancel"
               onClick={() => navigate(-1)}
-              className="flex-1 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 py-5 rounded-[20px] font-bold transition-all"
+              className="flex-1 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 py-5 rounded-[24px] font-bold transition-all active:scale-95"
             >
               Cancel
             </button>
             <button
               id="btn-confirm-submit"
               onClick={() => navigate(`/applicationform/${jobId}`, { state: { ...extractedData, fileName: state?.fileName } })}
-              className="flex-[2] bg-[#D10043] hover:bg-slate-900 text-white py-5 rounded-[20px] font-bold flex items-center justify-center gap-3 transition-all shadow-xl shadow-pink-100 active:scale-[0.98]"
+              className="flex-[2] bg-[#D60041] hover:bg-slate-900 text-white py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 transition-all shadow-xl shadow-pink-100 active:scale-95"
             >
               <CheckCircle size={22} />
               Confirm & Submit Final Application

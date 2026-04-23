@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import axios from 'axios';
+import { ArrowRight } from 'lucide-react';
 
 // Layout components
 import Header from '../../components/layout/Header';
@@ -29,6 +30,10 @@ const JobManagementPage = () => {
     type: null,
     selectedJob: null
   });
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const departments = ["All Departments", "Information Technology", "Human Resources", "Marketing", "Finance", "Operations"];
 
@@ -89,6 +94,25 @@ const JobManagementPage = () => {
     });
   }, [jobs, searchQuery, statusFilter, deptFilter]);
 
+  // Handle page reset on filter change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter, deptFilter]);
+
+  // Scroll to top when page changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [currentPage]);
+
+  const totalPages = Math.ceil(filteredJobs.length / itemsPerPage);
+  const paginatedJobs = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredJobs.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredJobs, currentPage, itemsPerPage]);
+
+  const handlePrevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
+  const handleNextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
+
   const closeModal = () => setModalState({ type: null, selectedJob: null });
 
   const handleMutationSuccess = () => {
@@ -127,11 +151,50 @@ const JobManagementPage = () => {
             {error}
           </div>
         ) : (
-          <JobList
-            jobs={filteredJobs}
-            onEdit={(job) => setModalState({ type: 'edit', selectedJob: job })}
-            onView={(job) => setModalState({ type: 'view', selectedJob: job })}
-          />
+          <>
+            <JobList
+              jobs={paginatedJobs}
+              onEdit={(job) => setModalState({ type: 'edit', selectedJob: job })}
+              onView={(job) => setModalState({ type: 'view', selectedJob: job })}
+            />
+            
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="mt-12 flex flex-col md:flex-row items-center justify-between gap-6 bg-white px-8 py-6 rounded-[32px] shadow-sm border border-gray-100">
+                <div className="text-sm text-gray-500 font-medium">
+                  Showing <span className="font-bold text-gray-900">{((currentPage - 1) * itemsPerPage) + 1}</span> to <span className="font-bold text-gray-900">{Math.min(currentPage * itemsPerPage, filteredJobs.length)}</span> of <span className="font-bold text-gray-900">{filteredJobs.length}</span> jobs
+                </div>
+                
+                <div className="flex items-center gap-6">
+                  <button
+                    onClick={handlePrevPage}
+                    disabled={currentPage === 1}
+                    className="group flex items-center gap-2 px-6 py-3 rounded-full bg-white border border-gray-100 shadow-sm text-sm font-semibold text-gray-600 hover:bg-gray-50 hover:border-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-95"
+                  >
+                    <ArrowRight size={18} className="rotate-180 group-hover:-translate-x-1 transition-transform" />
+                    Previous
+                  </button>
+                  
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Page</span>
+                    <div className="px-4 py-2 rounded-xl bg-white border border-gray-100 shadow-inner font-black text-[#D60041] text-sm">
+                      {currentPage}
+                    </div>
+                    <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">of {totalPages}</span>
+                  </div>
+
+                  <button
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                    className="group flex items-center gap-2 px-6 py-3 rounded-full bg-[#1A1A1A] text-white shadow-lg text-sm font-semibold hover:bg-[#D60041] disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-95"
+                  >
+                    Next
+                    <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </main>
 

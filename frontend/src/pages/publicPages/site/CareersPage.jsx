@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import axios from 'axios';
 import {
   ChevronDown,
   Briefcase,
@@ -14,70 +15,83 @@ import {
 import Footer from '../../../components/layout/Footer';
 import Header from '../../../components/layout/Header';
 
-const STATIC_JOBS = [
-  {
-    id: 1,
-    title: "Production Supervisor",
-    department: "Manufacturing",
-    skills_requirements: "Experience in ceramic manufacturing, leadership skills, and knowledge of ISO standards. Minimum 3 years experience.",
-    location: "Bulacan",
-    job_type: "Full-time",
-    salary_range: "₱30,000 - ₱45,000",
-    is_active: true
-  },
-  {
-    id: 2,
-    title: "Quality Control Analyst",
-    department: "Quality Assurance",
-    skills_requirements: "Strong attention to detail, laboratory experience, and knowledge of material testing. Chemical Engineering background preferred.",
-    location: "Bulacan",
-    job_type: "Full-time",
-    salary_range: "₱25,000 - ₱35,000",
-    is_active: true
-  },
-  {
-    id: 3,
-    title: "HR Generalist",
-    department: "Human Resources",
-    skills_requirements: "Recruitment, payroll processing, and employee relations. Excellent communication skills required.",
-    location: "Makati",
-    job_type: "Full-time",
-    salary_range: "₱28,000 - ₱40,000",
-    is_active: true
-  },
-  {
-    id: 4,
-    title: "Maintenance Technician",
-    department: "Engineering",
-    skills_requirements: "Troubleshooting industrial machinery, electrical systems, and preventive maintenance. TESDA certification is a plus.",
-    location: "Bulacan",
-    job_type: "Full-time",
-    salary_range: "₱20,000 - ₱28,000",
-    is_active: false
-  }
-];
-
 const CareersPage = () => {
   const navigate = useNavigate();
+
+  const [jobs, setJobs] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDept, setSelectedDept] = useState('All Departments');
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const JOBS_PER_PAGE = 10;
 
-  const departments = ['All Departments', ...new Set(STATIC_JOBS.map(job => job.department))];
+  useEffect(() => {
+    const fetchPublicJobs = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get('http://localhost:8000/hr/read-jobs');
 
-  const filteredJobs = STATIC_JOBS.filter(job => {
-    const matchesSearch =
-      job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.skills_requirements.toLowerCase().includes(searchTerm.toLowerCase());
+        const rawData = Array.isArray(response.data) ? response.data : [];
 
-    const matchesDept = selectedDept === 'All Departments' || job.department === selectedDept;
+        const dynamicJobs = rawData.map(job => ({
+          ...job,
+          title: job.job_title || "Untitled Position",
+          department: job.department || "General",
+          location: job.location || "Philippines",
+          job_type: job.job_type || "Full-time",
+          salary_range: job.salary_range || "Competitive",
+          is_active: Boolean(job.is_active),
+          skills_requirements: job.skills_requirements || job.description || "No specific requirements listed."
+        }));
 
-    return matchesSearch && matchesDept;
-  });
+        setJobs(dynamicJobs);
+      } catch (error) {
+        console.error("Error loading careers:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPublicJobs();
+  }, []);
+
+  // Reset to first page when search or department changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedDept]);
+
+  // Scroll to top when page changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [currentPage]);
+
+  const departments = useMemo(() => {
+    return ['All Departments', ...new Set(jobs.map(job => job.department))];
+  }, [jobs]);
+
+  const filteredJobs = useMemo(() => {
+    return jobs.filter(job => {
+      const matchesSearch =
+        job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.skills_requirements.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesDept = selectedDept === 'All Departments' || job.department === selectedDept;
+
+      return matchesSearch && matchesDept;
+    });
+  }, [jobs, searchTerm, selectedDept]);
+
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredJobs.length / JOBS_PER_PAGE);
+  const paginatedJobs = filteredJobs.slice(
+    (currentPage - 1) * JOBS_PER_PAGE,
+    currentPage * JOBS_PER_PAGE
+  );
 
   const searchSuggestions = searchTerm
-    ? [...new Set(STATIC_JOBS
+    ? [...new Set(jobs
       .filter(job => job.title.toLowerCase().includes(searchTerm.toLowerCase()))
       .map(job => job.title))]
     : [];
@@ -120,7 +134,7 @@ const CareersPage = () => {
                 }}
                 onFocus={() => setShowSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                className={`w-full pl-14 pr-12 py-3.5 bg-gray-50/50 border border-transparent hover:bg-gray-50 focus:bg-white focus:ring-2 focus:ring-[#D60041]/20 focus:border-[#D60041] transition-all text-sm font-medium outline-none z-30 relative rounded-full`}
+                className="w-full pl-14 pr-12 py-3.5 bg-gray-50/50 border border-transparent hover:bg-gray-50 focus:bg-white focus:ring-2 focus:ring-[#D60041]/20 focus:border-[#D60041] transition-all text-sm font-medium outline-none z-30 relative rounded-full"
               />
               {searchTerm && (
                 <button
@@ -132,7 +146,7 @@ const CareersPage = () => {
               )}
 
               {showSuggestions && searchSuggestions.length > 0 && (
-                <div className="absolute top-[calc(100%+8px)] left-0 w-full bg-white border border-gray-100 rounded-[24px] shadow-lg z-20 overflow-hidden flex flex-col animate-in fade-in duration-200 py-2">
+                <div className="absolute top-[calc(100%+8px)] left-0 w-full bg-white border border-gray-100 rounded-[24px] shadow-lg z-20 overflow-hidden flex flex-col py-2">
                   {searchSuggestions.map((suggestion, index) => (
                     <button
                       key={index}
@@ -167,16 +181,24 @@ const CareersPage = () => {
           <div className="mt-8 flex items-center justify-center gap-4">
             <div className="h-px flex-grow max-w-[60px] bg-gray-200"></div>
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              Showing {filteredJobs.length} Career Opportunities
+              {isLoading ? 'Loading Positions...' : `Showing ${filteredJobs.length} Career Opportunities`}
             </p>
             <div className="h-px flex-grow max-w-[60px] bg-gray-200"></div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-24 items-stretch">
-          {filteredJobs.length > 0 ? (
-            filteredJobs.map((job) => (
-              <div key={job.id} className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group flex flex-col relative overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 items-stretch">
+          {isLoading ? (
+            <div className="col-span-full py-20 text-center text-gray-400 animate-pulse">
+              Fetching the latest opportunities...
+            </div>
+          ) : paginatedJobs.length > 0 ? (
+            paginatedJobs.map((job) => (
+              <div 
+                key={job.id} 
+                onClick={() => navigate(`/apply/${job.job_id}`, { state: { job } })}
+                className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group flex flex-col relative overflow-hidden cursor-pointer"
+              >
                 <div className="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-bl-[100px] opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>
 
                 <div className="flex justify-between items-start mb-6 relative z-10">
@@ -222,11 +244,20 @@ const CareersPage = () => {
                 </div>
 
                 <div className="flex gap-3 relative z-10">
-                  <button className="flex-1 py-3.5 rounded-full border border-gray-200 font-medium text-sm text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/job-details/${job.job_id}`, { state: { job } });
+                    }}
+                    className="flex-1 py-3.5 rounded-full border border-gray-200 font-medium text-sm text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all"
+                  >
                     Details
                   </button>
                   <button
-                    onClick={() => navigate(`/apply/${job.id}`)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/apply/${job.job_id}`, { state: { job } });
+                    }}
                     disabled={!job.is_active}
                     className="flex-[2] py-3.5 rounded-full bg-[#1A1A1A] text-white font-medium text-sm flex items-center justify-center gap-2 hover:bg-[#D60041] transition-colors disabled:opacity-50 disabled:cursor-not-allowed group/btn"
                   >
@@ -252,6 +283,44 @@ const CareersPage = () => {
             </div>
           )}
         </div>
+
+        {/* Pagination UI */}
+        {filteredJobs.length > JOBS_PER_PAGE && (
+          <div className="mt-12 flex flex-col md:flex-row items-center justify-between gap-6 bg-white px-8 py-6 rounded-[32px] shadow-sm border border-gray-100 mb-24">
+            <div className="text-sm text-gray-500 font-medium">
+              Showing <span className="font-bold text-gray-900">{((currentPage - 1) * JOBS_PER_PAGE) + 1}</span> to <span className="font-bold text-gray-900">{Math.min(currentPage * JOBS_PER_PAGE, filteredJobs.length)}</span> of <span className="font-bold text-gray-900">{filteredJobs.length}</span> positions
+            </div>
+
+            <div className="flex items-center gap-6">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="group flex items-center gap-2 px-6 py-3 rounded-full bg-white border border-gray-100 shadow-sm text-sm font-semibold text-gray-600 hover:bg-gray-50 hover:border-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-95"
+              >
+                <ArrowRight size={18} className="rotate-180 group-hover:-translate-x-1 transition-transform" />
+                Previous
+              </button>
+
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Page</span>
+                <div className="px-4 py-2 rounded-xl bg-white border border-gray-100 shadow-inner font-black text-[#D60041] text-sm">
+                  {currentPage}
+                </div>
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">of {totalPages}</span>
+              </div>
+
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="group flex items-center gap-2 px-6 py-3 rounded-full bg-[#1A1A1A] text-white shadow-lg text-sm font-semibold hover:bg-[#D60041] disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-95"
+              >
+                Next
+                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+          </div>
+        )}
+
       </main>
 
       <Footer />

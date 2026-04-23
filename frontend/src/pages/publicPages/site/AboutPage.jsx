@@ -18,8 +18,8 @@ import Footer from '../../../components/layout/Footer';
 
 const BANNERS = [
   'src/assets/banner.jpg',
-  'src/assets/banner2.png',
-  'src/assets/banner3.png'
+  'src/assets/banner2.jpg',
+  'src/assets/banner3.jpg'
 ];
 
 const AboutPage = () => {

@@ -26,8 +26,8 @@ const SubmissionSuccessPage = () => {
 
       <main className="max-w-7xl mx-auto px-6 py-20 flex flex-col items-center">
         <div className="relative mb-10">
-          <div className="absolute inset-0 bg-[#D10043] opacity-20 blur-3xl rounded-full animate-pulse"></div>
-          <div className="relative w-24 h-24 bg-white rounded-[32px] shadow-2xl shadow-pink-100 border border-slate-50 flex items-center justify-center text-[#D10043] animate-in zoom-in duration-700">
+          <div className="absolute inset-0 bg-[#D60041] opacity-20 blur-3xl rounded-full animate-pulse"></div>
+          <div className="relative w-24 h-24 bg-white rounded-[32px] shadow-2xl shadow-pink-100 border border-slate-50 flex items-center justify-center text-[#D60041] animate-in zoom-in duration-700">
             <CheckCircle size={48} strokeWidth={2.5} />
           </div>
         </div>
@@ -43,7 +43,7 @@ const SubmissionSuccessPage = () => {
 
         <div className="w-full bg-white rounded-[40px] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden mb-12">
           <div className="p-8 md:p-10">
-            <h2 className="text-sm font-black uppercase tracking-widest text-[#D10043] mb-6 flex items-center gap-2">
+            <h2 className="text-sm font-black uppercase tracking-widest text-[#D60041] mb-6 flex items-center gap-2">
               <BellRing size={16} />
               What's Next?
             </h2>
@@ -82,7 +82,7 @@ const SubmissionSuccessPage = () => {
           </button>
           <button
             onClick={() => navigate('/')}
-            className="flex-1 bg-white border border-slate-200 hover:border-[#D10043] hover:text-[#D10043] text-slate-700 py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 transition-all shadow-sm active:scale-[0.98]"
+            className="flex-1 bg-white border border-slate-200 hover:border-[#D60041] hover:text-[#D60041] text-slate-700 py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 transition-all shadow-sm active:scale-[0.98]"
           >
             <Home size={20} />
             Back to Home
@@ -91,7 +91,7 @@ const SubmissionSuccessPage = () => {
 
         <a
           href="#"
-          className="mt-12 text-slate-400 hover:text-[#D10043] text-sm font-bold flex items-center gap-2 transition-colors group"
+          className="mt-12 text-slate-400 hover:text-[#D60041] text-sm font-bold flex items-center gap-2 transition-colors group"
         >
           Follow us on LinkedIn for updates
           <ExternalLink size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
