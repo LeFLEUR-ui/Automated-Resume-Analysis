@@ -74,7 +74,7 @@ const Header = () => {
   const navItems = getNavItems();
 
   return (
-    <header className="bg-white border-b border-gray-100 px-6 md:px-10 py-4 sticky top-0 z-50 font-sans shadow-sm">
+    <header className="bg-white border-b border-gray-100 px-4 sm:px-6 md:px-10 py-4 sticky top-0 z-50 font-sans shadow-sm">
       <div className="max-w-[1400px] mx-auto flex items-center justify-between">
 
         <div className="flex items-center space-x-4 cursor-pointer shrink-0 group" onClick={() => navigate(isLanding ? '/' : location.pathname)}>

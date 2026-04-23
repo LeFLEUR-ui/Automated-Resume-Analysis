@@ -5,6 +5,7 @@ import { ArrowRight } from 'lucide-react';
 
 // Layout components
 import Header from '../../components/layout/Header';
+import Footer from '../../components/layout/Footer';
 import JobManagementHeader from '../../components/hr/jobManagement/JobManagementHeader';
 import JobSearchAndFilter from '../../components/hr/jobManagement/JobSearchAndFilter';
 import JobList from '../../components/hr/jobManagement/JobList';
@@ -125,7 +126,7 @@ const JobManagementPage = () => {
       <Helmet><title>HR - Job Management</title></Helmet>
       <Header />
 
-      <main className="max-w-[1400px] mx-auto px-6 md:px-10 py-8">
+      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-10 py-6 md:py-8">
         <JobManagementHeader onCreateJob={() => setModalState({ type: 'create', selectedJob: null })} />
 
         <JobSearchAndFilter
@@ -216,6 +217,7 @@ const JobManagementPage = () => {
         job={modalState.selectedJob}
         onClose={closeModal}
       />
+      <Footer />
     </div>
   );
 };

@@ -25,18 +25,18 @@ const StatCard = ({ icon: Icon, label, value, trend, trendColor, bgColor, iconCo
   </div>
 );
 
-const KeyMetrics = ({ stats }) => {
+const KeyMetrics = ({ stats, activeJobsCount }) => {
   return (
-    <div className="bg-white border border-gray-100 rounded-[32px] p-8 lg:p-10 mb-8 shadow-sm hover:shadow-md transition-shadow duration-300">
+    <div className="bg-white border border-gray-100 rounded-[32px] p-6 sm:p-8 lg:p-10 mb-8 shadow-sm">
       <div className="flex justify-between items-start mb-8">
         <div>
-          <h3 className="text-xl font-extrabold tracking-tight text-gray-900">Key Metrics</h3>
-          <p className="text-sm text-gray-500 mt-1.5 font-medium">
+          <h3 className="text-lg md:text-xl font-extrabold tracking-tight text-gray-900">Key Metrics</h3>
+          <p className="text-xs md:text-sm text-gray-500 mt-1 font-medium">
             Real-time overview of your recruitment performance
           </p>
         </div>
         <button className="p-2 hover:bg-gray-50 rounded-xl transition-colors group">
-          <MoreHorizontal className="w-5 h-5 text-gray-400 group-hover:text-[#D60041] transition-colors" />
+          <MoreHorizontal className="w-5 h-5 text-gray-400 group-hover:text-[#D60041]" />
         </button>
       </div>
 
@@ -62,7 +62,7 @@ const KeyMetrics = ({ stats }) => {
         <StatCard 
           icon={Briefcase} 
           label="Active Jobs" 
-          value={stats.activeJobs} 
+          value={activeJobsCount} 
           trend="Current Openings" 
           trendColor="text-blue-600" 
           bgColor="bg-blue-50" 

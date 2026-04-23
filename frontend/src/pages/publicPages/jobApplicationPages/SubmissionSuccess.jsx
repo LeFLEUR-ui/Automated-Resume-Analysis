@@ -1,5 +1,6 @@
 import React from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import axios from 'axios';
 import { Helmet } from 'react-helmet-async';
 import {
   CheckCircle,
@@ -14,12 +15,29 @@ import Footer from '../../../components/layout/Footer';
 
 const SubmissionSuccessPage = () => {
   const navigate = useNavigate();
+  const { state } = useLocation();
   const { jobId } = useParams();
+  const [jobTitle, setJobTitle] = React.useState(state?.jobTitle || "Success");
+
+  React.useEffect(() => {
+    const fetchJobTitle = async () => {
+      if (state?.jobTitle) return;
+      try {
+        const response = await axios.get(`http://localhost:8000/hr/read-job/${jobId}`);
+        if (response.data?.job_title) {
+          setJobTitle(response.data.job_title);
+        }
+      } catch (err) {
+        console.error("Failed to fetch job title:", err);
+      }
+    };
+    fetchJobTitle();
+  }, [jobId, state]);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900 antialiased font-['Inter',_sans-serif]">
       <Helmet>
-        <title>Application Submitted | Success</title>
+        <title>Applied: {jobTitle} | Success</title>
       </Helmet>
 
       <Header />

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
 import { Helmet } from 'react-helmet-async';
 import {
   User, Mail, Phone, MapPin,
@@ -29,8 +30,24 @@ const ApplicationForm = () => {
     skills: location.state?.skills || ["Process Optimization", "Team Leadership", "Lean Manufacturing", "Safety Compliance", "ERP Systems"]
   });
 
+  const [jobTitle, setJobTitle] = useState(location.state?.job?.title || "Position");
   const [currentSkill, setCurrentSkill] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  useEffect(() => {
+    const fetchJobTitle = async () => {
+      if (location.state?.job?.title) return;
+      try {
+        const response = await axios.get(`http://localhost:8000/hr/read-job/${jobId}`);
+        if (response.data?.job_title) {
+          setJobTitle(response.data.job_title);
+        }
+      } catch (err) {
+        console.error("Failed to fetch job title for tab name:", err);
+      }
+    };
+    fetchJobTitle();
+  }, [jobId, location.state]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -72,7 +89,7 @@ const ApplicationForm = () => {
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900 antialiased font-['Inter',_sans-serif]">
       <Helmet>
-        <title>Edit Application | Careers</title>
+        <title>Edit Application | {jobTitle}</title>
       </Helmet>
 
       <Header />

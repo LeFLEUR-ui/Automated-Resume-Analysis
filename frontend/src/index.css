@@ -9,6 +9,8 @@
 @layer base {
   html {
     font-family: "Miranda sans", sans-serif;
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
   }
 }
 html, body, #root {

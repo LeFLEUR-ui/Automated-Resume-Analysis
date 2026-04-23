@@ -31,7 +31,7 @@ async def create_job_description(
 @router.get("/read-jobs", response_model=List[JobResponse])
 async def read_active_jobs(
     skip: int = 0, 
-    limit: int = 20, 
+    limit: int = 100, 
     db: AsyncSession = Depends(get_db)
 ):
     return await get_all_active_jobs(db, skip=skip, limit=limit)

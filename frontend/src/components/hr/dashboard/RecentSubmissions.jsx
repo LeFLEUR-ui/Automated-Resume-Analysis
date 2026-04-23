@@ -17,8 +17,8 @@ const CandidateRow = ({ name, role, skills, match, status, profileImage }) => {
     : (typeof skills === 'string' ? skills.split(',').map(s => s.trim()) : []);
 
   return (
-    <div className="flex flex-col lg:flex-row lg:items-center justify-between p-4 border border-gray-100 bg-white rounded-[20px] hover:border-[#D60041]/30 hover:shadow-md transition-all duration-300 group gap-4 lg:gap-0">
-      <div className="flex items-center gap-4 w-full lg:w-[30%]">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-gray-100 bg-white rounded-[24px] hover:border-[#D60041]/30 hover:shadow-md transition-all duration-300 group gap-4">
+      <div className="flex items-center gap-4 w-full sm:w-[40%] lg:w-[30%]">
         <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center overflow-hidden shrink-0 group-hover:bg-[#D60041] transition-colors duration-300">
           {profileImage ? (
             <img src={profileImage.startsWith('http') ? profileImage : `${BASE_URL}${profileImage}`} alt={name} className="w-full h-full object-cover" />
@@ -28,13 +28,13 @@ const CandidateRow = ({ name, role, skills, match, status, profileImage }) => {
         </div>
 
         <div className="min-w-0">
-          <h3 className="font-semibold text-[15px] text-gray-900 truncate group-hover:text-[#D60041] transition-colors">{name}</h3>
-          <p className="text-xs text-gray-500 font-medium truncate">{role}</p>
+          <h3 className="font-bold text-sm md:text-[15px] text-gray-900 truncate group-hover:text-[#D60041] transition-colors">{name}</h3>
+          <p className="text-[11px] text-gray-500 font-medium truncate">{role}</p>
         </div>
       </div>
 
-      <div className="flex flex-wrap lg:flex-nowrap items-center gap-4 lg:gap-8 w-full lg:w-[70%] justify-between lg:justify-end">
-        <div className="flex gap-2 hidden md:flex min-w-[120px] lg:min-w-[150px]">
+      <div className="flex flex-1 items-center justify-between sm:justify-end gap-4 md:gap-8">
+        <div className="hidden lg:flex gap-2 min-w-[150px]">
           {skillsList.slice(0, 2).map((skill, i) => (
             <span key={i} className="px-2.5 py-1 bg-gray-50 rounded-md text-[10px] font-medium text-gray-600 border border-gray-100 whitespace-nowrap">
               {skill}
@@ -47,21 +47,21 @@ const CandidateRow = ({ name, role, skills, match, status, profileImage }) => {
           )}
         </div>
 
-        <div className="flex flex-col items-center justify-center min-w-[60px]">
+        <div className="flex flex-col items-center justify-center min-w-[50px]">
           <div className="flex items-baseline gap-0.5">
-            <span className="text-lg font-semibold text-gray-900 group-hover:text-[#D60041] transition-colors">{match}</span>
-            <span className="text-xs font-semibold text-gray-400">%</span>
+            <span className="text-base md:text-lg font-black text-gray-900 group-hover:text-[#D60041] transition-colors">{match}</span>
+            <span className="text-[10px] font-bold text-gray-400">%</span>
           </div>
-          <span className="text-[9px] font-medium text-gray-400 uppercase tracking-wider">Match</span>
+          <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Match</span>
         </div>
 
-        <div className="min-w-[80px] flex justify-center">
-          <span className={`px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wide ${statusStyles[status.toLowerCase()] || statusStyles.pending}`}>
+        <div className="hidden xs:flex min-w-[70px] justify-center">
+          <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider ${statusStyles[status.toLowerCase()] || statusStyles.pending}`}>
             {status}
           </span>
         </div>
 
-        <button className="px-5 py-2 bg-white border border-gray-200 rounded-full text-xs font-semibold text-gray-700 hover:bg-[#D60041] hover:text-white hover:border-[#D60041] transition-all duration-300 shadow-sm shrink-0">
+        <button className="px-4 md:px-6 py-2.5 bg-gray-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#D60041] transition-all shadow-md active:scale-95 shrink-0">
           Review
         </button>
       </div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import { X, MapPin, Briefcase, Calendar, Star, GraduationCap, Mail, Phone } from 'lucide-react';
 
 const ViewCandidateDetailsModal = ({ isOpen, onClose, candidate }) => {
@@ -6,6 +7,9 @@ const ViewCandidateDetailsModal = ({ isOpen, onClose, candidate }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50">
+      <Helmet>
+        <title>{candidate.name} | Application Review</title>
+      </Helmet>
       <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200">
         
         <div className="px-8 py-5 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0">

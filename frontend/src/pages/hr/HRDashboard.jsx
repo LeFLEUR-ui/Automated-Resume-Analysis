@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { Download, AlertCircle, Briefcase, BarChart3 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import KeyMetrics from '../../components/hr/dashboard/KeyMetrics';
 import ApplicationTrends from '../../components/hr/dashboard/ApplicationTrends';
 import RecentSubmissions from '../../components/hr/dashboard/RecentSubmissions';
 import Header from '../../components/layout/Header';
+import Footer from '../../components/layout/Footer';
 
 const STATIC_STATS = {
   total: 1248,
@@ -64,6 +66,19 @@ const STATIC_CANDIDATES = [
 
 const HRDashboard = () => {
   const navigate = useNavigate();
+  const [activeJobsCount, setActiveJobsCount] = useState(0);
+
+  useEffect(() => {
+    const fetchActiveJobs = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/hr/read-jobs');
+        setActiveJobsCount(response.data.length);
+      } catch (error) {
+        console.error("Failed to fetch active jobs count:", error);
+      }
+    };
+    fetchActiveJobs();
+  }, []);
 
   return (
     <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter'] pb-12">
@@ -72,32 +87,32 @@ const HRDashboard = () => {
       </Helmet>
       <Header />
 
-      <main className="max-w-[1400px] mx-auto px-6 md:px-10 py-8">
+      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-10 py-6 md:py-8">
 
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6 md:gap-0">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 md:mb-10 gap-6">
           <div>
-            <h2 className="text-3xl font-black tracking-tight text-gray-900">
+            <h2 className="text-2xl md:text-3xl font-black tracking-tight text-gray-900">
               Dashboard Overview
             </h2>
-            <p className="text-sm text-gray-500 font-medium tracking-wide mt-1.5">
+            <p className="text-sm text-gray-500 font-medium tracking-wide mt-1">
               Live recruitment analytics from database
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <button className="bg-white border border-gray-200 px-5 py-2.5 rounded-xl hover:border-pink-100 hover:text-[#D60041] hover:bg-pink-50 hover:shadow-sm transition-all duration-300 text-xs font-bold tracking-tight text-gray-700 flex items-center shadow-sm">
+          <div className="flex items-center gap-3 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0 scrollbar-hide">
+            <button className="whitespace-nowrap bg-white border border-gray-200 px-4 py-2 rounded-xl hover:border-pink-100 hover:text-[#D60041] hover:bg-pink-50 transition-all duration-300 text-[11px] md:text-xs font-bold text-gray-700 flex items-center shadow-sm shrink-0">
               Real-time
-              <div className="w-2 h-2 bg-green-500 rounded-full ml-2 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
+              <div className="w-2 h-2 bg-green-500 rounded-full ml-2 animate-pulse"></div>
             </button>
 
-            <button className="bg-white border border-gray-200 px-5 py-2.5 rounded-xl hover:border-pink-100 hover:text-[#D60041] hover:bg-pink-50 hover:shadow-sm transition-all duration-300 text-xs font-bold tracking-tight text-gray-700 flex items-center shadow-sm group">
-              <Download className="h-4 w-4 mr-2 text-gray-400 group-hover:text-[#D60041] transition-colors" />
+            <button className="whitespace-nowrap bg-white border border-gray-200 px-4 py-2 rounded-xl hover:border-pink-100 hover:text-[#D60041] hover:bg-pink-50 transition-all duration-300 text-[11px] md:text-xs font-bold text-gray-700 flex items-center shadow-sm group shrink-0">
+              <Download className="h-4 w-4 mr-2 text-gray-400 group-hover:text-[#D60041]" />
               Export Report
             </button>
           </div>
         </div>
 
-        <KeyMetrics stats={STATIC_STATS} />
+        <KeyMetrics stats={STATIC_STATS} activeJobsCount={activeJobsCount} />
         <ApplicationTrends />
         <RecentSubmissions candidates={STATIC_CANDIDATES} />
 
@@ -132,7 +147,7 @@ const HRDashboard = () => {
                 Active Positions
               </h4>
               <p className="text-sm text-gray-500 font-bold mt-2">
-                {STATIC_STATS.activeJobs} roles currently open
+                {activeJobsCount} roles currently open
               </p>
             </div>
           </div>
@@ -154,6 +169,7 @@ const HRDashboard = () => {
         </div>
 
       </main>
+      <Footer />
     </div>
   );
 };

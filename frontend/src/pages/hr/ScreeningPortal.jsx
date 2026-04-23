@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Header from '../../components/layout/Header';
+import Footer from '../../components/layout/Footer';
 import ScheduleInterviewModal from '../../components/modals/hr/ScheduleInterviewModal';
 import ViewCandidateDetailsModal from '../../components/modals/hr/ViewCandidateDetailsModal';
 
@@ -113,7 +114,7 @@ const ScreeningPortal = () => {
 
       <Header />
 
-      <main className="max-w-[1400px] mx-auto px-6 md:px-10 py-8">
+      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-10 py-6 md:py-8">
         <ScreeningHeader />
 
         <SearchAndFilter 
@@ -144,6 +145,7 @@ const ScreeningPortal = () => {
         onClose={() => setDetailsModalOpen(false)}
         candidate={selectedCandidate}
       />
+      <Footer />
     </div>
   );
 };

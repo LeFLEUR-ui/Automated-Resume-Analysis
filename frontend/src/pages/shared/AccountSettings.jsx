@@ -53,7 +53,7 @@ const AccountSettings = () => {
 
       <Header />
 
-      <main className="max-w-[1400px] mx-auto px-6 py-12 w-full flex-grow">
+      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-10 py-6 md:py-8 w-full flex-grow">
 
         <div className="mb-12 animate-in fade-in slide-in-from-top-4 duration-700">
           <div className="flex items-center gap-2 bg-[#D10043]/5 text-[#D10043] px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-[0.2em] mb-3 border border-[#D10043]/10 w-fit">
