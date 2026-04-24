@@ -37,3 +37,9 @@ async def update_hr_profile(db: AsyncSession, hr_id: int, hr_update: HRUpdate):
     await db.commit()
     await db.refresh(hr)
     return hr
+
+async def get_total_candidates_count(db: AsyncSession):
+    from app.models.candidate import Candidate
+    from sqlalchemy import func
+    result = await db.execute(select(func.count(Candidate.id)))
+    return result.scalar()
