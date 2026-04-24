@@ -8,3 +8,4 @@ def extract_phone(text: str) -> str:
     phone_pattern = r'(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}|\d{10,11}'
     match = re.search(phone_pattern, text)
     return match.group(0) if match else ""
+    

@@ -40,3 +40,4 @@ def extract_highest_degree(text: str) -> str:
                 return degree_type
                 
     return ""
+    

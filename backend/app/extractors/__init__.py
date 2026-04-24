@@ -19,3 +19,4 @@ def extract_all(text: str) -> dict:
         "education": extract_education(text),
         "highest_degree": extract_highest_degree(text)
     }
+    
