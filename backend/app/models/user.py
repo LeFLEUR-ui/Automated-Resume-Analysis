@@ -11,6 +11,10 @@ class User(Base):
     password = Column(String, nullable=False)
     fullname = Column(String, nullable=False) 
     role = Column(String)
+    profile_image_url = Column(String, nullable=True)
+    phone = Column(String, nullable=True)
+    location = Column(String, nullable=True)
+    bio = Column(Text, nullable=True)
 
     __mapper_args__ = {
         "polymorphic_on": role,

@@ -1,11 +1,11 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 
 from app.models.hr import HR
-from app.schemas.hr_schema import HRCreate
+from app.schemas.hr_schema import HRCreate, HRUpdate
 from app.utils.auth import hash_password
 
 async def create_hr_profile(db: AsyncSession, hr_in: HRCreate):
-
     new_hr = HR(
         fullname=hr_in.fullname,
         email=hr_in.email,
@@ -19,3 +19,21 @@ async def create_hr_profile(db: AsyncSession, hr_in: HRCreate):
     await db.commit()
     await db.refresh(new_hr)
     return new_hr
+
+async def get_hr_profile(db: AsyncSession, hr_id: int):
+    result = await db.execute(select(HR).where(HR.id == hr_id))
+    return result.scalar_one_or_none()
+
+async def update_hr_profile(db: AsyncSession, hr_id: int, hr_update: HRUpdate):
+    result = await db.execute(select(HR).where(HR.id == hr_id))
+    hr = result.scalar_one_or_none()
+    if not hr:
+        return None
+    
+    update_data = hr_update.dict(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(hr, key, value)
+    
+    await db.commit()
+    await db.refresh(hr)
+    return hr

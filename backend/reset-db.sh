@@ -1,3 +1,4 @@
 #!/bin/bash
-sudo -u postgres psql -d automated_resume_db -c "TRUNCATE TABLE job_descriptions RESTART IDENTITY CASCADE;"
-echo "Database cleared!"
+export PGPASSWORD='passwordnamin'
+psql -h localhost -U postgres -d automated_resume_db -c "DROP TABLE IF EXISTS job_descriptions, candidates, hr_staffs, admins, users CASCADE;"
+echo "Database reset! All relevant tables dropped."

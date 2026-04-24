@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel, EmailStr
 
 
@@ -5,6 +6,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
     role: str
+    fullname: str
 
 class UserLogin(BaseModel):
     email: EmailStr
@@ -14,3 +16,22 @@ class Token(BaseModel):
     access_token: str
     token_type: str
     role: str
+    fullname: str
+    user_id: int
+    profile_image_url: Optional[str] = None
+    phone: Optional[str] = None
+    location: Optional[str] = None
+    bio: Optional[str] = None
+
+class UserResponse(BaseModel):
+    id: int
+    fullname: str
+    email: EmailStr
+    role: str
+    profile_image_url: Optional[str] = None
+    phone: Optional[str] = None
+    location: Optional[str] = None
+    bio: Optional[str] = None
+
+    class Config:
+        from_attributes = True

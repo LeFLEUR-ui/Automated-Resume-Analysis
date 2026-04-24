@@ -29,7 +29,10 @@ async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
         return {
             "access_token": data["token"],
             "token_type": "bearer",
-            "role": data["role"]
+            "role": data["role"],
+            "fullname": data["fullname"],
+            "user_id": data["user_id"],
+            "profile_image_url": data.get("profile_image_url")
         }
     except Exception as e:
         raise HTTPException(status_code=401, detail=str(e))

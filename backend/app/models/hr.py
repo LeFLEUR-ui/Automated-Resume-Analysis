@@ -9,6 +9,7 @@ class HR(User):
     id = Column(Integer, ForeignKey("users.id"), primary_key=True)
     company_name = Column(String, nullable=False)
     department = Column(String, nullable=True)
+    position = Column(String, nullable=True)
 
     __mapper_args__ = {
         "polymorphic_identity": "HR",

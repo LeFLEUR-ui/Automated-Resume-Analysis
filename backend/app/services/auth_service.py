@@ -42,4 +42,4 @@ async def login_user(db: AsyncSession, email: str, password: str):
         "role": user.role
     })
 
-    return {"token": token, "role": user.role}
+    return {"token": token, "role": user.role, "fullname": user.fullname, "user_id": user.id, "profile_image_url": user.profile_image_url}

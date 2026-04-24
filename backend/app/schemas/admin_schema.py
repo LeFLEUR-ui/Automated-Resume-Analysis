@@ -9,12 +9,25 @@ class AdminCreate(BaseModel):
     managed_region: Optional[str] = None
 
 
+class AdminUpdate(BaseModel):
+    fullname: Optional[str] = None
+    managed_region: Optional[str] = None
+    phone: Optional[str] = None
+    location: Optional[str] = None
+    bio: Optional[str] = None
+    profile_image_url: Optional[str] = None
+
+
 class AdminResponse(BaseModel):
     id: int
     fullname: str
     email: EmailStr
-    managed_region: Optional[str]
     role: str
+    managed_region: Optional[str] = None
+    phone: Optional[str] = None
+    location: Optional[str] = None
+    bio: Optional[str] = None
+    profile_image_url: Optional[str] = None
 
     class Config:
         from_attributes = True

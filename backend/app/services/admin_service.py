@@ -1,7 +1,16 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from app.models.user import User
 from app.models.admin import Admin
-from app.schemas.admin_schema import AdminCreate
+from app.schemas.admin_schema import AdminCreate, AdminUpdate
 from app.utils.auth import hash_password
+
+async def get_all_users(db: AsyncSession):
+    """
+    Fetches all users from the database.
+    """
+    result = await db.execute(select(User))
+    return result.scalars().all()
 
 async def create_admin_profile(db: AsyncSession, admin_in: AdminCreate):
     """
@@ -20,3 +29,21 @@ async def create_admin_profile(db: AsyncSession, admin_in: AdminCreate):
     await db.commit()
     await db.refresh(new_admin)
     return new_admin
+
+async def get_admin_profile(db: AsyncSession, admin_id: int):
+    result = await db.execute(select(Admin).where(Admin.id == admin_id))
+    return result.scalar_one_or_none()
+
+async def update_admin_profile(db: AsyncSession, admin_id: int, admin_update: AdminUpdate):
+    result = await db.execute(select(Admin).where(Admin.id == admin_id))
+    admin = result.scalar_one_or_none()
+    if not admin:
+        return None
+    
+    update_data = admin_update.dict(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(admin, key, value)
+    
+    await db.commit()
+    await db.refresh(admin)
+    return admin
