@@ -6,9 +6,19 @@ from sqlalchemy.exc import IntegrityError
 
 from app.database import get_db
 from app.schemas.candidate_schema import CandidateCreate, CandidateResponse, CandidateUpdate
-from app.services import candidate_service
+from app.services import candidate_service, resume_service
 
 router = APIRouter(prefix="/candidate", tags=["Candidates"])
+
+@router.post("/parse-resume")
+async def parse_resume(file: UploadFile = File(...)):
+    """
+    Test endpoint to parse an uploaded resume and return extracted data.
+    """
+    extracted_data = await resume_service.parse_resume_file(file)
+    if not extracted_data:
+        raise HTTPException(status_code=400, detail="Failed to parse resume or unsupported file type.")
+    return extracted_data
 
 @router.get("/profile/{candidate_id}", response_model=CandidateResponse)
 async def get_profile(candidate_id: int, db: AsyncSession = Depends(get_db)):
