@@ -1,1 +1,0 @@
-from .file_extractor import extract_file_content

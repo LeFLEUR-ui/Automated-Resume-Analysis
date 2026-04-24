@@ -1,5 +1,5 @@
-from .file import extract_file_content
-from .content import extract_content
+from .file.file_extractor import extract_file_content
+from .content.content_extractor import extract_content
 
 def process_resume(file_path: str, file_extension: str) -> dict:
     """
