@@ -391,25 +391,38 @@ const ApplyForJobPage = () => {
 
                     {/* Extracted Data Display */}
                     <div className="bg-slate-50 border border-slate-100 rounded-[32px] p-8 space-y-6">
-                      <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#D60041] mb-2">Extracted Profile Data</h5>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
-                        {[
-                          { label: "Full Name", value: extractedData?.fullname },
-                          { label: "Email Address", value: extractedData?.email },
-                          { label: "Phone Number", value: extractedData?.phone },
-                          { label: "Location", value: extractedData?.location },
-                          { label: "Experience", value: extractedData?.experience },
-                          { label: "Total Years", value: extractedData?.years_experience },
-                          { label: "Education", value: extractedData?.education },
-                          { label: "Highest Degree", value: extractedData?.highest_degree }
-                        ].map((item, idx) => (
-                          <div key={idx} className="space-y-1">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{item.label}</span>
-                            <p className="text-sm font-bold text-slate-900 truncate">
-                              {item.value || "null"}
-                            </p>
+                      <div className="flex flex-col md:flex-row gap-8 items-start">
+                        {extractedData?.profile_image_url && (
+                          <div className="shrink-0">
+                            <img 
+                              src={extractedData.profile_image_url} 
+                              alt="Profile" 
+                              className="w-32 h-32 rounded-2xl object-cover border-4 border-white shadow-lg"
+                            />
                           </div>
-                        ))}
+                        )}
+                        <div className="flex-1">
+                          <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#D60041] mb-4">Extracted Profile Data</h5>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
+                            {[
+                              { label: "Full Name", value: extractedData?.fullname },
+                              { label: "Email Address", value: extractedData?.email },
+                              { label: "Phone Number", value: extractedData?.phone },
+                              { label: "Location", value: extractedData?.location },
+                              { label: "Experience", value: extractedData?.experience },
+                              { label: "Total Years", value: extractedData?.years_experience },
+                              { label: "Education", value: extractedData?.education },
+                              { label: "Highest Degree", value: extractedData?.highest_degree }
+                            ].map((item, idx) => (
+                              <div key={idx} className="space-y-1">
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{item.label}</span>
+                                <p className="text-sm font-bold text-slate-900 truncate">
+                                  {item.value || "null"}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       </div>
                     </div>
 

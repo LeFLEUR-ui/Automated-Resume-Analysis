@@ -3,7 +3,9 @@ import React, { useState } from 'react';
 const CandidateCard = ({ candidate, onOpenDetails, onOpenInterview, onUpdateStatus }) => {
   const [isUpdating, setIsUpdating] = useState(false);
   const status = candidate.status.toLowerCase();
-  const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(candidate.name)}&background=fdf2f8&color=d81159&bold=true`;
+  const avatarUrl = candidate.profileImage 
+    ? candidate.profileImage 
+    : `https://ui-avatars.com/api/?name=${encodeURIComponent(candidate.name)}&background=fdf2f8&color=d81159&bold=true`;
 
   const formatDate = (dateStr) => {
     if (!dateStr) return "N/A";

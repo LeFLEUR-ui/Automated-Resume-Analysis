@@ -92,7 +92,7 @@ const ScreeningPortal = () => {
           status: app.status,
           preferredJob: app.job_title || app.job?.job_title || "Unknown",
           skills: app.skills || [],
-          profileImage: null,
+          profileImage: app.profile_image_url || null,
           date: app.created_at,
           location: app.job?.location || "N/A",
           matchScore: app.match_score || 0

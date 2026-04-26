@@ -33,7 +33,8 @@ const PreviewAndVerifyPage = () => {
     education: {
       degree: data?.highest_degree || "",
       college: data?.education ? data.education.split('|')[0] : ""
-    }
+    },
+    profile_image_url: data?.profile_image_url || null
   };
 
   const getMatchColor = (pct) => {
@@ -156,11 +157,22 @@ const PreviewAndVerifyPage = () => {
               </div>
               <h2 className="font-bold uppercase tracking-widest text-xs">Personal Information</h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <InfoItem icon={<User size={16} />} label="Full Name" value={extractedData.personal.name} />
-              <InfoItem icon={<Mail size={16} />} label="Email Address" value={extractedData.personal.email} />
-              <InfoItem icon={<Phone size={16} />} label="Phone" value={extractedData.personal.phone} />
-              <InfoItem icon={<MapPin size={16} />} label="Location" value={extractedData.personal.location} />
+            <div className="flex flex-col md:flex-row gap-8 items-start">
+              {data?.profile_image_url && (
+                <div className="shrink-0">
+                  <img 
+                    src={data.profile_image_url} 
+                    alt="Profile" 
+                    className="w-32 h-32 rounded-2xl object-cover border-4 border-white shadow-lg"
+                  />
+                </div>
+              )}
+              <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+                <InfoItem icon={<User size={16} />} label="Full Name" value={extractedData.personal.name} />
+                <InfoItem icon={<Mail size={16} />} label="Email Address" value={extractedData.personal.email} />
+                <InfoItem icon={<Phone size={16} />} label="Phone" value={extractedData.personal.phone} />
+                <InfoItem icon={<MapPin size={16} />} label="Location" value={extractedData.personal.location} />
+              </div>
             </div>
 
             <div className="mt-8 pt-8 border-t border-slate-50">

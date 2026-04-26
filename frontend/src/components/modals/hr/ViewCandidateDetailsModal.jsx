@@ -25,8 +25,14 @@ const ViewCandidateDetailsModal = ({ isOpen, onClose, candidate }) => {
         <div className="flex flex-1 overflow-hidden">
           <div className="w-80 bg-gray-50/50 border-r border-gray-100 p-8 overflow-y-auto">
             <div className="text-center mb-8">
-              <div className="w-24 h-24 rounded-2xl bg-pink-100 border-4 border-white shadow-sm mx-auto flex items-center justify-center text-[#d81159] text-3xl font-bold mb-4">
-                {candidate.name.charAt(0)}
+              <div className="w-24 h-24 rounded-2xl overflow-hidden border-4 border-white shadow-sm mx-auto mb-4 bg-pink-50">
+                {candidate.profileImage ? (
+                  <img src={candidate.profileImage} alt={candidate.name} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-[#d81159] text-3xl font-bold bg-pink-100">
+                    {candidate.name.charAt(0)}
+                  </div>
+                )}
               </div>
               <h2 className="text-xl font-bold text-gray-900">{candidate.name}</h2>
               <p className="text-sm text-gray-500 font-medium">{candidate.preferredJob}</p>

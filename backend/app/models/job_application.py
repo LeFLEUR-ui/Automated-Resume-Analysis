@@ -28,6 +28,7 @@ class JobApplication(Base):
     college = Column(String, nullable=True)
     skills = Column(JSON, nullable=True)
     match_score = Column(DOUBLE_PRECISION, nullable=True) # Percentage score 0-100
+    profile_image_url = Column(String, nullable=True)
     
     status = Column(String, default="PENDING") # PENDING, REVIEWED, REJECTED, ACCEPTED
     

@@ -87,7 +87,8 @@ const ApplicationForm = () => {
         degree: formData.degree,
         college: formData.college,
         skills: formData.skills,
-        match_score: location.state?.matchData?.match_percentage || 0
+        match_score: location.state?.matchData?.match_percentage || 0,
+        profile_image_url: location.state?.profile_image_url || null
       });
       setShowSuccessModal(true);
     } catch (error) {

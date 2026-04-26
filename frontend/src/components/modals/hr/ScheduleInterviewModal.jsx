@@ -86,8 +86,12 @@ SMS Backup: Enabled`);
           <div className="flex-1 p-12 space-y-10 border-r border-slate-50 bg-white">
 
             <div className="flex items-center gap-6 p-6 bg-slate-50/50 rounded-[32px] border border-slate-100/80">
-              <div className="w-16 h-16 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-[#D10043] font-black text-2xl shadow-sm">
-                {candidate.name.charAt(0)}
+              <div className="w-16 h-16 rounded-2xl overflow-hidden border border-slate-100 flex items-center justify-center text-[#D10043] font-black text-2xl shadow-sm bg-white">
+                {candidate.profileImage ? (
+                  <img src={candidate.profileImage} alt={candidate.name} className="w-full h-full object-cover" />
+                ) : (
+                  candidate.name.charAt(0)
+                )}
               </div>
               <div>
                 <p className="text-xl font-black text-slate-900 tracking-tight">{candidate.name}</p>

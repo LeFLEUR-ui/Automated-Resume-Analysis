@@ -31,3 +31,4 @@ class ResumeMatchRequest(BaseModel):
     location: Optional[str] = ""
     experience: Optional[str] = ""
     education: Optional[str] = ""
+    profile_image_url: Optional[str] = None
