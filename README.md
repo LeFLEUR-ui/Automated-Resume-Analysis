@@ -3,20 +3,20 @@
 
 <p align="center">
   <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=react,redux,fastapi,redis,postgres,tailwind,py,js" />
+    <img src="https://skillicons.dev/icons?i=tailwind,javascript,react,redux,py,fastapi,redis,postgres" />
   </a>
 </p>
 
 ---
 
-## 🌟 Introduction
-The **Mariwasa Automated Resume Analysis System (ARAS)** is an enterprise-grade recruitment ecosystem designed to streamline the hiring lifecycle for **Mariwasa Siam Ceramics Inc.** By leveraging advanced Natural Language Processing (NLP) and real-time data synchronization, ARAS transforms unstructured resume data into actionable insights, enabling HR teams to identify top talent with surgical precision.
+## Introduction
+The **Automated Resume Analysis System** is an enterprise-grade recruitment ecosystem designed to streamline the hiring lifecycle for **Mariwasa Siam Ceramics Inc.** By leveraging advanced Natural Language Processing (NLP) and real-time data synchronization, ARAS transforms unstructured resume data into actionable insights, enabling HR teams to identify top talent with surgical precision.
 
 ---
 
-## 🚀 Core Ecosystem: The Three Portals
+## Core Ecosystem: The Three Portals
 
-### 1. 👤 Candidate Portal
+### 1. Candidate Portal
 *   **Smart Resume Upload Portal**: A revolutionary feature where candidates can upload their resume directly, and the system automatically identifies and recommends the most suitable job opening based on their parsed skills and experience.
 *   **Smart Upload (Job-Specific)**: Drag-and-drop resume upload for specific roles with instant AI parsing.
 *   **Preview & Verify**: A dedicated interface for candidates to review and correct AI-extracted data before final submission.
@@ -24,29 +24,29 @@ The **Mariwasa Automated Resume Analysis System (ARAS)** is an enterprise-grade 
 *   **Application Tracking**: A real-time timeline view of application statuses (Pending, Under Review, Accepted, Rejected).
 *   **Unified Profile**: Centralized management of professional experience, education, and skills.
 
-### 2. 🏢 HR Screening Portal
+### 2. HR Screening Portal
 *   **Intelligent Dashboard**: Real-time analytics on total resumes, application trends, and candidate distribution.
 *   **Advanced Screening**: A high-fidelity interface to view applicants sorted by AI Match Scores.
 *   **Job Management**: Full CRUD capabilities for job postings with the ability to Archive/Unarchive roles.
 *   **Deep Profile Analysis**: Detailed view of candidate skills (Matched vs. Missing), experience relevance, and education hierarchy.
 *   **Real-time Notifications**: Instant WebSocket alerts for new applications and registrations.
 
-### 3. 🛡️ Admin Control Center
+### 3. Admin Control Center
 *   **User Management**: Oversight of all accounts across the system.
 *   **Audit Logging**: Detailed tracking of system-wide activities for security and compliance.
 *   **System Health**: Monitoring of rate limits and background service performance.
 
 ---
 
-## 🧠 AI Intelligence Layer
+## AI Intelligence Layer
 
-### 📄 Resume Parsing Engine
+### Resume Parsing Engine
 The system utilizes specialized extractors to transform PDF and DOCX files into structured JSON data:
 - **NER (Named Entity Recognition)**: Extracts contact details and personal information.
 - **Contextual Classifiers**: Categorizes professional experience and identifies education levels.
 - **Skill Aggregator**: Uses a weighted dictionary and pattern matching to identify technical and soft skills.
 
-### 🎯 Smart Matching Logic
+### Smart Matching Logic
 The "Match Score" is calculated using a multi-factor algorithm:
 1.  **Skills Alignment (50%)**: Direct comparison of candidate skills against required job competencies.
 2.  **Experience Relevance (30%)**: Analyzes years of experience and job title similarity.
@@ -54,13 +54,39 @@ The "Match Score" is calculated using a multi-factor algorithm:
 
 ---
 
-## 🛠️ Technical Architecture
+## Technical Architecture
 
 ### **The Stack**
 - **Frontend**: React 19 (Vite), **Redux Toolkit** (Global State Management), Tailwind CSS (Premium Glassmorphism Design).
 - **Backend**: FastAPI (Python 3.12), SQLAlchemy 2.0 (Async Engine).
 - **Database**: PostgreSQL (Relational Data), Redis (Rate Limiting & Caching).
 - **Security**: JWT (JSON Web Tokens), BCrypt Hashing, Role-Based Access Control (RBAC).
+
+## Project Structure
+```bash
+.
+├── backend
+│   ├── app
+│   │   ├── controllers         # API Routes (FastAPI)
+│   │   ├── extractors          # AI Resume Parsing Logic
+│   │   ├── main.py             # App Entry Point
+│   │   ├── models              # SQLAlchemy Models
+│   │   ├── schemas             # Pydantic Validation
+│   │   ├── services            # Business Logic
+│   │   └── utils               # Database & Utilities
+│   ├── requirements.txt        # Python Dependencies
+│   ├── reset-db.sh             # Database Reset Utility
+│   ├── seed-db.py              # Initial Data Seeding
+│   └── uploads                 # Dynamic File Storage
+├── frontend
+│   ├── public                  # Static Assets
+│   └── src
+│       ├── components          # Reusable UI Components
+│       ├── pages               # Page Views
+│       ├── redux               # Global State Management
+│       └── App.jsx             # Main Routing
+└── README.md
+```
 
 ### **Infrastructure Enhancements**
 - **Redis Caching**: Frequently accessed data (Job lists, HR metrics, Profiles) are cached in Redis to reduce database load and ensure <100ms response times.
@@ -69,7 +95,7 @@ The "Match Score" is calculated using a multi-factor algorithm:
 
 ---
 
-## 📖 User Manual: Getting Started
+## User Manual: Getting Started
 
 ### **For Candidates**
 1.  **Sign Up**: Create an account via the Registration page.
@@ -85,7 +111,7 @@ The "Match Score" is calculated using a multi-factor algorithm:
 
 ---
 
-## 🎨 Design Standards
+## Design Standards
 ARAS follows a **Premium Enterprise Aesthetic**:
 - **Palette**: Mariwasa Ruby (#D60041) paired with Slate 900 for high-contrast professional feel.
 - **Glassmorphism**: Layers utilize backdrop blurs and subtle borders to establish depth.
