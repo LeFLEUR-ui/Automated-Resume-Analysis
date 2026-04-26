@@ -7,8 +7,10 @@ import {
   Trophy, Target, Sparkles
 } from 'lucide-react';
 
+import { useCreateJobMutation } from '../../../redux/api/apiSlice';
+
 const CreateJobModal = ({ isOpen, onClose, onSuccess }) => {
-  const [loading, setLoading] = useState(false);
+  const [createJob, { isLoading: isCreating }] = useCreateJobMutation();
   const [currentStep, setCurrentStep] = useState(1);
   const [status, setStatus] = useState({ type: null, message: '' });
   const [formData, setFormData] = useState({
@@ -23,7 +25,6 @@ const CreateJobModal = ({ isOpen, onClose, onSuccess }) => {
     is_active: true
   });
 
-  // For visual feedback on validation
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
@@ -92,18 +93,15 @@ const CreateJobModal = ({ isOpen, onClose, onSuccess }) => {
     e.preventDefault();
     if (!validateStep(3)) return;
 
-    setLoading(true);
     setStatus({ type: null, message: '' });
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/hr/createjob', formData, {
-        headers: { 'Content-Type': 'application/json' }
-      });
-
+      const result = await createJob(formData).unwrap();
+      
       setStatus({ type: 'success', message: 'Job posting has been created successfully!' });
 
       setTimeout(() => {
-        if (onSuccess) onSuccess(response.data);
+        if (onSuccess) onSuccess(result);
         onClose();
         // Reset form
         setFormData({
@@ -114,10 +112,8 @@ const CreateJobModal = ({ isOpen, onClose, onSuccess }) => {
       }, 2000);
 
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 'An error occurred while creating the job.';
+      const errorMessage = err.data?.detail || 'An error occurred while creating the job.';
       setStatus({ type: 'error', message: errorMessage });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -437,10 +433,10 @@ const CreateJobModal = ({ isOpen, onClose, onSuccess }) => {
               ) : (
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={isCreating}
                   className="flex items-center gap-2 px-10 py-3.5 bg-[#d81159] text-white rounded-2xl text-sm font-black hover:opacity-90 transition-all shadow-[0_10px_20px_rgba(216,17,89,0.2)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {loading ? (
+                  {isCreating ? (
                     <><Loader2 size={18} className="animate-spin" /> Publishing...</>
                   ) : (
                     <><Sparkles size={18} /> Publish Position</>

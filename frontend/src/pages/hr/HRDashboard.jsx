@@ -64,33 +64,27 @@ const STATIC_CANDIDATES = [
   }
 ];
 
+import { 
+  useGetDashboardStatsQuery, 
+  useGetCandidateCountQuery, 
+  useGetResumeCountQuery,
+  useGetJobsQuery
+} from '../../redux/api/apiSlice';
+
 const HRDashboard = () => {
   const navigate = useNavigate();
-  const [activeJobsCount, setActiveJobsCount] = useState(0);
-  const [totalCandidates, setTotalCandidates] = useState(0);
-  const [totalResumes, setTotalResumes] = useState(0);
-  const [appStats, setAppStats] = useState({ pending: 0, reviewed: 0, accepted: 0, rejected: 0 });
+  
+  // Use RTK Query hooks instead of useEffect/axios
+  const { data: appStats = { pending: 0, reviewed: 0, accepted: 0, rejected: 0 }, isLoading: isStatsLoading } = useGetDashboardStatsQuery();
+  const { data: candidateCountData, isLoading: isCandidateLoading } = useGetCandidateCountQuery();
+  const { data: resumeCountData, isLoading: isResumeLoading } = useGetResumeCountQuery();
+  const { data: jobs = [], isLoading: isJobsLoading } = useGetJobsQuery();
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const jobsResponse = await axios.get('http://localhost:8000/hr/read-jobs');
-        setActiveJobsCount(jobsResponse.data.length);
-        
-        const candidatesResponse = await axios.get('http://localhost:8000/hr/candidate-count');
-        setTotalCandidates(candidatesResponse.data.count);
+  const activeJobsCount = jobs.filter(j => j.is_active).length;
+  const totalCandidates = candidateCountData?.count || 0;
+  const totalResumes = resumeCountData?.count || 0;
 
-        const resumesResponse = await axios.get('http://localhost:8000/hr/resume-count');
-        setTotalResumes(resumesResponse.data.count);
-
-        const statsResponse = await axios.get('http://localhost:8000/hr/application-stats');
-        setAppStats(statsResponse.data);
-      } catch (error) {
-        console.error("Failed to fetch dashboard data:", error);
-      }
-    };
-    fetchDashboardData();
-  }, []);
+  const isLoading = isStatsLoading || isCandidateLoading || isResumeLoading || isJobsLoading;
 
   return (
     <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter'] pb-12">
@@ -98,6 +92,15 @@ const HRDashboard = () => {
         <title>HR - Dashboard</title>
       </Helmet>
       <Header />
+
+      {isLoading && (
+        <div className="fixed inset-0 bg-white/60 backdrop-blur-sm z-[999] flex items-center justify-center">
+          <div className="flex flex-col items-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D60041] mb-4"></div>
+            <p className="text-sm font-bold text-gray-600 animate-pulse">Syncing dashboard data...</p>
+          </div>
+        </div>
+      )}
 
       <main className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-10 py-6 md:py-8">
 

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import axios from 'axios';
 import { 
   X, Briefcase, MapPin, Building2, DollarSign, 
   ListChecks, FileText, Loader2, CheckCircle2, 
@@ -8,8 +7,10 @@ import {
   Trophy, Target, Sparkles
 } from 'lucide-react';
 
+import { useUpdateJobMutation } from '../../../redux/api/apiSlice';
+
 const EditJobModal = ({ isOpen, onClose, onSuccess, jobData }) => {
-  const [loading, setLoading] = useState(false);
+  const [updateJob, { isLoading: isUpdating }] = useUpdateJobMutation();
   const [currentStep, setCurrentStep] = useState(1);
   const [status, setStatus] = useState({ type: null, message: '' });
   const [formData, setFormData] = useState({
@@ -101,26 +102,24 @@ const EditJobModal = ({ isOpen, onClose, onSuccess, jobData }) => {
     e.preventDefault();
     if (!validateStep(3)) return;
 
-    setLoading(true);
     setStatus({ type: null, message: '' });
 
     try {
-      const response = await axios.patch(`http://127.0.0.1:8000/hr/update-job/${formData.job_id}`, formData, {
-        headers: { 'Content-Type': 'application/json' }
-      });
+      const result = await updateJob({ 
+        jobId: formData.job_id, 
+        body: formData 
+      }).unwrap();
 
       setStatus({ type: 'success', message: 'Job posting has been updated successfully!' });
 
       setTimeout(() => {
-        if (onSuccess) onSuccess(response.data);
+        if (onSuccess) onSuccess(result);
         onClose();
       }, 2000);
 
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 'An error occurred while updating the job.';
+      const errorMessage = err.data?.detail || 'An error occurred while updating the job.';
       setStatus({ type: 'error', message: errorMessage });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -432,10 +431,10 @@ const EditJobModal = ({ isOpen, onClose, onSuccess, jobData }) => {
               ) : (
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={isUpdating}
                   className="flex items-center gap-2 px-10 py-3.5 bg-[#d81159] text-white rounded-2xl text-sm font-black hover:opacity-90 transition-all shadow-[0_10px_20px_rgba(216,17,89,0.2)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {loading ? (
+                  {isUpdating ? (
                     <><Loader2 size={18} className="animate-spin" /> Saving...</>
                   ) : (
                     <><Sparkles size={18} /> Save Changes</>

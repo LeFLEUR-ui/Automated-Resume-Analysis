@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import axios from 'axios';
 import { ArrowRight } from 'lucide-react';
 
 // Layout components
@@ -15,11 +14,12 @@ import CreateJobModal from '../../components/modals/hr/CreateJobModal';
 import EditJobModal from '../../components/modals/hr/EditJobModal';
 import ViewJobDetailsModal from '../../components/modals/hr/ViewJobDetailsModal';
 
+import { useGetJobsQuery } from '../../redux/api/apiSlice';
+
 const JobManagementPage = () => {
-  // State for database data
-  const [jobs, setJobs] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // RTK Query hook handles fetching, loading, error, and caching!
+  const { data: jobs = [], isLoading, error: queryError, refetch } = useGetJobsQuery();
+  const error = queryError ? "Failed to sync with database. Please try again later." : null;
 
   // Filter States
   const [searchQuery, setSearchQuery] = useState("");
@@ -38,43 +38,14 @@ const JobManagementPage = () => {
 
   const departments = ["All Departments", "Information Technology", "Human Resources", "Marketing", "Finance", "Operations"];
 
-  const fetchJobs = async () => {
-    try {
-      setIsLoading(true);
-      const response = await axios.get('http://localhost:8000/hr/read-jobs');
+  // We no longer need fetchJobs manually, but we can keep handleMutationSuccess
+  // although RTK Query will auto-refetch due to tag invalidation!
+  const closeModal = () => setModalState({ type: null, selectedJob: null });
 
-      const rawData = Array.isArray(response.data) ? response.data : [];
-
-      const transformedData = rawData.map(job => {
-        return {
-          ...job,
-
-          title: job.job_title || "Untitled Position",
-
-          department: job.department || "General",
-
-          location: job.location || "Remote / Not Specified",
-
-          salary_range: job.salary_range || "Competitive / TBD",
-
-          is_active: Boolean(job.is_active)
-        };
-      });
-
-      setJobs(transformedData);
-      setError(null);
-    } catch (err) {
-      console.error("Critical Error fetching jobs:", err);
-      setError("Failed to sync with database. Please try again later.");
-    } finally {
-      setIsLoading(false);
-    }
+  const handleMutationSuccess = () => {
+    // No need to manually refetch if the mutation invalidates the 'Jobs' tag!
+    closeModal();
   };
-
-  useEffect(() => {
-    fetchJobs();
-  }, []);
-
 
   const filteredJobs = useMemo(() => {
     return jobs.filter(job => {
@@ -113,13 +84,6 @@ const JobManagementPage = () => {
 
   const handlePrevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
   const handleNextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
-
-  const closeModal = () => setModalState({ type: null, selectedJob: null });
-
-  const handleMutationSuccess = () => {
-    fetchJobs();
-    closeModal();
-  };
 
   return (
     <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter'] pb-12">
