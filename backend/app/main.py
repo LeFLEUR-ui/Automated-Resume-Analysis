@@ -9,6 +9,7 @@ from app.controllers.candidate_controller import router as candidate_router
 from app.controllers.resume_controller import router as resume_router
 from app.controllers.job_application_controller import router as job_application_router
 from app.controllers.notification_controller import router as notification_router
+from app.controllers.job_matching_controller import router as job_matching_router
 
 import os
 import asyncio
@@ -44,6 +45,7 @@ app.include_router(candidate_router)
 app.include_router(resume_router)
 app.include_router(job_application_router)
 app.include_router(notification_router)
+app.include_router(job_matching_router)
 
 async def create_tables():
     from app.models.user import User
