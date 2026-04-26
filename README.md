@@ -92,3 +92,106 @@ ARAS follows a **Premium Enterprise Aesthetic**:
 
 ---
 © 2026 Mariwasa Siam Ceramics Inc. - STI CS Thesis Academic Project.
+
+## Project Structure
+```text
+.
+├── backend
+│   ├── app
+│   │   ├── controllers
+│   │   │   ├── admin_controller.py
+│   │   │   ├── auth_controller.py
+│   │   │   ├── candidate_controller.py
+│   │   │   ├── hr_controller.py
+│   │   │   ├── job_application_controller.py
+│   │   │   ├── job_matching_controller.py
+│   │   │   ├── notification_controller.py
+│   │   │   └── resume_controller.py
+│   │   ├── extractors
+│   │   │   ├── content
+│   │   │   ├── file
+│   │   │   └── resume_processor.py
+│   │   ├── main.py
+│   │   ├── models
+│   │   │   ├── admin.py
+│   │   │   ├── candidate.py
+│   │   │   ├── hr.py
+│   │   │   ├── __init__.py
+│   │   │   ├── job_application.py
+│   │   │   ├── job_description.py
+│   │   │   ├── notification.py
+│   │   │   ├── resume.py
+│   │   │   └── user.py
+│   │   ├── schemas
+│   │   │   ├── admin_schema.py
+│   │   │   ├── candidate_schema.py
+│   │   │   ├── hr_schema.py
+│   │   │   ├── job_application_schema.py
+│   │   │   ├── job_description_schema.py
+│   │   │   ├── job_matching_schema.py
+│   │   │   ├── notification_schema.py
+│   │   │   ├── resume_schema.py
+│   │   │   └── user_schema.py
+│   │   ├── services
+│   │   │   ├── admin_service.py
+│   │   │   ├── auth_service.py
+│   │   │   ├── candidate_service.py
+│   │   │   ├── hr_service.py
+│   │   │   ├── job_application_service.py
+│   │   │   ├── job_description_service.py
+│   │   │   ├── job_matching_service.py
+│   │   │   ├── notification_service.py
+│   │   │   └── resume_service.py
+│   │   └── utils
+│   │       ├── auth.py
+│   │       ├── cache.py
+│   │       ├── database.py
+│   │       ├── limiter.py
+│   │       └── websocket_manager.py
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── reset-db.sh
+├── frontend
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── public
+│   │   ├── favicon.svg
+│   │   └── icons.svg
+│   ├── README.md
+│   ├── src
+│   │   ├── App.css
+│   │   ├── App.jsx
+│   │   ├── assets
+│   │   │   ├── banner2.jpg
+│   │   │   ├── banner3.jpg
+│   │   │   ├── banner.jpg
+│   │   │   ├── hero.png
+│   │   │   ├── logo.png
+│   │   │   ├── react.svg
+│   │   │   ├── sub header.jpg
+│   │   │   └── vite.svg
+│   │   ├── components
+│   │   │   ├── admin
+│   │   │   ├── candidate
+│   │   │   ├── hr
+│   │   │   ├── layout
+│   │   │   └── modals
+│   │   ├── data
+│   │   │   └── jobs.js
+│   │   ├── index.css
+│   │   ├── main.jsx
+│   │   ├── pages
+│   │   │   ├── admin
+│   │   │   ├── candidate
+│   │   │   ├── hr
+│   │   │   ├── publicPages
+│   │   │   └── shared
+│   │   ├── ProtectedRoutes.jsx
+│   │   └── redux
+│   │       ├── slices
+│   │       └── store.js
+│   └── vite.config.js
+└── README.md
+```
