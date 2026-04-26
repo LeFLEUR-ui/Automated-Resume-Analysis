@@ -1,16 +1,34 @@
 import React from 'react';
 import { 
   Clock, User, ShieldCheck, Briefcase, 
-  AlertCircle, CheckCircle2, MessageSquare, ChevronRight 
+  AlertCircle, CheckCircle2, MessageSquare, ChevronRight,
+  UserPlus, FileText, Zap, Edit3, Radio, TrendingUp
 } from 'lucide-react';
 
 const NotificationDropdown = ({ userRole, notifications, onMarkAllRead }) => {
   const [showAll, setShowAll] = React.useState(false);
 
+  const renderIcon = (iconName) => {
+    const props = { size: 16 };
+    switch (iconName) {
+      case 'UserPlus': return <UserPlus {...props} />;
+      case 'Briefcase': return <Briefcase {...props} />;
+      case 'FileText': return <FileText {...props} />;
+      case 'ShieldCheck': return <ShieldCheck {...props} />;
+      case 'Zap': return <Zap {...props} />;
+      case 'Edit3': return <Edit3 {...props} />;
+      case 'Radio': return <Radio {...props} />;
+      case 'MessageSquare': return <MessageSquare {...props} />;
+      case 'TrendingUp': return <TrendingUp {...props} />;
+      case 'Clock': return <Clock {...props} />;
+      default: return <AlertCircle {...props} />;
+    }
+  };
+
   const displayNotifications = showAll ? [
     ...notifications,
-    { id: 10, title: 'Old Alert', desc: 'This is an archived notification from yesterday.', time: '1d ago', type: 'system', icon: <Clock size={16} />, bgColor: 'bg-slate-50', textColor: 'text-slate-400', read: true },
-    { id: 11, title: 'Previous Update', desc: 'Your profile was verified by the system.', time: '2d ago', type: 'system', icon: <ShieldCheck size={16} />, bgColor: 'bg-slate-50', textColor: 'text-slate-400', read: true }
+    { id: 10, title: 'Old Alert', desc: 'This is an archived notification from yesterday.', time: '1d ago', type: 'system', icon: 'Clock', bgColor: 'bg-slate-50', textColor: 'text-slate-400', read: true },
+    { id: 11, title: 'Previous Update', desc: 'Your profile was verified by the system.', time: '2d ago', type: 'system', icon: 'ShieldCheck', bgColor: 'bg-slate-50', textColor: 'text-slate-400', read: true }
   ] : notifications;
 
   return (
@@ -49,7 +67,7 @@ const NotificationDropdown = ({ userRole, notifications, onMarkAllRead }) => {
               )}
               <div className="flex gap-4">
                 <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border border-gray-100 group-hover:border-pink-100 transition-colors ${notif.bgColor} ${notif.textColor}`}>
-                  {notif.icon}
+                  {renderIcon(notif.icon)}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex justify-between items-start mb-1.5">

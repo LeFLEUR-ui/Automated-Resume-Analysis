@@ -1,5 +1,6 @@
 import os
 import shutil
+import time
 from fastapi import UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -10,30 +11,36 @@ from app.services.notification_service import create_notification
 
 async def parse_resume_file(db: AsyncSession, file: UploadFile) -> dict:
     """
-    Saves the uploaded file temporarily and parses it using the extractors.
+    Saves the uploaded file permanently and parses it using the extractors.
     """
-    # Create temp directory if it doesn't exist
-    temp_dir = "uploads/temp_resumes"
-    if not os.path.exists(temp_dir):
-        os.makedirs(temp_dir)
+    # Create permanent directory if it doesn't exist
+    upload_dir = "uploads/resumes"
+    if not os.path.exists(upload_dir):
+        os.makedirs(upload_dir)
         
     file_extension = os.path.splitext(file.filename)[1].strip('.')
-    temp_file_path = os.path.join(temp_dir, file.filename)
+    # Generate a unique filename to prevent collisions
+    timestamp = int(time.time())
+    safe_filename = f"{timestamp}_{file.filename.replace(' ', '_')}"
+    permanent_file_path = os.path.join(upload_dir, safe_filename)
     
     try:
-        # Save uploaded file to temp location
-        print(f"DEBUG: Saving uploaded file to {temp_file_path}")
-        with open(temp_file_path, "wb") as buffer:
+        # Save uploaded file to permanent location
+        print(f"DEBUG: Saving uploaded file to {permanent_file_path}")
+        with open(permanent_file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
             
         # Process the resume
-        print(f"DEBUG: Starting processing for {file.filename}")
-        extracted_data = process_resume(temp_file_path, file_extension)
+        print(f"DEBUG: Starting processing for {safe_filename}")
+        extracted_data = process_resume(permanent_file_path, file_extension)
         
         if not extracted_data:
             print("DEBUG: process_resume returned empty data (Parsing Failed)")
         else:
             print(f"DEBUG: Successfully extracted data for {extracted_data.get('fullname', 'unknown')}")
+            # Add file information to extracted data so it can be saved later
+            extracted_data["file_url"] = f"http://localhost:8000/{permanent_file_path}"
+            extracted_data["filename"] = safe_filename
 
         # Trigger notification
         name = extracted_data.get("fullname", "A candidate")
@@ -51,11 +58,6 @@ async def parse_resume_file(db: AsyncSession, file: UploadFile) -> dict:
         print(f"Error in parse_resume_file: {e}")
         traceback.print_exc()
         return {}
-        
-    finally:
-        # Clean up temp file
-        if os.path.exists(temp_file_path):
-            os.remove(temp_file_path)
 
 async def create_resume(db: AsyncSession, resume_in: ResumeCreate) -> Resume:
     new_resume = Resume(**resume_in.model_dump())

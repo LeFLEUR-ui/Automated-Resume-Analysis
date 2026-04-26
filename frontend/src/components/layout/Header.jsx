@@ -43,46 +43,46 @@ const Header = () => {
           const res = await axios.get(`http://localhost:8000/notifications/?role=${userRole}`);
           const formatted = res.data.map(n => {
             // Determine icon and colors based on type
-            let icon = <AlertCircle size={16} />;
+            let iconName = 'AlertCircle';
             let bgColor = 'bg-slate-50';
             let textColor = 'text-slate-600';
             let tag = null;
             let tagColor = null;
 
             if (n.type === 'registration') {
-              icon = <UserPlus size={16} />;
+              iconName = 'UserPlus';
               bgColor = 'bg-blue-50';
               textColor = 'text-blue-600';
             } else if (n.type === 'application') {
-              icon = <Briefcase size={16} />;
+              iconName = 'Briefcase';
               bgColor = 'bg-pink-50';
               textColor = 'text-[#D60041]';
               tag = 'New';
               tagColor = 'bg-pink-100 text-[#D60041]';
             } else if (n.type === 'upload') {
-              icon = <FileText size={16} />;
+              iconName = 'FileText';
               bgColor = 'bg-orange-50';
               textColor = 'text-orange-600';
             } else if (n.type === 'hr_registration') {
-              icon = <ShieldCheck size={16} />;
+              iconName = 'ShieldCheck';
               bgColor = 'bg-indigo-50';
               textColor = 'text-indigo-600';
               tag = 'System';
               tagColor = 'bg-indigo-100 text-indigo-700';
             } else if (n.type === 'job_creation') {
-              icon = <Zap size={16} />;
+              iconName = 'Zap';
               bgColor = 'bg-green-50';
               textColor = 'text-green-600';
             } else if (n.type === 'job_update') {
-              icon = <Edit3 size={16} />;
+              iconName = 'Edit3';
               bgColor = 'bg-amber-50';
               textColor = 'text-amber-600';
             } else if (n.type === 'candidate_login') {
-              icon = <Radio size={16} />;
+              iconName = 'Radio';
               bgColor = 'bg-green-50';
               textColor = 'text-green-600';
             } else if (n.type === 'hr_login') {
-              icon = <Radio size={16} />;
+              iconName = 'Radio';
               bgColor = 'bg-purple-50';
               textColor = 'text-purple-600';
             }
@@ -103,7 +103,7 @@ const Header = () => {
               desc: n.message,
               time: timeStr,
               type: n.type,
-              icon,
+              icon: iconName,
               bgColor,
               textColor,
               tag,
@@ -119,9 +119,9 @@ const Header = () => {
       
       if (isCandidateRole) {
         const candidateNotifs = [
-          { id: 1, title: 'Status Update', desc: 'Your application for Frontend Lead is now "Under Review".', time: '2m ago', type: 'application', icon: <Briefcase size={16} />, bgColor: 'bg-blue-50', textColor: 'text-blue-600', tag: 'Update', tagColor: 'bg-blue-100 text-blue-700', read: false },
-          { id: 2, title: 'Interview Invite', desc: 'Mariwasa HR sent you an interview invitation.', time: '1h ago', type: 'schedule', icon: <MessageSquare size={16} />, bgColor: 'bg-pink-50', textColor: 'text-[#D60041]', read: false },
-          { id: 3, title: 'Job Match', desc: 'New "UI Designer" role matches your profile.', time: '3h ago', type: 'job', icon: <TrendingUp size={16} />, bgColor: 'bg-green-50', textColor: 'text-green-600', read: false }
+          { id: 1, title: 'Status Update', desc: 'Your application for Frontend Lead is now "Under Review".', time: '2m ago', type: 'application', icon: 'Briefcase', bgColor: 'bg-blue-50', textColor: 'text-blue-600', tag: 'Update', tagColor: 'bg-blue-100 text-blue-700', read: false },
+          { id: 2, title: 'Interview Invite', desc: 'Mariwasa HR sent you an interview invitation.', time: '1h ago', type: 'schedule', icon: 'MessageSquare', bgColor: 'bg-pink-50', textColor: 'text-[#D60041]', read: false },
+          { id: 3, title: 'Job Match', desc: 'New "UI Designer" role matches your profile.', time: '3h ago', type: 'job', icon: 'TrendingUp', bgColor: 'bg-green-50', textColor: 'text-green-600', read: false }
         ];
         dispatch(setNotifications(candidateNotifs));
       }
@@ -137,46 +137,46 @@ const Header = () => {
         try {
           const n = JSON.parse(event.data);
           
-          let icon = <AlertCircle size={16} />;
+          let iconName = 'AlertCircle';
           let bgColor = 'bg-slate-50';
           let textColor = 'text-slate-600';
           let tag = null;
           let tagColor = null;
 
           if (n.type === 'registration') {
-            icon = <UserPlus size={16} />;
+            iconName = 'UserPlus';
             bgColor = 'bg-blue-50';
             textColor = 'text-blue-600';
           } else if (n.type === 'application') {
-            icon = <Briefcase size={16} />;
+            iconName = 'Briefcase';
             bgColor = 'bg-pink-50';
             textColor = 'text-[#D60041]';
             tag = 'New';
             tagColor = 'bg-pink-100 text-[#D60041]';
           } else if (n.type === 'upload') {
-            icon = <FileText size={16} />;
+            iconName = 'FileText';
             bgColor = 'bg-orange-50';
             textColor = 'text-orange-600';
           } else if (n.type === 'hr_registration') {
-            icon = <ShieldCheck size={16} />;
+            iconName = 'ShieldCheck';
             bgColor = 'bg-indigo-50';
             textColor = 'text-indigo-600';
             tag = 'System';
             tagColor = 'bg-indigo-100 text-indigo-700';
           } else if (n.type === 'job_creation') {
-            icon = <Zap size={16} />;
+            iconName = 'Zap';
             bgColor = 'bg-green-50';
             textColor = 'text-green-600';
           } else if (n.type === 'job_update') {
-            icon = <Edit3 size={16} />;
+            iconName = 'Edit3';
             bgColor = 'bg-amber-50';
             textColor = 'text-amber-600';
           } else if (n.type === 'candidate_login') {
-            icon = <Radio size={16} />;
+            iconName = 'Radio';
             bgColor = 'bg-green-50';
             textColor = 'text-green-600';
           } else if (n.type === 'hr_login') {
-            icon = <Radio size={16} />;
+            iconName = 'Radio';
             bgColor = 'bg-purple-50';
             textColor = 'text-purple-600';
           }
@@ -187,7 +187,7 @@ const Header = () => {
             desc: n.message,
             time: 'just now',
             type: n.type,
-            icon,
+            icon: iconName,
             bgColor,
             textColor,
             tag,
