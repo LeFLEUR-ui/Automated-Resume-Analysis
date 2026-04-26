@@ -1,7 +1,6 @@
-# Mariwasa Automated Resume Analysis System (ARAS)
-### *Revolutionizing Recruitment with AI-Driven Intelligence*
+# Automated Resume Analysis System
 
-<p align="center">
+<p align="left">
   <a href="https://skillicons.dev">
     <img src="https://skillicons.dev/icons?i=tailwind,javascript,react,redux,py,fastapi,redis,postgres" />
   </a>
@@ -62,32 +61,6 @@ The "Match Score" is calculated using a multi-factor algorithm:
 - **Database**: PostgreSQL (Relational Data), Redis (Rate Limiting & Caching).
 - **Security**: JWT (JSON Web Tokens), BCrypt Hashing, Role-Based Access Control (RBAC).
 
-## Project Structure
-```bash
-.
-├── backend
-│   ├── app
-│   │   ├── controllers         # API Routes (FastAPI)
-│   │   ├── extractors          # AI Resume Parsing Logic
-│   │   ├── main.py             # App Entry Point
-│   │   ├── models              # SQLAlchemy Models
-│   │   ├── schemas             # Pydantic Validation
-│   │   ├── services            # Business Logic
-│   │   └── utils               # Database & Utilities
-│   ├── requirements.txt        # Python Dependencies
-│   ├── reset-db.sh             # Database Reset Utility
-│   ├── seed-db.py              # Initial Data Seeding
-│   └── uploads                 # Dynamic File Storage
-├── frontend
-│   ├── public                  # Static Assets
-│   └── src
-│       ├── components          # Reusable UI Components
-│       ├── pages               # Page Views
-│       ├── redux               # Global State Management
-│       └── App.jsx             # Main Routing
-└── README.md
-```
-
 ### **Infrastructure Enhancements**
 - **Redis Caching**: Frequently accessed data (Job lists, HR metrics, Profiles) are cached in Redis to reduce database load and ensure <100ms response times.
 - **Rate Limiting**: Integrated `slowapi` with Redis to prevent spamming of the AI parsing engine (5 uploads per minute limit).
@@ -118,4 +91,4 @@ ARAS follows a **Premium Enterprise Aesthetic**:
 - **Micro-interactions**: Every button and card includes active scaling and hover transitions for a "living" UI.
 
 ---
-© 2026 Mariwasa Siam Ceramics Inc. - Advanced Recruitment Technologies.
+© 2026 Mariwasa Siam Ceramics Inc. - STI CS Thesis Academic Project.
