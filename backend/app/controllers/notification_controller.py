@@ -26,10 +26,11 @@ async def mark_all_read(db: AsyncSession = Depends(get_db)):
     return {"message": "All notifications marked as read"}
 
 @router.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket, role: str = "Guest"):
+async def websocket_endpoint(websocket: WebSocket):
     """
     WebSocket endpoint for real-time notifications, partitioned by role.
     """
+    role = websocket.query_params.get("role", "Guest")
     await manager.connect(websocket, role)
     try:
         while True:

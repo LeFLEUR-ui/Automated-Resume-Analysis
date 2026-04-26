@@ -236,6 +236,10 @@ const Header = () => {
     return () => {
       if (ws && ws.readyState === WebSocket.OPEN) {
         ws.close();
+      } else if (ws && ws.readyState === WebSocket.CONNECTING) {
+        // If it's still connecting, we can still call close() but it triggers the warning.
+        // We'll set the onopen to close it immediately if it finishes connecting later.
+        ws.onopen = () => ws.close();
       }
     };
   }, [userRole]);

@@ -68,6 +68,8 @@ const HRDashboard = () => {
   const navigate = useNavigate();
   const [activeJobsCount, setActiveJobsCount] = useState(0);
   const [totalCandidates, setTotalCandidates] = useState(0);
+  const [totalResumes, setTotalResumes] = useState(0);
+  const [appStats, setAppStats] = useState({ pending: 0, reviewed: 0, accepted: 0, rejected: 0 });
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -77,6 +79,12 @@ const HRDashboard = () => {
         
         const candidatesResponse = await axios.get('http://localhost:8000/hr/candidate-count');
         setTotalCandidates(candidatesResponse.data.count);
+
+        const resumesResponse = await axios.get('http://localhost:8000/hr/resume-count');
+        setTotalResumes(resumesResponse.data.count);
+
+        const statsResponse = await axios.get('http://localhost:8000/hr/application-stats');
+        setAppStats(statsResponse.data);
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
       }
@@ -116,7 +124,13 @@ const HRDashboard = () => {
           </div>
         </div>
 
-        <KeyMetrics stats={STATIC_STATS} activeJobsCount={activeJobsCount} totalCandidates={totalCandidates} />
+        <KeyMetrics 
+          stats={STATIC_STATS} 
+          activeJobsCount={activeJobsCount} 
+          totalCandidates={totalCandidates} 
+          totalResumes={totalResumes}
+          appStats={appStats}
+        />
         <ApplicationTrends />
         <RecentSubmissions candidates={STATIC_CANDIDATES} />
 

@@ -2,6 +2,12 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 
+class JobInfo(BaseModel):
+    id: int
+    job_title: str
+    location: str
+    department: str
+
 class JobApplicationBase(BaseModel):
     candidate_name: str
     candidate_email: EmailStr
@@ -13,6 +19,7 @@ class JobApplicationBase(BaseModel):
     degree: Optional[str] = None
     college: Optional[str] = None
     skills: Optional[List[str]] = None
+    match_score: Optional[float] = None
 
 class JobApplicationCreate(JobApplicationBase):
     job_id: str
@@ -23,6 +30,7 @@ class JobApplicationResponse(JobApplicationBase):
     status: str
     created_at: datetime
     updated_at: datetime
+    job: Optional[JobInfo] = None
 
     class Config:
         from_attributes = True

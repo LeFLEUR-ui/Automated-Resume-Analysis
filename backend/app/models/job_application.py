@@ -1,7 +1,12 @@
-from sqlalchemy import Column, Integer, String, JSON, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy.dialects.postgresql import JSON, DOUBLE_PRECISION
 from sqlalchemy.orm import relationship
 from datetime import datetime
+from typing import TYPE_CHECKING
 from app.database import Base
+
+if TYPE_CHECKING:
+    from app.models.job_description import JobDescription
 
 class JobApplication(Base):
     __tablename__ = "job_applications"
@@ -22,6 +27,7 @@ class JobApplication(Base):
     degree = Column(String, nullable=True)
     college = Column(String, nullable=True)
     skills = Column(JSON, nullable=True)
+    match_score = Column(DOUBLE_PRECISION, nullable=True) # Percentage score 0-100
     
     status = Column(String, default="PENDING") # PENDING, REVIEWED, REJECTED, ACCEPTED
     

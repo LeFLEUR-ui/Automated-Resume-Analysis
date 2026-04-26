@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Helmet } from 'react-helmet-async';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
@@ -69,6 +70,8 @@ const MOCK_CANDIDATES = [
 ];
 
 const ScreeningPortal = () => {
+  const [candidates, setCandidates] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -76,6 +79,33 @@ const ScreeningPortal = () => {
   const [interviewModalOpen, setInterviewModalOpen] = useState(false);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
+
+  useEffect(() => {
+    const fetchApplications = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get('http://localhost:8000/applications/');
+        // Map backend data to frontend format
+        const mapped = response.data.map(app => ({
+          id: app.id,
+          name: app.candidate_name,
+          status: app.status,
+          preferredJob: app.job_title || app.job?.job_title || "Unknown",
+          skills: app.skills || [],
+          profileImage: null,
+          date: app.created_at,
+          location: app.job?.location || "N/A",
+          matchScore: app.match_score || 0
+        }));
+        setCandidates(mapped);
+      } catch (error) {
+        console.error("Failed to fetch applications:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchApplications();
+  }, []);
 
   const handleOpenInterview = (candidate) => {
     setSelectedCandidate(candidate);
@@ -87,7 +117,7 @@ const ScreeningPortal = () => {
     setDetailsModalOpen(true);
   };
 
-  const filteredCandidates = MOCK_CANDIDATES.filter(c => {
+  const filteredCandidates = candidates.filter(c => {
     const matchesStatus =
       statusFilter === "All Status" ||
       c.status.toLowerCase() === statusFilter.toLowerCase();
@@ -97,13 +127,13 @@ const ScreeningPortal = () => {
       !searchQuery ||
       c.name.toLowerCase().includes(q) ||
       c.preferredJob.toLowerCase().includes(q) ||
-      c.skills.some(s => s.toLowerCase().includes(q));
+      (c.skills && c.skills.some(s => s.toLowerCase().includes(q)));
 
     return matchesStatus && matchesSearch;
   });
 
   const suggestions = searchQuery.length > 0
-    ? MOCK_CANDIDATES.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase())).map(c => c.name)
+    ? candidates.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase())).map(c => c.name)
     : [];
 
   return (
@@ -127,11 +157,18 @@ const ScreeningPortal = () => {
           suggestions={suggestions}
         />
 
-        <CandidateList 
-          candidates={filteredCandidates}
-          onOpenDetails={handleOpenDetails}
-          onOpenInterview={handleOpenInterview}
-        />
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="w-12 h-12 border-4 border-pink-100 border-t-[#D60041] rounded-full animate-spin mb-4"></div>
+            <p className="text-gray-500 font-bold">Loading candidates...</p>
+          </div>
+        ) : (
+          <CandidateList 
+            candidates={filteredCandidates}
+            onOpenDetails={handleOpenDetails}
+            onOpenInterview={handleOpenInterview}
+          />
+        )}
       </main>
 
       <ScheduleInterviewModal

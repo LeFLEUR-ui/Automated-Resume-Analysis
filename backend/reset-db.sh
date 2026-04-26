@@ -1,4 +1,13 @@
 #!/bin/bash
-export PGPASSWORD='passwordnamin'
-psql -h localhost -U postgres -d automated_resume_db -c "DROP TABLE IF EXISTS job_descriptions, candidates, hr_staffs, admins, users CASCADE;"
-echo "Database reset! All relevant tables dropped."
+set -a
+source .env
+set +a
+
+export PGPASSWORD=$DATABASE_PASSWORD
+
+echo "Resetting database: automated_resume_db..."
+
+# This drops everything in the public schema and recreates it
+psql -h localhost -U postgres -d automated_resume_db -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO postgres; GRANT ALL ON SCHEMA public TO public;"
+
+echo "Database reset! All tables and schemas have been wiped clean."

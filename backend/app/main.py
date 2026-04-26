@@ -10,6 +10,7 @@ from app.controllers.resume_controller import router as resume_router
 from app.controllers.job_application_controller import router as job_application_router
 from app.controllers.notification_controller import router as notification_router
 from app.controllers.job_matching_controller import router as job_matching_router
+from app.models import * # Ensure all models are loaded for SQLAlchemy relationships
 
 import os
 import asyncio

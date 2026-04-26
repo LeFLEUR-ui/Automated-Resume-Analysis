@@ -54,3 +54,24 @@ async def get_total_candidates_count(db: AsyncSession):
     from sqlalchemy import func
     result = await db.execute(select(func.count(Candidate.id)))
     return result.scalar()
+
+async def get_total_resumes_count(db: AsyncSession):
+    from app.models.job_application import JobApplication
+    from sqlalchemy import func
+    result = await db.execute(select(func.count(JobApplication.id)))
+    return result.scalar()
+
+async def get_application_stats(db: AsyncSession):
+    from app.models.job_application import JobApplication
+    from sqlalchemy import func
+    
+    # Get counts grouped by status
+    result = await db.execute(select(JobApplication.status, func.count(JobApplication.id)).group_by(JobApplication.status))
+    stats = {row[0]: row[1] for row in result.all()}
+    
+    return {
+        "pending": stats.get("PENDING", 0),
+        "reviewed": stats.get("REVIEWED", 0),
+        "accepted": stats.get("ACCEPTED", 0),
+        "rejected": stats.get("REJECTED", 0)
+    }

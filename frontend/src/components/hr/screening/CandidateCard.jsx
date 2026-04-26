@@ -57,7 +57,7 @@ const CandidateCard = ({ candidate, onOpenDetails, onOpenInterview }) => {
               {candidate.location}
             </span>
             <span className="hidden sm:block text-gray-300">•</span>
-            <span className="text-[#D60041] font-extrabold px-2 py-0.5 bg-red-50 rounded-md">{candidate.matchScore}% Match</span>
+            <span className="text-[#D60041] font-extrabold px-2 py-0.5 bg-red-50 rounded-md">{Math.round(candidate.matchScore)}% Match</span>
           </div>
         </div>
       </div>

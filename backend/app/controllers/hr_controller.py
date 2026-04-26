@@ -25,6 +25,16 @@ async def get_candidates_count(db: AsyncSession = Depends(get_db)):
     count = await hr_service.get_total_candidates_count(db)
     return {"count": count}
 
+@router.get("/resume-count")
+async def get_resumes_count(db: AsyncSession = Depends(get_db)):
+    count = await hr_service.get_total_resumes_count(db)
+    return {"count": count}
+
+@router.get("/application-stats")
+async def get_app_stats(db: AsyncSession = Depends(get_db)):
+    stats = await hr_service.get_application_stats(db)
+    return stats
+
 @router.get("/profile/{hr_id}", response_model=HRResponse)
 async def get_hr_profile_details(hr_id: int, db: AsyncSession = Depends(get_db)):
     profile = await hr_service.get_hr_profile(db, hr_id)

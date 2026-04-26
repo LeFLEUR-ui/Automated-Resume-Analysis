@@ -33,6 +33,13 @@ async def create_job_application(application_in: JobApplicationCreate, db: Async
         
     return await job_application_service.create_job_application(db, application_in, job.id)
 
+@router.get("/", response_model=List[JobApplicationResponse])
+async def get_all_applications(db: AsyncSession = Depends(get_db)):
+    """
+    Get all job applications from all jobs.
+    """
+    return await job_application_service.get_all_applications(db)
+
 @router.get("/job/{job_id}", response_model=List[JobApplicationResponse])
 async def get_applications_for_job(job_id: int, db: AsyncSession = Depends(get_db)):
     """
