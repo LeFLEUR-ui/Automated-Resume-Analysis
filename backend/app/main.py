@@ -11,6 +11,9 @@ from app.controllers.job_application_controller import router as job_application
 from app.controllers.notification_controller import router as notification_router
 from app.controllers.job_matching_controller import router as job_matching_router
 from app.models import * # Ensure all models are loaded for SQLAlchemy relationships
+from app.utils.limiter import limiter
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
 import os
 import asyncio
@@ -20,6 +23,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 origins = [
     "http://localhost:5173",

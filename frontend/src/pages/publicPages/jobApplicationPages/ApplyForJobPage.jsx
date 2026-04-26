@@ -42,6 +42,7 @@ const ApplyForJobPage = () => {
   const [extractedData, setExtractedData] = useState(null);
   const [matchData, setMatchData] = useState(null);
   const [isMatching, setIsMatching] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
@@ -87,6 +88,14 @@ const ApplyForJobPage = () => {
     loadJobData();
   }, [jobId, location.state]);
 
+  // Cooldown timer effect
+  useEffect(() => {
+    if (cooldown > 0) {
+      const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldown]);
+
   const validateAndSetFile = (selectedFile) => {
     const validTypes = [
       "application/pdf",
@@ -120,7 +129,7 @@ const ApplyForJobPage = () => {
   };
 
   const handleUpload = async () => {
-    if (!file || !isTermsAccepted) return;
+    if (!file || !isTermsAccepted || cooldown > 0) return;
     setIsUploading(true);
     setUploadProgress(20); // Initial progress
 
@@ -155,10 +164,16 @@ const ApplyForJobPage = () => {
       }
     } catch (error) {
       console.error("Error parsing resume:", error);
-      const detail = error.response?.data?.detail || "Failed to parse resume. Please ensure you uploaded a valid PDF or Word document.";
-      alert(detail);
+      if (error.response?.status === 429) {
+        alert("Too many requests! Please wait a moment before trying again.");
+        setCooldown(30); // Force a longer cooldown if backend rejected them
+      } else {
+        const detail = error.response?.data?.detail || "Failed to parse resume. Please ensure you uploaded a valid PDF or Word document.";
+        alert(detail);
+      }
     } finally {
       setIsUploading(false);
+      if (!isComplete) setCooldown(10); // 10s cooldown for retries
     }
   };
 
@@ -435,13 +450,13 @@ const ApplyForJobPage = () => {
                     <button
                       onClick={handleUpload}
                       disabled={!isTermsAccepted}
-                      className={`w-full py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 transition-all transform active:scale-95 shadow-xl ${isTermsAccepted
+                      className={`w-full py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 transition-all transform active:scale-95 shadow-xl ${isTermsAccepted && cooldown === 0
                         ? "bg-[#D60041] hover:bg-slate-900 text-white shadow-pink-100 hover:shadow-none"
                         : "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none"
                         }`}
                     >
                       <ShieldCheck size={22} />
-                      <span>Submit My Application</span>
+                      <span>{cooldown > 0 ? `Wait ${cooldown}s` : 'Submit My Application'}</span>
                     </button>
                   </div>
                 )}

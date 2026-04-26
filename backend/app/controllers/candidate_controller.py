@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile, Request
 import shutil
 import os
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -7,11 +7,13 @@ from sqlalchemy.exc import IntegrityError
 from app.database import get_db
 from app.schemas.candidate_schema import CandidateCreate, CandidateResponse, CandidateUpdate
 from app.services import candidate_service, resume_service
+from app.utils.limiter import limiter
 
 router = APIRouter(prefix="/candidate", tags=["Candidates"])
 
 @router.post("/parse-resume")
-async def parse_resume(file: UploadFile = File(...), db: AsyncSession = Depends(get_db)):
+@limiter.limit("5/minute")
+async def parse_resume(request: Request, file: UploadFile = File(...), db: AsyncSession = Depends(get_db)):
     """
     Test endpoint to parse an uploaded resume and return extracted data.
     """
