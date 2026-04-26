@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Helmet } from 'react-helmet-async';
 import { 
   Search, 
@@ -17,16 +18,23 @@ import {
 } from 'lucide-react';
 import Header from '../../components/layout/Header';
 
-const USERS_DATA = [
-  { id: 1, name: "Marcus Aurelius", email: "marcus@empire.gov", role: "Super Admin", status: "Active", joined: "Oct 2023", location: "Rome, IT", avatar: "M" },
-  { id: 2, name: "Helena Troi", email: "helena.t@design.co", role: "Editor", status: "Active", joined: "Nov 2023", location: "Athens, GR", avatar: "H" },
-  { id: 3, name: "Julian Casablancas", email: "julian@voidz.com", role: "Moderator", status: "Inactive", joined: "Jan 2024", location: "New York, US", avatar: "J" },
-  { id: 4, name: "Sophia Loren", email: "sophia@cinema.it", role: "User Manager", status: "Active", joined: "Feb 2024", location: "Naples, IT", avatar: "S" },
-  { id: 5, name: "Thomas Bangalter", email: "thomas@robot.fr", role: "Viewer", status: "Pending", joined: "Mar 2024", location: "Paris, FR", avatar: "T" },
-  { id: 6, name: "Syd Barrett", email: "syd@moon.uk", role: "Editor", status: "Active", joined: "Apr 2024", location: "Cambridge, UK", avatar: "S" },
-];
-
 const UsersPage = () => {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/admins/users');
+        setUsers(response.data);
+      } catch (err) {
+        console.error("Failed to fetch users:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUsers();
+  }, []);
   return (
     <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter']">
       <Helmet>
@@ -75,15 +83,15 @@ const UsersPage = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
-                    {USERS_DATA.map((user) => (
+                    {users.map((user) => (
                       <tr key={user.id} className="group hover:bg-gray-50/50 transition-colors">
                         <td className="px-8 py-6">
                           <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-2xl bg-gray-100 flex items-center justify-center font-bold text-gray-500 text-sm">
-                              {user.avatar}
+                            <div className="w-10 h-10 rounded-2xl bg-[#D10043]/10 flex items-center justify-center font-bold text-[#D10043] text-sm">
+                              {user.fullname?.charAt(0) || 'U'}
                             </div>
                             <div>
-                              <p className="text-sm font-bold text-gray-900">{user.name}</p>
+                              <p className="text-sm font-bold text-gray-900">{user.fullname}</p>
                               <p className="text-[11px] text-gray-400 font-medium flex items-center gap-1.5">
                                 <Mail size={12} /> {user.email}
                               </p>
@@ -92,19 +100,13 @@ const UsersPage = () => {
                         </td>
                         <td className="px-6 py-6">
                           <div className="flex items-center gap-2">
-                            <Shield size={14} className="text-gray-300" />
+                            <Shield size={14} className="text-[#D10043]" />
                             <span className="text-xs font-semibold text-gray-700">{user.role}</span>
                           </div>
-                          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tight mt-1 ml-5">
-                            Joined {user.joined}
-                          </p>
                         </td>
                         <td className="px-6 py-6">
-                          <span className={`text-[11px] font-bold px-3 py-1 rounded-full ${
-                            user.status === 'Active' ? 'bg-emerald-50 text-emerald-600' : 
-                            user.status === 'Pending' ? 'bg-amber-50 text-amber-600' : 'bg-gray-100 text-gray-400'
-                          }`}>
-                            {user.status}
+                          <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-600">
+                            Active
                           </span>
                         </td>
                         <td className="px-8 py-6 text-right">
@@ -114,6 +116,13 @@ const UsersPage = () => {
                         </td>
                       </tr>
                     ))}
+                    {users.length === 0 && !loading && (
+                      <tr>
+                        <td colSpan="4" className="px-8 py-12 text-center text-gray-400 font-medium">
+                          No users found in the system.
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -136,8 +145,8 @@ const UsersPage = () => {
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Active Now</p>
-                    <p className="text-xl font-bold text-gray-900">128</p>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total Users</p>
+                    <p className="text-xl font-bold text-gray-900">{users.length}</p>
                   </div>
                   <UserCheck className="text-emerald-500 opacity-20" size={32} />
                 </div>

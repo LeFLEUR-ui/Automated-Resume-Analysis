@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, Enum
 import enum
 from app.database import Base
+from sqlalchemy.orm import relationship
 
 class JobType(str, enum.Enum):
     PART_TIME = "Part-Time"
@@ -22,3 +23,6 @@ class JobDescription(Base):
     description = Column(String, nullable=False)
     skills_requirements = Column(String)
     is_active = Column(Boolean, default=True)
+
+    # Relationships
+    applications = relationship("JobApplication", back_populates="job")

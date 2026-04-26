@@ -6,39 +6,38 @@ import {
   Cpu, Briefcase, GraduationCap,
   CheckCircle, ArrowLeft, Edit3
 } from 'lucide-react';
-import Header from '../../../components/layout/Header';
-import Footer from '../../../components/layout/Footer';
+import Header from '../../components/layout/Header';
+import Footer from '../../components/layout/Footer';
 
-const PreviewAndVerifyPage = () => {
+const CandidatePreviewAndVerify = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const { jobId } = useParams();
 
-  const data = state?.extractedData;
-
+  // Simulated extracted data for candidate profile
   const extractedData = {
     personal: {
-      name: data?.fullname || "",
-      email: data?.email || "",
-      phone: data?.phone || "",
-      location: data?.location || ""
+      name: "Alex Thompson",
+      email: "alex.t@example.com",
+      phone: "+1 (555) 000-1234",
+      location: "Chicago, IL"
     },
-    skills: data?.skills ? data.skills.split(' | ').filter(Boolean) : ["Extraction in progress"],
+    skills: ["Process Optimization", "Team Leadership", "Lean Manufacturing", "Safety Compliance", "ERP Systems"],
     experience: {
-      title: data?.experience ? data.experience.split('|')[0] : "",
-      company: state?.job?.department || "Department Not Specified",
-      relevance: data?.years_experience ? `${data.years_experience}+ years of experience` : "Experience not extracted"
+      title: "Senior Operations Lead",
+      company: "Global Tech Manufacturing",
+      relevance: "7+ years in high-volume production environments"
     },
     education: {
-      degree: data?.highest_degree || "",
-      college: data?.education ? data.education.split('|')[0] : ""
+      degree: "B.S. in Industrial Engineering",
+      college: "University of Illinois"
     }
   };
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900 antialiased font-['Inter',_sans-serif]">
       <Helmet>
-        <title>Verify Information | {state?.job?.title || 'Careers'}</title>
+        <title>Verify Application | {state?.job?.title || 'Candidate Portal'}</title>
       </Helmet>
 
       <Header />
@@ -47,17 +46,37 @@ const PreviewAndVerifyPage = () => {
 
         <div className="flex justify-between items-end mb-8">
           <div>
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">Review Application</h1>
+            <button
+              onClick={() => navigate(-1)}
+              className="flex items-center text-slate-500 hover:text-[#D10043] transition-all mb-4 font-semibold text-sm group"
+            >
+              <ArrowLeft size={18} className="mr-2 group-hover:-translate-x-1 transition-transform" />
+              Back to Upload
+            </button>
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">Review Profile Updates</h1>
             <p className="text-slate-500 font-medium">
-              Verify the information extracted from <span className="text-slate-900 font-bold">{state?.fileName || "your resume"}</span>.
+              Verify the information extracted from your new resume <span className="text-slate-900 font-bold">{state?.fileName || "upload"}</span>.
             </p>
+          </div>
+          <div className="flex items-center gap-4 bg-white p-3 pr-6 rounded-2xl border border-slate-100 shadow-sm">
+            <div className="w-16 h-16 rounded-xl bg-slate-50 border border-slate-100 overflow-hidden flex items-center justify-center text-slate-300">
+              {localStorage.getItem('profile_image_url') ? (
+                <img src={localStorage.getItem('profile_image_url')} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <User size={32} />
+              )}
+            </div>
+            <div>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Application Identity</p>
+              <p className="text-sm font-black text-slate-900">{extractedData.personal.name}</p>
+            </div>
           </div>
           <button
             id="btn-edit-details"
-            onClick={() => navigate(`/applicationform/${jobId}`, { state: { ...extractedData, fileName: state?.fileName } })}
+            onClick={() => navigate(jobId ? `/candidate/update-profile/${jobId}` : '/candidate/update-profile', { state: { ...extractedData, fileName: state?.fileName, job: state?.job } })}
             className="flex items-center text-sm font-bold text-[#D60041] hover:underline bg-pink-50 px-4 py-2 rounded-xl transition-colors"
           >
-            <Edit3 size={16} className="mr-2" /> Edit Details
+            <Edit3 size={16} className="mr-2" /> Manual Edit
           </button>
         </div>
 
@@ -81,7 +100,7 @@ const PreviewAndVerifyPage = () => {
                 <div className="p-2.5 bg-pink-50 rounded-xl">
                   <Cpu size={20} />
                 </div>
-                <h2 className="font-bold uppercase tracking-widest text-xs">Skills</h2>
+                <h2 className="font-bold uppercase tracking-widest text-xs">Skills Found</h2>
               </div>
               <div className="flex flex-wrap gap-2">
                 {extractedData.skills.map((skill, i) => (
@@ -99,7 +118,7 @@ const PreviewAndVerifyPage = () => {
                 <div className="p-2.5 bg-pink-50 rounded-xl">
                   <Briefcase size={20} />
                 </div>
-                <h2 className="font-bold uppercase tracking-widest text-xs">Experience</h2>
+                <h2 className="font-bold uppercase tracking-widest text-xs">Latest Experience</h2>
               </div>
               <h4 className="font-black text-slate-900 mb-1">{extractedData.experience.title}</h4>
               <p className="text-sm font-bold text-slate-500 mb-4">{extractedData.experience.company}</p>
@@ -122,19 +141,17 @@ const PreviewAndVerifyPage = () => {
 
           <div className="flex flex-col sm:flex-row gap-4 pt-6">
             <button
-              id="btn-cancel"
-              onClick={() => navigate(-1)}
+              onClick={() => navigate('/candidate/dashboard')}
               className="flex-1 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 py-5 rounded-[24px] font-bold transition-all active:scale-95"
             >
-              Cancel
+              Cancel Update
             </button>
             <button
-              id="btn-confirm-submit"
-              onClick={() => navigate(`/applicationform/${jobId}`, { state: { ...extractedData, fileName: state?.fileName } })}
+              onClick={() => navigate(jobId ? `/candidate/update-profile/${jobId}` : '/candidate/update-profile', { state: { ...extractedData, fileName: state?.fileName, job: state?.job } })}
               className="flex-[2] bg-[#D60041] hover:bg-slate-900 text-white py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 transition-all shadow-xl shadow-pink-100 active:scale-95"
             >
               <CheckCircle size={22} />
-              Confirm & Submit Final Application
+              Confirm & Save Profile Changes
             </button>
           </div>
         </div>
@@ -157,4 +174,4 @@ const InfoItem = ({ icon, label, value }) => (
   </div>
 );
 
-export default PreviewAndVerifyPage;
+export default CandidatePreviewAndVerify;

@@ -7,6 +7,8 @@ from app.controllers.auth_controller import router as auth_router
 from app.controllers.admin_controller import router as admin_router
 from app.controllers.hr_controller import router as hr_router
 from app.controllers.candidate_controller import router as candidate_router
+from app.controllers.resume_controller import router as resume_router
+from app.controllers.job_application_controller import router as job_application_router
 
 import asyncio
 import logging
@@ -38,12 +40,16 @@ app.include_router(auth_router)
 app.include_router(admin_router)
 app.include_router(hr_router)
 app.include_router(candidate_router)
+app.include_router(resume_router)
+app.include_router(job_application_router)
 
 async def create_tables():
     from app.models.user import User
     from app.models.candidate import Candidate
     from app.models.hr import HR
     from app.models.admin import Admin
+    from app.models.resume import Resume
+    from app.models.job_application import JobApplication
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

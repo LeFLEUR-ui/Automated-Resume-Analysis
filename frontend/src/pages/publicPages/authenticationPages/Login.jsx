@@ -41,12 +41,12 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/auth/login', {
+      const response = await axios.post('http://localhost:8000/auth/login', {
         email: email,
         password: password,
       });
 
-      const { access_token, role: verifiedRole } = response.data;
+      const { access_token, role: verifiedRole, fullname, user_id, profile_image_url } = response.data;
 
       if (role.toUpperCase() !== verifiedRole.toUpperCase()) {
         setModalState({
@@ -61,6 +61,13 @@ const Login = () => {
 
       localStorage.setItem('token', access_token);
       localStorage.setItem('role', verifiedRole);
+      localStorage.setItem('fullname', fullname);
+      localStorage.setItem('user_id', user_id);
+      if (profile_image_url) {
+        localStorage.setItem('profile_image_url', profile_image_url);
+      } else {
+        localStorage.removeItem('profile_image_url');
+      }
 
       setVerifiedUserRole(verifiedRole);
       setModalState({

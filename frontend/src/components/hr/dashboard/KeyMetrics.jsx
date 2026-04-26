@@ -1,5 +1,5 @@
 import React from 'react';
-import { MoreHorizontal, FileText, Clock, Briefcase, Zap } from 'lucide-react';
+import { MoreHorizontal, FileText, Clock, Briefcase, Zap, Users } from 'lucide-react';
 
 const StatCard = ({ icon: Icon, label, value, trend, trendColor, bgColor, iconColor }) => (
   <div className="flex flex-col p-6 border border-gray-100 bg-gray-50/50 rounded-[24px] hover:bg-white hover:border-pink-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
@@ -25,7 +25,7 @@ const StatCard = ({ icon: Icon, label, value, trend, trendColor, bgColor, iconCo
   </div>
 );
 
-const KeyMetrics = ({ stats, activeJobsCount }) => {
+const KeyMetrics = ({ stats, activeJobsCount, totalCandidates }) => {
   return (
     <div className="bg-white border border-gray-100 rounded-[32px] p-6 sm:p-8 lg:p-10 mb-8 shadow-sm">
       <div className="flex justify-between items-start mb-8">
@@ -39,7 +39,6 @@ const KeyMetrics = ({ stats, activeJobsCount }) => {
           <MoreHorizontal className="w-5 h-5 text-gray-400 group-hover:text-[#D60041]" />
         </button>
       </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard 
           icon={FileText} 
@@ -69,10 +68,10 @@ const KeyMetrics = ({ stats, activeJobsCount }) => {
           iconColor="text-blue-500" 
         />
         <StatCard 
-          icon={Zap} 
-          label="Avg Processing" 
-          value="1.8s" 
-          trend="AI analysis time" 
+          icon={Users} 
+          label="Total Candidates" 
+          value={totalCandidates} 
+          trend="Registered Users" 
           trendColor="text-purple-600" 
           bgColor="bg-purple-50" 
           iconColor="text-purple-500" 

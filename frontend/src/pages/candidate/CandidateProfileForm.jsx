@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { Helmet } from 'react-helmet-async';
@@ -8,33 +8,17 @@ import {
   FileText, Code, X, Plus,
   ArrowLeft, Save
 } from 'lucide-react';
-import Header from '../../../components/layout/Header';
-import Footer from '../../../components/layout/Footer';
-import ApplicationSuccessModal from '../../../components/modals/shared/ApplicationSuccessModal';
+import Header from '../../components/layout/Header';
+import Footer from '../../components/layout/Footer';
+import ApplicationSuccessModal from '../../components/modals/shared/ApplicationSuccessModal';
 
-const ApplicationForm = () => {
+const CandidateProfileForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { jobId } = useParams();
+  const [jobTitle, setJobTitle] = React.useState(location.state?.job?.title || 'Position');
 
-  const [formData, setFormData] = useState({
-    fullName: location.state?.personal?.name && location.state.personal.name !== "null" ? location.state.personal.name : "",
-    email: location.state?.personal?.email && location.state.personal.email !== "null" ? location.state.personal.email : "",
-    phone: location.state?.personal?.phone && location.state.personal.phone !== "null" ? location.state.personal.phone : "",
-    location: location.state?.personal?.location && location.state.personal.location !== "null" ? location.state.personal.location : "",
-    jobTitle: location.state?.experience?.title && location.state.experience.title !== "null" ? location.state.experience.title : "",
-    company: location.state?.experience?.company && location.state.experience.company !== "null" ? location.state.experience.company : "",
-    relevance: location.state?.experience?.relevance && location.state.experience.relevance !== "Experience not extracted" ? location.state.experience.relevance : "",
-    degree: location.state?.education?.degree && location.state.education.degree !== "null" ? location.state.education.degree : "",
-    college: location.state?.education?.college && location.state.education.college !== "null" ? location.state.education.college : "",
-    skills: location.state?.skills && location.state.skills[0] !== "Extraction in progress" ? location.state.skills : []
-  });
-
-  const [jobTitle, setJobTitle] = useState(location.state?.job?.title || "Position");
-  const [currentSkill, setCurrentSkill] = useState("");
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-
-  useEffect(() => {
+  React.useEffect(() => {
     const fetchJobTitle = async () => {
       if (location.state?.job?.title) return;
       try {
@@ -43,11 +27,27 @@ const ApplicationForm = () => {
           setJobTitle(response.data.job_title);
         }
       } catch (err) {
-        console.error("Failed to fetch job title for tab name:", err);
+        console.error("Failed to fetch job title:", err);
       }
     };
-    fetchJobTitle();
+    if (jobId) fetchJobTitle();
   }, [jobId, location.state]);
+
+  const [formData, setFormData] = useState({
+    fullName: location.state?.personal?.name || "Alex Thompson",
+    email: location.state?.personal?.email || "alex.t@example.com",
+    phone: location.state?.personal?.phone || "+1 (555) 000-1234",
+    location: location.state?.personal?.location || "Chicago, IL",
+    jobTitle: location.state?.experience?.title || "Senior Operations Lead",
+    company: location.state?.experience?.company || "Global Tech Manufacturing",
+    relevance: location.state?.experience?.relevance || "7+ years in high-volume production environments",
+    degree: location.state?.education?.degree || "B.S. in Industrial Engineering",
+    college: location.state?.education?.college || "University of Illinois",
+    skills: location.state?.skills || ["Process Optimization", "Team Leadership", "Lean Manufacturing", "Safety Compliance", "ERP Systems"]
+  });
+
+  const [currentSkill, setCurrentSkill] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -72,36 +72,14 @@ const ApplicationForm = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      await axios.post('http://localhost:8000/applications/', {
-        job_id: jobId,
-        candidate_name: formData.fullName,
-        candidate_email: formData.email,
-        phone: formData.phone,
-        location: formData.location,
-        job_title: formData.jobTitle,
-        company: formData.company,
-        relevance: formData.relevance,
-        degree: formData.degree,
-        college: formData.college,
-        skills: formData.skills
-      });
-      setShowSuccessModal(true);
-    } catch (error) {
-      console.error("Failed to submit application:", error);
-      alert("Failed to submit application. Please try again.");
-    }
+    // In a real app, we would send an axios.put request to update the profile
+    setShowSuccessModal(true);
   };
 
   const handleFinalRedirect = () => {
-    navigate(`/submissionsuccess/${jobId}`, {
-      state: {
-        updatedData: formData,
-        fileName: location.state?.fileName
-      }
-    });
+    navigate('/candidate/dashboard');
   };
 
   return (
@@ -114,7 +92,6 @@ const ApplicationForm = () => {
 
       <main className="max-w-7xl mx-auto px-6 py-12">
         <button
-          id="btn-back"
           onClick={() => navigate(-1)}
           className="flex items-center text-slate-500 hover:text-[#D10043] transition-all mb-8 font-semibold text-sm group"
         >
@@ -122,11 +99,26 @@ const ApplicationForm = () => {
           Back to Review
         </button>
 
-        <div className="mb-10">
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">Application Details</h1>
-          <p className="text-slate-500 font-medium">
-            Update or manually enter your professional information below.
-          </p>
+        <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">Application Details</h1>
+            <p className="text-slate-500 font-medium">
+              Review and update your professional details for the <span className="font-bold text-slate-900">{jobTitle}</span> position.
+            </p>
+          </div>
+          <div className="flex items-center gap-4 bg-white p-3 pr-6 rounded-2xl border border-slate-100 shadow-sm">
+            <div className="w-16 h-16 rounded-xl bg-slate-50 border border-slate-100 overflow-hidden flex items-center justify-center text-slate-300">
+              {localStorage.getItem('profile_image_url') ? (
+                <img src={localStorage.getItem('profile_image_url')} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <User size={32} />
+              )}
+            </div>
+            <div>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Application Identity</p>
+              <p className="text-sm font-black text-slate-900">{formData.fullName}</p>
+            </div>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
@@ -136,7 +128,7 @@ const ApplicationForm = () => {
               <div className="p-2.5 bg-pink-50 rounded-xl">
                 <User size={20} />
               </div>
-              <h2 className="font-bold uppercase tracking-widest text-sm">Personal Information</h2>
+              <h2 className="font-bold uppercase tracking-widest text-sm">Personal Details</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -147,7 +139,6 @@ const ApplicationForm = () => {
                 value={formData.fullName}
                 onChange={handleChange}
                 placeholder="e.g. John Doe"
-                required={true}
               />
               <InputField
                 icon={<Mail size={18} />}
@@ -157,7 +148,6 @@ const ApplicationForm = () => {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="john@example.com"
-                required={true}
               />
               <InputField
                 icon={<Phone size={18} />}
@@ -169,7 +159,7 @@ const ApplicationForm = () => {
               />
               <InputField
                 icon={<MapPin size={18} />}
-                label="Location"
+                label="Primary Location"
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
@@ -183,7 +173,7 @@ const ApplicationForm = () => {
               <div className="p-2.5 bg-pink-50 rounded-xl">
                 <Briefcase size={20} />
               </div>
-              <h2 className="font-bold uppercase tracking-widest text-sm">Latest Experience</h2>
+              <h2 className="font-bold uppercase tracking-widest text-sm">Current/Latest Experience</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -197,7 +187,7 @@ const ApplicationForm = () => {
               />
               <InputField
                 icon={<Building2 size={18} />}
-                label="Company"
+                label="Company Name"
                 name="company"
                 value={formData.company}
                 onChange={handleChange}
@@ -207,7 +197,7 @@ const ApplicationForm = () => {
 
             <div className="w-full">
               <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                Experience Summary / Relevance
+                Professional Bio / Experience Summary
               </label>
               <div className="relative">
                 <div className="absolute top-4 left-4 text-slate-400">
@@ -219,7 +209,7 @@ const ApplicationForm = () => {
                   onChange={handleChange}
                   rows="3"
                   className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 pl-12 pr-4 text-slate-900 font-medium focus:outline-none focus:border-[#D10043] focus:ring-4 focus:ring-[#D10043]/10 transition-all resize-none"
-                  placeholder="Briefly describe your responsibilities and achievements..."
+                  placeholder="Summarize your professional background..."
                 ></textarea>
               </div>
             </div>
@@ -231,13 +221,13 @@ const ApplicationForm = () => {
                 <div className="p-2.5 bg-pink-50 rounded-xl">
                   <GraduationCap size={20} />
                 </div>
-                <h2 className="font-bold uppercase tracking-widest text-sm">Education</h2>
+                <h2 className="font-bold uppercase tracking-widest text-sm">Highest Education</h2>
               </div>
 
               <div className="space-y-6">
                 <InputField
                   icon={<GraduationCap size={18} />}
-                  label="Degree / Certification"
+                  label="Degree / Qualification"
                   name="degree"
                   value={formData.degree}
                   onChange={handleChange}
@@ -245,7 +235,7 @@ const ApplicationForm = () => {
                 />
                 <InputField
                   icon={<Building2 size={18} />}
-                  label="Institution"
+                  label="University / Institution"
                   name="college"
                   value={formData.college}
                   onChange={handleChange}
@@ -259,21 +249,19 @@ const ApplicationForm = () => {
                 <div className="p-2.5 bg-pink-50 rounded-xl">
                   <Code size={20} />
                 </div>
-                <h2 className="font-bold uppercase tracking-widest text-sm">Core Skills</h2>
+                <h2 className="font-bold uppercase tracking-widest text-sm">Skills Portfolio</h2>
               </div>
 
               <div className="mb-4 relative">
                 <input
-                  id="input-skill"
                   type="text"
                   value={currentSkill}
                   onChange={(e) => setCurrentSkill(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleAddSkill(e)}
-                  placeholder="Type a skill and hit Enter..."
+                  placeholder="Add a skill and hit Enter..."
                   className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-4 text-slate-900 font-medium focus:outline-none focus:border-[#D10043] focus:ring-4 focus:ring-[#D10043]/10 transition-all"
                 />
                 <button
-                  id="btn-add-skill"
                   type="button"
                   onClick={handleAddSkill}
                   className="absolute right-2 top-2 bottom-2 bg-slate-200 hover:bg-[#D10043] hover:text-white text-slate-600 rounded-xl px-3 transition-colors flex items-center justify-center"
@@ -310,20 +298,18 @@ const ApplicationForm = () => {
 
           <div className="flex flex-col sm:flex-row justify-end gap-4 pt-6 border-t border-slate-200">
             <button
-              id="btn-cancel"
               type="button"
               onClick={() => navigate(-1)}
               className="px-8 py-4 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 rounded-[20px] font-bold transition-all"
             >
-              Cancel
+              Discard Changes
             </button>
             <button
-              id="btn-save-application"
               type="submit"
               className="px-10 py-4 bg-[#D10043] hover:bg-slate-900 text-white rounded-[20px] font-bold flex items-center justify-center gap-3 transition-all shadow-xl shadow-pink-100 active:scale-[0.98]"
             >
               <Save size={20} />
-              Save Application Details
+              Submit Final Application
             </button>
           </div>
 
@@ -331,7 +317,8 @@ const ApplicationForm = () => {
 
         <ApplicationSuccessModal 
           isOpen={showSuccessModal} 
-          onConfirm={handleFinalRedirect} 
+          onConfirm={handleFinalRedirect}
+          // We can pass different props here if we want to customize the modal text
         />
       </main>
 
@@ -340,10 +327,10 @@ const ApplicationForm = () => {
   );
 };
 
-const InputField = ({ icon, label, name, value, onChange, placeholder, type = "text", required = false }) => (
+const InputField = ({ icon, label, name, value, onChange, placeholder, type = "text" }) => (
   <div className="w-full">
     <label htmlFor={name} className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-      {label} {required && <span className="text-[#D10043] ml-1">*</span>}
+      {label}
     </label>
     <div className="relative group">
       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-[#D10043] transition-colors">
@@ -356,11 +343,10 @@ const InputField = ({ icon, label, name, value, onChange, placeholder, type = "t
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        required={required}
         className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 pl-12 pr-4 text-slate-900 font-medium focus:outline-none focus:border-[#D10043] focus:ring-4 focus:ring-[#D10043]/10 transition-all"
       />
     </div>
   </div>
 );
 
-export default ApplicationForm;
+export default CandidateProfileForm;

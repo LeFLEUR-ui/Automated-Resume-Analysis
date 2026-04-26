@@ -35,6 +35,7 @@ const ApplyForJobPage = () => {
   const [isComplete, setIsComplete] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
+  const [extractedData, setExtractedData] = useState(null);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
@@ -112,21 +113,30 @@ const ApplyForJobPage = () => {
     }
   };
 
-  const simulateUpload = () => {
+  const handleUpload = async () => {
     if (!file || !isTermsAccepted) return;
     setIsUploading(true);
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 10;
-      setUploadProgress(progress);
-      if (progress >= 100) {
-        clearInterval(interval);
-        setTimeout(() => {
-          setIsUploading(false);
-          setIsComplete(true);
-        }, 500);
-      }
-    }, 100);
+    setUploadProgress(20); // Initial progress
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await axios.post('http://localhost:8000/candidate/parse-resume', formData, {
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setUploadProgress(Math.max(20, percentCompleted));
+        }
+      });
+      
+      setExtractedData(response.data);
+      setIsComplete(true);
+    } catch (error) {
+      console.error("Error parsing resume:", error);
+      alert("Failed to parse resume. Please try again.");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -247,8 +257,38 @@ const ApplyForJobPage = () => {
                       </div>
                     </div>
 
+                    {/* Extracted Data Display */}
+                    <div className="bg-slate-50 border border-slate-100 rounded-[24px] p-8 space-y-6">
+                      <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#D60041] mb-2">Extracted Information</h5>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
+                        {[
+                          { label: "Full Name", value: extractedData?.fullname },
+                          { label: "Email Address", value: extractedData?.email },
+                          { label: "Phone Number", value: extractedData?.phone },
+                          { label: "Location", value: extractedData?.location },
+                          { label: "Experience", value: extractedData?.experience },
+                          { label: "Total Years", value: extractedData?.years_experience },
+                          { label: "Education", value: extractedData?.education },
+                          { label: "Highest Degree", value: extractedData?.highest_degree }
+                        ].map((item, idx) => (
+                          <div key={idx} className="space-y-1">
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{item.label}</span>
+                            <p className="text-sm font-bold text-slate-900 truncate">
+                              {item.value || "null"}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
                     <button
-                      onClick={() => navigate(`/preview-and-verify/${job.job_id}`, { state: { job, fileName: file.name } })}
+                      onClick={() => navigate(`/preview-and-verify/${job.job_id}`, { 
+                        state: { 
+                          job, 
+                          fileName: file.name,
+                          extractedData 
+                        } 
+                      })}
                       className="w-full bg-slate-900 hover:bg-[#D60041] text-white py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 transition-all shadow-xl hover:shadow-pink-100 active:scale-95"
                     >
                       <span>Proceed to Review Information</span>
@@ -275,7 +315,7 @@ const ApplyForJobPage = () => {
                     </div>
 
                     <button
-                      onClick={simulateUpload}
+                      onClick={handleUpload}
                       disabled={!isTermsAccepted}
                       className={`w-full py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 transition-all transform active:scale-95 shadow-xl ${isTermsAccepted
                         ? "bg-[#D60041] hover:bg-slate-900 text-white shadow-pink-100 hover:shadow-none"

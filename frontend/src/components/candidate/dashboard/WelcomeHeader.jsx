@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 const WelcomeHeader = () => {
   const navigate = useNavigate();
+  const fullname = localStorage.getItem('fullname') || 'Candidate';
 
   return (
     <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6 animate-in fade-in slide-in-from-top-4 duration-700">
@@ -13,7 +14,7 @@ const WelcomeHeader = () => {
           Portal Overview
         </div>
         <h2 className="text-4xl font-black tracking-tight text-slate-900 leading-none">
-          Welcome back, <span className="text-[#D10043]">Alex</span>
+          Welcome back, <span className="text-[#D10043]">{fullname}</span>
         </h2>
         <p className="text-slate-400 font-bold text-sm mt-3 uppercase tracking-widest max-w-md">
           Your application journey is moving fast. Check your latest status and updates below.

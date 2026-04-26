@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -28,25 +29,71 @@ const BRAND_RED = "#D10043";
 
 const ViewProfile = () => {
   const navigate = useNavigate();
-  const userRole = localStorage.getItem('role') || 'Guest';
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   const userEmail = localStorage.getItem('saved_email') || 'user@system.com';
+  const userRole = localStorage.getItem('role') || 'Guest';
+  const userId = localStorage.getItem('user_id');
+  const [profileImageUrl, setProfileImageUrl] = useState(localStorage.getItem('profile_image_url'));
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setProfileImageUrl(localStorage.getItem('profile_image_url'));
+    };
+    window.addEventListener('storage', handleStorageChange);
+    // Also check periodically or on mount
+    const interval = setInterval(handleStorageChange, 1000);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!userId) {
+        setLoading(false);
+        return;
+      }
+      try {
+        let endpoint = `http://localhost:8000/candidate/profile/${userId}`;
+        if (userRole === 'HR') endpoint = `http://localhost:8000/hr/profile/${userId}`;
+        if (userRole === 'ADMIN') endpoint = `http://localhost:8000/admins/profile/${userId}`;
+
+        const response = await axios.get(endpoint);
+        const data = response.data;
+        // If it's the current user, sync with localStorage just in case
+        if (data.id === parseInt(userId) && data.profile_image_url) {
+          localStorage.setItem('profile_image_url', data.profile_image_url);
+          setProfileImageUrl(data.profile_image_url);
+        }
+        setProfile(data);
+      } catch (err) {
+        console.error("Failed to fetch profile:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+  }, [userRole, userId]);
 
   const profileData = {
-    name: userRole === 'CANDIDATE' ? "Alex Thompson" : "Mariwasa Official",
-    title: userRole === 'CANDIDATE' ? "Senior Frontend Developer" : "Human Resources Lead",
-    location: "Metro Manila, Philippines",
-    bio: userRole === 'CANDIDATE'
-      ? "Passionate frontend engineer with 7+ years of experience building high-performance web applications using React and modern CSS frameworks."
-      : "Managing digital transformation and high-volume recruitment for Mariwasa Siam Ceramics.",
-    since: userRole === 'CANDIDATE' ? "Joined Oct 2023" : "Member since 2018",
+    name: profile?.fullname || (userRole === 'CANDIDATE' ? "Candidate User" : userRole === 'HR' ? "HR Official" : "Admin User"),
+    title: profile?.current_job_title || profile?.position || (userRole === 'CANDIDATE' ? "Professional Title" : userRole === 'HR' ? "HR Professional" : "System Administrator"),
+    location: profile?.location || "Location not set",
+    bio: profile?.bio || (userRole === 'CANDIDATE'
+      ? "No professional bio provided yet."
+      : `Member of the Mariwasa ${userRole === 'HR' ? 'Human Resources' : 'Administration'} Team.`),
+    since: userRole === 'CANDIDATE' ? "Joined Mariwasa" : "Member since 2024",
     stats: userRole === 'CANDIDATE' ? [
-      { label: "Applications", value: "12", icon: <FileText size={18} /> },
-      { label: "Interviews", value: "3", icon: <Calendar size={18} /> },
-      { label: "Offers", value: "1", icon: <Award size={18} /> }
+      { label: "Applications", value: "0", icon: <FileText size={18} /> },
+      { label: "Interviews", value: "0", icon: <Calendar size={18} /> },
+      { label: "Offers", value: "0", icon: <Award size={18} /> }
     ] : [
-      { label: "Screened", value: "1.2k", icon: <Users size={18} /> },
-      { label: "Job Posts", value: "45", icon: <Briefcase size={18} /> },
-      { label: "Reports", value: "28", icon: <TrendingUp size={18} /> }
+      { label: "Screened", value: "0", icon: <Users size={18} /> },
+      { label: "Job Posts", value: "0", icon: <Briefcase size={18} /> },
+      { label: "Reports", value: "0", icon: <TrendingUp size={18} /> }
     ]
   };
 
@@ -83,7 +130,20 @@ const ViewProfile = () => {
 
                 <div className="relative inline-block mb-8">
                   <div className="w-32 h-32 md:w-40 md:h-40 rounded-[48px] bg-slate-50 border-8 border-white shadow-2xl overflow-hidden flex items-center justify-center text-slate-200 mx-auto">
-                    {userRole === 'CANDIDATE' ? <User size={80} /> : <ShieldCheck size={80} />}
+                    {profileImageUrl ? (
+                      <img 
+                        src={profileImageUrl} 
+                        alt="Profile" 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div className={`fallback-icon items-center justify-center w-full h-full ${profileImageUrl ? 'hidden' : 'flex'}`}>
+                      {userRole === 'CANDIDATE' ? <User size={80} /> : <ShieldCheck size={80} />}
+                    </div>
                   </div>
                   <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-green-500 rounded-2xl border-4 border-white flex items-center justify-center shadow-lg">
                     <CheckCircle2 size={16} className="text-white" strokeWidth={3} />

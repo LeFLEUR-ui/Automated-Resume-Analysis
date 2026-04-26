@@ -67,17 +67,21 @@ const STATIC_CANDIDATES = [
 const HRDashboard = () => {
   const navigate = useNavigate();
   const [activeJobsCount, setActiveJobsCount] = useState(0);
+  const [totalCandidates, setTotalCandidates] = useState(0);
 
   useEffect(() => {
-    const fetchActiveJobs = async () => {
+    const fetchDashboardData = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/hr/read-jobs');
-        setActiveJobsCount(response.data.length);
+        const jobsResponse = await axios.get('http://localhost:8000/hr/read-jobs');
+        setActiveJobsCount(jobsResponse.data.length);
+        
+        const candidatesResponse = await axios.get('http://localhost:8000/hr/candidate-count');
+        setTotalCandidates(candidatesResponse.data.count);
       } catch (error) {
-        console.error("Failed to fetch active jobs count:", error);
+        console.error("Failed to fetch dashboard data:", error);
       }
     };
-    fetchActiveJobs();
+    fetchDashboardData();
   }, []);
 
   return (
@@ -112,7 +116,7 @@ const HRDashboard = () => {
           </div>
         </div>
 
-        <KeyMetrics stats={STATIC_STATS} activeJobsCount={activeJobsCount} />
+        <KeyMetrics stats={STATIC_STATS} activeJobsCount={activeJobsCount} totalCandidates={totalCandidates} />
         <ApplicationTrends />
         <RecentSubmissions candidates={STATIC_CANDIDATES} />
 

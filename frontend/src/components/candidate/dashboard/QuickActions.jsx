@@ -6,7 +6,7 @@ const QuickActions = () => {
   const navigate = useNavigate();
 
   const ACTIONS = [
-    { icon: <FileText size={18} />, label: "Update Resume", desc: "Latest version", path: "/candidate/settings" },
+    { icon: <FileText size={18} />, label: "Update Resume", desc: "Latest version", path: "/candidate/upload-resume" },
     { icon: <Award size={18} />, label: "Skill Assessment", desc: "Verify expertise", path: "/candidate/settings" },
     { icon: <Settings size={18} />, label: "Portal Settings", desc: "Notifications", path: "/candidate/settings" }
   ];
