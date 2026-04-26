@@ -91,7 +91,6 @@ ARAS follows a **Premium Enterprise Aesthetic**:
 - **Micro-interactions**: Every button and card includes active scaling and hover transitions for a "living" UI.
 
 ---
-© 2026 Mariwasa Siam Ceramics Inc. - STI CS Thesis Academic Project.
 
 ## Project Structure
 ```text
@@ -195,3 +194,5 @@ ARAS follows a **Premium Enterprise Aesthetic**:
 │   └── vite.config.js
 └── README.md
 ```
+
+© 2026 Mariwasa Siam Ceramics Inc. - STI CS Thesis Academic Project.
