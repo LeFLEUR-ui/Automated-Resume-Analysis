@@ -3,7 +3,7 @@ from sqlalchemy.dialects.postgresql import JSON, DOUBLE_PRECISION
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from typing import TYPE_CHECKING
-from app.database import Base
+from app.utils.database import Base
 
 if TYPE_CHECKING:
     from app.models.job_description import JobDescription

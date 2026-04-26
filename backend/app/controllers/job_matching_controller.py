@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, File, UploadFile, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database import get_db
+from app.utils.database import get_db
 from app.schemas.job_matching_schema import MatchResponse, ResumeMatchRequest, JobMatchResult
 from app.services import job_matching_service, resume_service
 

@@ -4,7 +4,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database import get_db
+from app.utils.database import get_db
 from app.schemas.hr_schema import HRCreate, HRResponse, HRUpdate
 from app.schemas.job_description_schema import JobCreate, JobResponse, JobUpdate
 from app.services import hr_service

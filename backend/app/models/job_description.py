@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, Enum
 import enum
-from app.database import Base
+from app.utils.database import Base
 from sqlalchemy.orm import relationship
 
 class JobType(str, enum.Enum):

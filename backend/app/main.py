@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from app.utils.limiter import limiter
-from app.database import engine, Base 
+from app.utils.database import engine, Base 
 from app.models import *
 from app.controllers.auth_controller import router as auth_router
 from app.controllers.admin_controller import router as admin_router

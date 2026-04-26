@@ -4,7 +4,7 @@ import os
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 
-from app.database import get_db
+from app.utils.database import get_db
 from app.schemas.candidate_schema import CandidateCreate, CandidateResponse, CandidateUpdate
 from app.services import candidate_service, resume_service
 from app.utils.limiter import limiter

@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 import json
 
-from app.database import get_db
+from app.utils.database import get_db
 from app.schemas.notification_schema import NotificationResponse
 from app.services import notification_service
 from app.utils.websocket_manager import manager

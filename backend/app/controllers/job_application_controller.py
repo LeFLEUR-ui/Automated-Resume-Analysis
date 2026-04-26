@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
-from app.database import get_db
+from app.utils.database import get_db
 from app.schemas.job_application_schema import JobApplicationCreate, JobApplicationResponse
 from app.services import job_application_service
 from app.models.job_description import JobDescription
