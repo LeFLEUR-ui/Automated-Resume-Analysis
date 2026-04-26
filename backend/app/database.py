@@ -15,10 +15,20 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+def get_database_url():
+    url = os.getenv("DATABASE_URL")
+    if url:
+        return url
+    
+    user = os.getenv("DB_USER", "postgres")
+    password = os.getenv("DB_PASSWORD", "passwordnamin")
+    host = os.getenv("DB_HOST", "localhost")
+    port = os.getenv("DB_PORT", "5432")
+    db_name = os.getenv("DB_NAME", "automated_resume_db")
+    
+    return f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{db_name}"
 
-if not DATABASE_URL:
-    raise ValueError("DATABASE_URL is not set in the environment variables.")
+DATABASE_URL = get_database_url()
 
 engine = create_async_engine(
     DATABASE_URL,

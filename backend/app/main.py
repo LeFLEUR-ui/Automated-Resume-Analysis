@@ -1,7 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.database import engine, Base 
 from fastapi.staticfiles import StaticFiles
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from app.utils.limiter import limiter
+from app.database import engine, Base 
+from app.models import *
 from app.controllers.auth_controller import router as auth_router
 from app.controllers.admin_controller import router as admin_router
 from app.controllers.hr_controller import router as hr_router
@@ -10,10 +14,6 @@ from app.controllers.resume_controller import router as resume_router
 from app.controllers.job_application_controller import router as job_application_router
 from app.controllers.notification_controller import router as notification_router
 from app.controllers.job_matching_controller import router as job_matching_router
-from app.models import * # Ensure all models are loaded for SQLAlchemy relationships
-from app.utils.limiter import limiter
-from slowapi import _rate_limit_exceeded_handler
-from slowapi.errors import RateLimitExceeded
 
 import os
 import asyncio

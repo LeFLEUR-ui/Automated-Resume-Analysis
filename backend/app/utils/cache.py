@@ -4,6 +4,9 @@ import os
 import functools
 from typing import Any, Optional
 from fastapi.encoders import jsonable_encoder
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Redis configuration
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")

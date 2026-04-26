@@ -3,11 +3,11 @@ set -a
 source .env
 set +a
 
-export PGPASSWORD=$DATABASE_PASSWORD
+export PGPASSWORD=$DB_PASSWORD
 
-echo "Resetting database: automated_resume_db..."
+echo "Resetting database: $DB_NAME on $DB_HOST..."
 
 # This drops everything in the public schema and recreates it
-psql -h localhost -U postgres -d automated_resume_db -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO postgres; GRANT ALL ON SCHEMA public TO public;"
+psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO $DB_USER; GRANT ALL ON SCHEMA public TO public;"
 
-echo "Database reset! All tables and schemas have been wiped clean."
+echo "Database reset! All tables and schemas in $DB_NAME have been wiped clean."

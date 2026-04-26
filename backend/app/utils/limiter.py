@@ -1,6 +1,9 @@
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Initialize limiter
 # We use get_remote_address as the default key to identify users
