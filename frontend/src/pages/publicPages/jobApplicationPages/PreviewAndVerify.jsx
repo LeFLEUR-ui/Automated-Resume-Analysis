@@ -69,6 +69,7 @@ const PreviewAndVerifyPage = () => {
         </div>
 
         <div className="space-y-6">
+<<<<<<< HEAD
 
           {/* Match Analysis Section */}
           {matchData && (
@@ -128,14 +129,61 @@ const PreviewAndVerifyPage = () => {
                       <span className="text-[9px] font-black uppercase tracking-widest text-green-600 mr-2">Matched:</span>
                       {matchData.matched_skills.map((s, i) => (
                         <span key={i} className="px-3 py-1.5 bg-green-50 text-green-700 rounded-lg text-xs font-bold border border-green-100/50">{s}</span>
+=======
+          {/* AI Match Analysis (Styled for Original Design) */}
+          {matchData && (
+            <section className="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3 text-[#D60041]">
+                  <div className="p-2.5 bg-pink-50 rounded-xl">
+                    <Target size={20} />
+                  </div>
+                  <h2 className="font-bold uppercase tracking-widest text-xs">AI Match Analysis</h2>
+                </div>
+                <div className="bg-slate-900 text-white px-5 py-2 rounded-2xl text-sm font-black shadow-lg shadow-slate-100">
+                  {matchData.match_percentage}% Score
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[
+                  { label: 'Skills', score: matchData.skills_score, icon: <Cpu size={16} />, color: 'text-blue-600', bg: 'bg-blue-50/50' },
+                  { label: 'Experience', score: matchData.experience_score, icon: <Briefcase size={16} />, color: 'text-purple-600', bg: 'bg-purple-50/50' },
+                  { label: 'Education', score: matchData.education_score, icon: <GraduationCap size={16} />, color: 'text-amber-600', bg: 'bg-amber-50/50' }
+                ].map((item, idx) => (
+                  <div key={idx} className={`${item.bg} p-6 rounded-[24px] border border-transparent flex flex-col items-center justify-center text-center`}>
+                    <div className={`flex items-center gap-2 mb-1.5 ${item.color}`}>
+                      {item.icon}
+                      <span className="text-[10px] font-black uppercase tracking-widest opacity-70">{item.label}</span>
+                    </div>
+                    <p className={`text-2xl font-black ${item.color}`}>{item.score}%</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Matched / Missing Skills Chips */}
+              {(matchData.matched_skills?.length > 0 || matchData.missing_skills?.length > 0) && (
+                <div className="mt-8 pt-8 border-t border-slate-50 space-y-5">
+                  {matchData.matched_skills?.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 mr-2">Matched Skills:</span>
+                      {matchData.matched_skills.map((s, i) => (
+                        <span key={i} className="px-4 py-1.5 bg-slate-900 text-white rounded-xl text-[11px] font-bold shadow-sm">{s}</span>
+>>>>>>> 5106f13 (Restored and fixed Job Matching system, Header WebSocket, and Resume Analysis UI. Added debug logs and database migrations for target_role.)
                       ))}
                     </div>
                   )}
                   {matchData.missing_skills?.length > 0 && (
                     <div className="flex flex-wrap items-center gap-2">
+<<<<<<< HEAD
                       <span className="text-[9px] font-black uppercase tracking-widest text-red-500 mr-2">Missing:</span>
                       {matchData.missing_skills.map((s, i) => (
                         <span key={i} className="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-xs font-bold border border-red-100/50">{s}</span>
+=======
+                      <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 mr-2">Missing from Resume:</span>
+                      {matchData.missing_skills.map((s, i) => (
+                        <span key={i} className="px-4 py-1.5 bg-slate-50 text-slate-400 rounded-xl text-[11px] font-bold border border-slate-100 italic">{s}</span>
+>>>>>>> 5106f13 (Restored and fixed Job Matching system, Header WebSocket, and Resume Analysis UI. Added debug logs and database migrations for target_role.)
                       ))}
                     </div>
                   )}
@@ -143,8 +191,11 @@ const PreviewAndVerifyPage = () => {
               )}
             </section>
           )}
+<<<<<<< HEAD
 
           {/* Personal Info + Skills */}
+=======
+>>>>>>> 5106f13 (Restored and fixed Job Matching system, Header WebSocket, and Resume Analysis UI. Added debug logs and database migrations for target_role.)
           <section className="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
             <div className="flex items-center gap-3 mb-6 text-[#D60041]">
               <div className="p-2.5 bg-pink-50 rounded-xl">

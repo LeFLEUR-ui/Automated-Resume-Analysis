@@ -22,12 +22,19 @@ async def parse_resume_file(db: AsyncSession, file: UploadFile) -> dict:
     
     try:
         # Save uploaded file to temp location
+        print(f"DEBUG: Saving uploaded file to {temp_file_path}")
         with open(temp_file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
             
         # Process the resume
+        print(f"DEBUG: Starting processing for {file.filename}")
         extracted_data = process_resume(temp_file_path, file_extension)
         
+        if not extracted_data:
+            print("DEBUG: process_resume returned empty data (Parsing Failed)")
+        else:
+            print(f"DEBUG: Successfully extracted data for {extracted_data.get('fullname', 'unknown')}")
+
         # Trigger notification
         name = extracted_data.get("fullname", "A candidate")
         await create_notification(
@@ -40,7 +47,9 @@ async def parse_resume_file(db: AsyncSession, file: UploadFile) -> dict:
         return extracted_data
         
     except Exception as e:
+        import traceback
         print(f"Error in parse_resume_file: {e}")
+        traceback.print_exc()
         return {}
         
     finally:

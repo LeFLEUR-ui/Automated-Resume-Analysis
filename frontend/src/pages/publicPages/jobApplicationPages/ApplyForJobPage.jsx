@@ -13,9 +13,14 @@ import {
   Info,
   ArrowRight,
   Target,
+<<<<<<< HEAD
   Zap,
   GraduationCap,
   Cpu
+=======
+  Cpu,
+  GraduationCap
+>>>>>>> 5106f13 (Restored and fixed Job Matching system, Header WebSocket, and Resume Analysis UI. Added debug logs and database migrations for target_role.)
 } from 'lucide-react';
 import Header from '../../../components/layout/Header';
 import Footer from '../../../components/layout/Footer';
@@ -143,7 +148,11 @@ const ApplyForJobPage = () => {
         setIsMatching(true);
         try {
           const matchRes = await axios.post(
+<<<<<<< HEAD
             `http://127.0.0.1:8000/matching/match-data/${job.job_id}`,
+=======
+            `http://localhost:8000/matching/match-data/${job.job_id}`,
+>>>>>>> 5106f13 (Restored and fixed Job Matching system, Header WebSocket, and Resume Analysis UI. Added debug logs and database migrations for target_role.)
             response.data
           );
           setMatchData(matchRes.data);
@@ -155,7 +164,8 @@ const ApplyForJobPage = () => {
       }
     } catch (error) {
       console.error("Error parsing resume:", error);
-      alert("Failed to parse resume. Please try again.");
+      const detail = error.response?.data?.detail || "Failed to parse resume. Please ensure you uploaded a valid PDF or Word document.";
+      alert(detail);
     } finally {
       setIsUploading(false);
     }
@@ -342,6 +352,37 @@ const ApplyForJobPage = () => {
                       </div>
                     )}
 
+                    {/* Styled Match Analysis Section (Original Design Consistent) */}
+                    {matchData && (
+                      <div className="bg-white border border-slate-100 rounded-[32px] p-8 shadow-sm space-y-6">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3 text-[#D60041]">
+                            <div className="p-2.5 bg-pink-50 rounded-xl">
+                              <Target size={20} />
+                            </div>
+                            <h2 className="font-bold uppercase tracking-widest text-xs">Job Match Analysis</h2>
+                          </div>
+                          <div className="bg-[#D60041] text-white px-5 py-2 rounded-2xl text-sm font-black shadow-lg shadow-pink-100">
+                            {matchData.match_percentage}% Overall Match
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                          {[
+                            { label: 'Skills', score: matchData.skills_score, icon: <Cpu size={16} /> },
+                            { label: 'Experience', score: matchData.experience_score, icon: <Briefcase size={16} /> },
+                            { label: 'Education', score: matchData.education_score, icon: <GraduationCap size={16} /> }
+                          ].map((item, idx) => (
+                            <div key={idx} className="bg-slate-50/50 p-5 rounded-[24px] border border-slate-100/50 flex flex-col items-center">
+                              <div className="text-slate-400 mb-2">{item.icon}</div>
+                              <p className="text-2xl font-black text-slate-900 mb-0.5">{item.score}%</p>
+                              <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">{item.label}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     {/* Extracted Data Display */}
                     <div className="bg-slate-50 border border-slate-100 rounded-[32px] p-8 space-y-6">
                       <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#D60041] mb-2">Extracted Profile Data</h5>
@@ -372,7 +413,11 @@ const ApplyForJobPage = () => {
                           job, 
                           fileName: file.name,
                           extractedData,
+<<<<<<< HEAD
                           matchData
+=======
+                          matchData: matchData
+>>>>>>> 5106f13 (Restored and fixed Job Matching system, Header WebSocket, and Resume Analysis UI. Added debug logs and database migrations for target_role.)
                         } 
                       })}
                       className="w-full bg-slate-900 hover:bg-[#D60041] text-white py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 transition-all shadow-xl hover:shadow-pink-100 active:scale-95"

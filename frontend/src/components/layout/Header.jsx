@@ -46,6 +46,7 @@ const Header = () => {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
+    let ws;
     const fetchNotifications = async () => {
       if (isAdminRole || isHRRole) {
         try {
