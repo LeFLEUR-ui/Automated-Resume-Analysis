@@ -8,6 +8,9 @@ import {
 } from 'lucide-react';
 import NotificationDropdown from './NotificationDropdown';
 import axios from 'axios';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout as logoutAction } from '../../redux/slices/authSlice';
+import { setNotifications, addNotification, markAllRead as markAllReadAction } from '../../redux/slices/notificationSlice';
 
 const BRAND_RED = "#D60041";
 
@@ -21,29 +24,16 @@ const Header = () => {
   const dropdownRef = useRef(null);
   const notificationsRef = useRef(null);
 
-  const userEmail = localStorage.getItem('saved_email') || 'user@system.com';
-  const userRole = localStorage.getItem('role') || 'Guest';
-  const [profileImageUrl, setProfileImageUrl] = useState(localStorage.getItem('profile_image_url'));
+  const dispatch = useDispatch();
+  const { user: userEmail, role: userRole, profileImageUrl } = useSelector(state => state.auth);
+  const { notifications, unreadCount } = useSelector(state => state.notifications);
 
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setProfileImageUrl(localStorage.getItem('profile_image_url'));
-    };
-    window.addEventListener('storage', handleStorageChange);
-    // Sync with a short interval as a fallback
-    const interval = setInterval(handleStorageChange, 1000);
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      clearInterval(interval);
-    };
-  }, []);
+  // Remove local storage listeners as Redux handles the state now
 
   const isCandidateRole = userRole === 'CANDIDATE';
   const isHRRole = userRole === 'HR';
   const isAdminRole = userRole === 'ADMIN';
   const isGuest = userRole === 'Guest';
-
-  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     let ws;
@@ -121,18 +111,19 @@ const Header = () => {
               read: n.is_read
             };
           });
-          setNotifications(formatted);
+          dispatch(setNotifications(formatted));
         } catch (err) {
           console.error("Failed to fetch notifications:", err);
         }
       }
       
       if (isCandidateRole) {
-        setNotifications([
+        const candidateNotifs = [
           { id: 1, title: 'Status Update', desc: 'Your application for Frontend Lead is now "Under Review".', time: '2m ago', type: 'application', icon: <Briefcase size={16} />, bgColor: 'bg-blue-50', textColor: 'text-blue-600', tag: 'Update', tagColor: 'bg-blue-100 text-blue-700', read: false },
           { id: 2, title: 'Interview Invite', desc: 'Mariwasa HR sent you an interview invitation.', time: '1h ago', type: 'schedule', icon: <MessageSquare size={16} />, bgColor: 'bg-pink-50', textColor: 'text-[#D60041]', read: false },
           { id: 3, title: 'Job Match', desc: 'New "UI Designer" role matches your profile.', time: '3h ago', type: 'job', icon: <TrendingUp size={16} />, bgColor: 'bg-green-50', textColor: 'text-green-600', read: false }
-        ]);
+        ];
+        dispatch(setNotifications(candidateNotifs));
       }
     };
     
@@ -205,7 +196,7 @@ const Header = () => {
           };
 
           // Prepend the new notification to the list
-          setNotifications(prev => [formattedNewNotif, ...prev]);
+          dispatch(addNotification(formattedNewNotif));
           
           // Trigger pulse animation
           setPulse(true);
@@ -235,19 +226,17 @@ const Header = () => {
         ws.onopen = () => ws.close();
       }
     };
-  }, [userRole]);
-
-  const unreadCount = notifications.filter(n => !n.read).length;
+  }, [userRole, dispatch]);
 
   const handleMarkAllRead = async () => {
-    if (isAdminRole || isHRRole) {
+    if (isHRRole || isAdminRole) {
       try {
-        await axios.put('http://localhost:8000/notifications/mark-read');
+        await axios.put('http://localhost:8000/notifications/mark-all-read');
       } catch (err) {
-        console.error("Failed to mark read:", err);
+        console.error("Failed to mark all read:", err);
       }
     }
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    dispatch(markAllReadAction());
   };
 
   const isAdminPath = location.pathname.startsWith('/admin');
@@ -263,7 +252,7 @@ const Header = () => {
     location.pathname.includes('/submissionsuccess/');
 
   const handleLogout = () => {
-    localStorage.clear();
+    dispatch(logoutAction());
     navigate('/');
     window.location.reload();
   };

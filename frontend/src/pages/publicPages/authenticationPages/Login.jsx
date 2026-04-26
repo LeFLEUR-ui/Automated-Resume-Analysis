@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { setCredentials } from '../../../redux/slices/authSlice';
 import { Helmet } from 'react-helmet-async';
 import {
   Users,
@@ -21,6 +23,7 @@ const Login = () => {
   const [role, setRole] = useState('CANDIDATE');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   const [modalState, setModalState] = useState({
     isOpen: false,
@@ -59,15 +62,16 @@ const Login = () => {
         return;
       }
 
+      // Update Redux state
+      dispatch(setCredentials({
+        user: email,
+        role: verifiedRole,
+        profileImageUrl: profile_image_url
+      }));
+
       localStorage.setItem('token', access_token);
-      localStorage.setItem('role', verifiedRole);
       localStorage.setItem('fullname', fullname);
       localStorage.setItem('user_id', user_id);
-      if (profile_image_url) {
-        localStorage.setItem('profile_image_url', profile_image_url);
-      } else {
-        localStorage.removeItem('profile_image_url');
-      }
 
       setVerifiedUserRole(verifiedRole);
       setModalState({
