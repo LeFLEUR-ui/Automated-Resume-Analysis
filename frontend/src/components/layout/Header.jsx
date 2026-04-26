@@ -7,6 +7,7 @@ import {
   TrendingUp, Zap, Radio
 } from 'lucide-react';
 import NotificationDropdown from './NotificationDropdown';
+import axios from 'axios';
 
 const BRAND_RED = "#D60041";
 
@@ -16,6 +17,7 @@ const Header = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [pulse, setPulse] = useState(false);
   const dropdownRef = useRef(null);
   const notificationsRef = useRef(null);
 
@@ -44,30 +46,167 @@ const Header = () => {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    const getInitialNotifications = () => {
-      if (isAdminRole) return [
-        { id: 1, title: 'Security Alert', desc: 'Multiple failed login attempts from IP: 192.168.1.1', time: '10m ago', type: 'system', icon: <ShieldCheck size={16} />, bgColor: 'bg-red-50', textColor: 'text-red-600', tag: 'High Risk', tagColor: 'bg-red-100 text-red-700', read: false },
-        { id: 2, title: 'Server Sync', desc: 'Siam Ceramics database sync completed.', time: '2h ago', type: 'system', icon: <Database size={16} />, bgColor: 'bg-green-50', textColor: 'text-green-600', read: false },
-        { id: 3, title: 'Audit Log Export', desc: 'The monthly audit log is ready for download.', time: '5h ago', type: 'admin', icon: <FileText size={16} />, bgColor: 'bg-blue-50', textColor: 'text-blue-600', read: false }
-      ];
-      if (isHRRole) return [
-        { id: 1, title: 'New Application', desc: 'John Doe applied for Senior UI/UX Designer.', time: '5m ago', type: 'recruitment', icon: <User size={16} />, bgColor: 'bg-pink-50', textColor: 'text-[#D60041]', tag: 'New', tagColor: 'bg-pink-100 text-[#D60041]', read: false },
-        { id: 2, title: 'Interview Confirmed', desc: 'Sarah Jane accepted the Technical Interview.', time: '45m ago', type: 'schedule', icon: <Clock size={16} />, bgColor: 'bg-blue-50', textColor: 'text-blue-600', read: false },
-        { id: 3, title: 'Smart Upload Info', desc: '30 resumes were processed in the last hour.', time: '1h ago', type: 'system', icon: <Zap size={16} />, bgColor: 'bg-orange-50', textColor: 'text-orange-600', read: false }
-      ];
-      if (isCandidateRole) return [
-        { id: 1, title: 'Status Update', desc: 'Your application for Frontend Lead is now "Under Review".', time: '2m ago', type: 'application', icon: <Briefcase size={16} />, bgColor: 'bg-blue-50', textColor: 'text-blue-600', tag: 'Update', tagColor: 'bg-blue-100 text-blue-700', read: false },
-        { id: 2, title: 'Interview Invite', desc: 'Mariwasa HR sent you an interview invitation.', time: '1h ago', type: 'schedule', icon: <MessageSquare size={16} />, bgColor: 'bg-pink-50', textColor: 'text-[#D60041]', read: false },
-        { id: 3, title: 'Job Match', desc: 'New "UI Designer" role matches your profile.', time: '3h ago', type: 'job', icon: <TrendingUp size={16} />, bgColor: 'bg-green-50', textColor: 'text-green-600', read: false }
-      ];
-      return [];
+    const fetchNotifications = async () => {
+      if (isAdminRole) {
+        setNotifications([
+          { id: 1, title: 'Security Alert', desc: 'Multiple failed login attempts from IP: 192.168.1.1', time: '10m ago', type: 'system', icon: <ShieldCheck size={16} />, bgColor: 'bg-red-50', textColor: 'text-red-600', tag: 'High Risk', tagColor: 'bg-red-100 text-red-700', read: false },
+          { id: 2, title: 'Server Sync', desc: 'Siam Ceramics database sync completed.', time: '2h ago', type: 'system', icon: <Database size={16} />, bgColor: 'bg-green-50', textColor: 'text-green-600', read: false },
+          { id: 3, title: 'Audit Log Export', desc: 'The monthly audit log is ready for download.', time: '5h ago', type: 'admin', icon: <FileText size={16} />, bgColor: 'bg-blue-50', textColor: 'text-blue-600', read: false }
+        ]);
+        return;
+      }
+      
+      if (isCandidateRole) {
+        setNotifications([
+          { id: 1, title: 'Status Update', desc: 'Your application for Frontend Lead is now "Under Review".', time: '2m ago', type: 'application', icon: <Briefcase size={16} />, bgColor: 'bg-blue-50', textColor: 'text-blue-600', tag: 'Update', tagColor: 'bg-blue-100 text-blue-700', read: false },
+          { id: 2, title: 'Interview Invite', desc: 'Mariwasa HR sent you an interview invitation.', time: '1h ago', type: 'schedule', icon: <MessageSquare size={16} />, bgColor: 'bg-pink-50', textColor: 'text-[#D60041]', read: false },
+          { id: 3, title: 'Job Match', desc: 'New "UI Designer" role matches your profile.', time: '3h ago', type: 'job', icon: <TrendingUp size={16} />, bgColor: 'bg-green-50', textColor: 'text-green-600', read: false }
+        ]);
+        return;
+      }
+
+      if (isHRRole) {
+        try {
+          const res = await axios.get('http://localhost:8000/notifications/');
+          const formatted = res.data.map(n => {
+            // Determine icon and colors based on type
+            let icon = <AlertCircle size={16} />;
+            let bgColor = 'bg-slate-50';
+            let textColor = 'text-slate-600';
+            let tag = null;
+            let tagColor = null;
+
+            if (n.type === 'registration') {
+              icon = <UserPlus size={16} />;
+              bgColor = 'bg-blue-50';
+              textColor = 'text-blue-600';
+            } else if (n.type === 'application') {
+              icon = <Briefcase size={16} />;
+              bgColor = 'bg-pink-50';
+              textColor = 'text-[#D60041]';
+              tag = 'New';
+              tagColor = 'bg-pink-100 text-[#D60041]';
+            } else if (n.type === 'upload') {
+              icon = <FileText size={16} />;
+              bgColor = 'bg-orange-50';
+              textColor = 'text-orange-600';
+            }
+
+            // Format relative time (approximate)
+            const created = new Date(n.created_at);
+            const now = new Date();
+            const diffMs = now - created;
+            const diffMins = Math.floor(diffMs / 60000);
+            let timeStr = 'just now';
+            if (diffMins > 0 && diffMins < 60) timeStr = `${diffMins}m ago`;
+            else if (diffMins >= 60 && diffMins < 1440) timeStr = `${Math.floor(diffMins/60)}h ago`;
+            else if (diffMins >= 1440) timeStr = `${Math.floor(diffMins/1440)}d ago`;
+
+            return {
+              id: n.id,
+              title: n.title,
+              desc: n.message,
+              time: timeStr,
+              type: n.type,
+              icon,
+              bgColor,
+              textColor,
+              tag,
+              tagColor,
+              read: n.is_read
+            };
+          });
+          setNotifications(formatted);
+        } catch (err) {
+          console.error("Failed to fetch HR notifications:", err);
+        }
+      }
     };
-    setNotifications(getInitialNotifications());
+    
+    fetchNotifications();
+
+    let ws;
+    if (isHRRole) {
+      // Connect to WebSocket
+      ws = new WebSocket('ws://localhost:8000/notifications/ws');
+      
+      ws.onmessage = (event) => {
+        try {
+          const n = JSON.parse(event.data);
+          
+          let icon = <AlertCircle size={16} />;
+          let bgColor = 'bg-slate-50';
+          let textColor = 'text-slate-600';
+          let tag = null;
+          let tagColor = null;
+
+          if (n.type === 'registration') {
+            icon = <UserPlus size={16} />;
+            bgColor = 'bg-blue-50';
+            textColor = 'text-blue-600';
+          } else if (n.type === 'application') {
+            icon = <Briefcase size={16} />;
+            bgColor = 'bg-pink-50';
+            textColor = 'text-[#D60041]';
+            tag = 'New';
+            tagColor = 'bg-pink-100 text-[#D60041]';
+          } else if (n.type === 'upload') {
+            icon = <FileText size={16} />;
+            bgColor = 'bg-orange-50';
+            textColor = 'text-orange-600';
+          }
+
+          const formattedNewNotif = {
+            id: n.id,
+            title: n.title,
+            desc: n.message,
+            time: 'just now',
+            type: n.type,
+            icon,
+            bgColor,
+            textColor,
+            tag,
+            tagColor,
+            read: n.is_read
+          };
+
+          // Prepend the new notification to the list
+          setNotifications(prev => [formattedNewNotif, ...prev]);
+          
+          // Trigger pulse animation
+          setPulse(true);
+          setTimeout(() => setPulse(false), 2000);
+        } catch (err) {
+          console.error("Error processing websocket message:", err);
+        }
+      };
+
+      ws.onerror = (error) => {
+        console.error("WebSocket error:", error);
+      };
+      
+      ws.onclose = () => {
+        console.log("WebSocket connection closed.");
+      };
+    }
+    
+    return () => {
+      if (ws) {
+        ws.close();
+      }
+    };
   }, [userRole]);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
-  const handleMarkAllRead = () => {
+  const handleMarkAllRead = async () => {
+    if (isHRRole) {
+      try {
+        await axios.put('http://localhost:8000/notifications/mark-read');
+      } catch (err) {
+        console.error("Failed to mark read:", err);
+      }
+    }
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
   };
 
@@ -202,9 +341,9 @@ const Header = () => {
               <div className="relative mr-2" ref={notificationsRef}>
                 <button 
                   onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-                  className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 border ${isNotificationsOpen ? 'bg-slate-900 border-slate-900 shadow-xl' : 'bg-gray-50/50 border-gray-100 hover:bg-white hover:border-pink-100 hover:shadow-md hover:scale-105 active:scale-95'}`}
+                  className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 border ${pulse ? 'ring-4 ring-pink-100 scale-110' : ''} ${isNotificationsOpen ? 'bg-slate-900 border-slate-900 shadow-xl' : 'bg-gray-50/50 border-gray-100 hover:bg-white hover:border-pink-100 hover:shadow-md hover:scale-105 active:scale-95'}`}
                 >
-                  <Bell size={20} className={isNotificationsOpen ? 'text-white' : 'text-gray-500'} />
+                  <Bell size={20} className={`${pulse ? 'animate-bounce text-[#D60041]' : ''} ${isNotificationsOpen ? 'text-white' : 'text-gray-500'}`} />
                   {unreadCount > 0 && (
                     <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#D60041] text-white text-[9px] font-black rounded-full border-2 border-white flex items-center justify-center shadow-lg animate-in zoom-in duration-300">
                       {unreadCount}

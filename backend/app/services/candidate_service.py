@@ -29,6 +29,8 @@ async def update_candidate_profile(db: AsyncSession, candidate_id: int, candidat
     await db.refresh(candidate)
     return candidate
 
+from app.services.notification_service import create_notification
+
 async def create_candidate_profile(db: AsyncSession, candidate_in: CandidateCreate):
     """
     Creates a new Candidate profile. 
@@ -46,4 +48,13 @@ async def create_candidate_profile(db: AsyncSession, candidate_in: CandidateCrea
     db.add(new_candidate)
     await db.commit()
     await db.refresh(new_candidate)
+    
+    # Trigger notification
+    await create_notification(
+        db=db,
+        title="New Candidate Registration",
+        message=f"{new_candidate.fullname} has joined the platform.",
+        type="registration"
+    )
+    
     return new_candidate

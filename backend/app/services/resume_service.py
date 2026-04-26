@@ -6,8 +6,9 @@ from sqlalchemy.future import select
 from app.extractors.resume_processor import process_resume
 from app.models.resume import Resume
 from app.schemas.resume_schema import ResumeCreate, ResumeUpdate
+from app.services.notification_service import create_notification
 
-async def parse_resume_file(file: UploadFile) -> dict:
+async def parse_resume_file(db: AsyncSession, file: UploadFile) -> dict:
     """
     Saves the uploaded file temporarily and parses it using the extractors.
     """
@@ -27,6 +28,15 @@ async def parse_resume_file(file: UploadFile) -> dict:
         # Process the resume
         extracted_data = process_resume(temp_file_path, file_extension)
         
+        # Trigger notification
+        name = extracted_data.get("fullname", "A candidate")
+        await create_notification(
+            db=db,
+            title="Resume Analyzed",
+            message=f"{name}'s resume has been uploaded and analyzed.",
+            type="upload"
+        )
+        
         return extracted_data
         
     except Exception as e:
@@ -43,6 +53,14 @@ async def create_resume(db: AsyncSession, resume_in: ResumeCreate) -> Resume:
     db.add(new_resume)
     await db.commit()
     await db.refresh(new_resume)
+    
+    await create_notification(
+        db=db,
+        title="Resume Saved",
+        message="A candidate saved their parsed resume to their profile.",
+        type="upload"
+    )
+    
     return new_resume
 
 async def get_resume(db: AsyncSession, resume_id: int) -> Resume | None:
