@@ -3,12 +3,22 @@ from sqlalchemy.future import select
 from sqlalchemy import desc
 from app.models.job_description import JobDescription
 from app.schemas.job_description_schema import JobCreate, JobUpdate
+from app.services.notification_service import create_notification
 
 async def create_job(db: AsyncSession, job: JobCreate):
     db_job = JobDescription(**job.dict())
     db.add(db_job)
     await db.commit()
     await db.refresh(db_job)
+    
+    # Trigger notification
+    await create_notification(
+        db=db,
+        title="New Job Created",
+        message=f"A new position '{db_job.job_title}' has been posted.",
+        type="job_creation"
+    )
+    
     return db_job
 
 async def get_job(db: AsyncSession, job_id: str):
@@ -46,6 +56,15 @@ async def update_job(db: AsyncSession, job_id: str, job_data: JobUpdate):
 
     await db.commit()
     await db.refresh(db_job)
+    
+    # Trigger notification
+    await create_notification(
+        db=db,
+        title="Job Description Modified",
+        message=f"The job details for '{db_job.job_title}' have been updated.",
+        type="job_update"
+    )
+    
     return db_job
 
 async def set_job_status(db: AsyncSession, job_id: str, active_status: bool):

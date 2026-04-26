@@ -4,7 +4,7 @@ import {
   ChevronDown, LayoutDashboard, Users, Database, ShieldCheck, LogOut,
   Settings, Menu, X, FileText, Search, User, Building2, Info, Briefcase, LogIn, UserPlus,
   Bell, Clock, CheckCircle2, AlertCircle, MessageSquare, ChevronRight,
-  TrendingUp, Zap, Radio
+  TrendingUp, Zap, Radio, Edit3
 } from 'lucide-react';
 import NotificationDropdown from './NotificationDropdown';
 import axios from 'axios';
@@ -47,25 +47,7 @@ const Header = () => {
 
   useEffect(() => {
     const fetchNotifications = async () => {
-      if (isAdminRole) {
-        setNotifications([
-          { id: 1, title: 'Security Alert', desc: 'Multiple failed login attempts from IP: 192.168.1.1', time: '10m ago', type: 'system', icon: <ShieldCheck size={16} />, bgColor: 'bg-red-50', textColor: 'text-red-600', tag: 'High Risk', tagColor: 'bg-red-100 text-red-700', read: false },
-          { id: 2, title: 'Server Sync', desc: 'Siam Ceramics database sync completed.', time: '2h ago', type: 'system', icon: <Database size={16} />, bgColor: 'bg-green-50', textColor: 'text-green-600', read: false },
-          { id: 3, title: 'Audit Log Export', desc: 'The monthly audit log is ready for download.', time: '5h ago', type: 'admin', icon: <FileText size={16} />, bgColor: 'bg-blue-50', textColor: 'text-blue-600', read: false }
-        ]);
-        return;
-      }
-      
-      if (isCandidateRole) {
-        setNotifications([
-          { id: 1, title: 'Status Update', desc: 'Your application for Frontend Lead is now "Under Review".', time: '2m ago', type: 'application', icon: <Briefcase size={16} />, bgColor: 'bg-blue-50', textColor: 'text-blue-600', tag: 'Update', tagColor: 'bg-blue-100 text-blue-700', read: false },
-          { id: 2, title: 'Interview Invite', desc: 'Mariwasa HR sent you an interview invitation.', time: '1h ago', type: 'schedule', icon: <MessageSquare size={16} />, bgColor: 'bg-pink-50', textColor: 'text-[#D60041]', read: false },
-          { id: 3, title: 'Job Match', desc: 'New "UI Designer" role matches your profile.', time: '3h ago', type: 'job', icon: <TrendingUp size={16} />, bgColor: 'bg-green-50', textColor: 'text-green-600', read: false }
-        ]);
-        return;
-      }
-
-      if (isHRRole) {
+      if (isAdminRole || isHRRole) {
         try {
           const res = await axios.get('http://localhost:8000/notifications/');
           const formatted = res.data.map(n => {
@@ -90,6 +72,20 @@ const Header = () => {
               icon = <FileText size={16} />;
               bgColor = 'bg-orange-50';
               textColor = 'text-orange-600';
+            } else if (n.type === 'hr_registration') {
+              icon = <ShieldCheck size={16} />;
+              bgColor = 'bg-indigo-50';
+              textColor = 'text-indigo-600';
+              tag = 'System';
+              tagColor = 'bg-indigo-100 text-indigo-700';
+            } else if (n.type === 'job_creation') {
+              icon = <Zap size={16} />;
+              bgColor = 'bg-green-50';
+              textColor = 'text-green-600';
+            } else if (n.type === 'job_update') {
+              icon = <Edit3 size={16} />;
+              bgColor = 'bg-amber-50';
+              textColor = 'text-amber-600';
             }
 
             // Format relative time (approximate)
@@ -118,15 +114,23 @@ const Header = () => {
           });
           setNotifications(formatted);
         } catch (err) {
-          console.error("Failed to fetch HR notifications:", err);
+          console.error("Failed to fetch notifications:", err);
         }
+      }
+      
+      if (isCandidateRole) {
+        setNotifications([
+          { id: 1, title: 'Status Update', desc: 'Your application for Frontend Lead is now "Under Review".', time: '2m ago', type: 'application', icon: <Briefcase size={16} />, bgColor: 'bg-blue-50', textColor: 'text-blue-600', tag: 'Update', tagColor: 'bg-blue-100 text-blue-700', read: false },
+          { id: 2, title: 'Interview Invite', desc: 'Mariwasa HR sent you an interview invitation.', time: '1h ago', type: 'schedule', icon: <MessageSquare size={16} />, bgColor: 'bg-pink-50', textColor: 'text-[#D60041]', read: false },
+          { id: 3, title: 'Job Match', desc: 'New "UI Designer" role matches your profile.', time: '3h ago', type: 'job', icon: <TrendingUp size={16} />, bgColor: 'bg-green-50', textColor: 'text-green-600', read: false }
+        ]);
       }
     };
     
     fetchNotifications();
 
     let ws;
-    if (isHRRole) {
+    if (isAdminRole || isHRRole) {
       // Connect to WebSocket
       ws = new WebSocket('ws://localhost:8000/notifications/ws');
       
@@ -154,6 +158,20 @@ const Header = () => {
             icon = <FileText size={16} />;
             bgColor = 'bg-orange-50';
             textColor = 'text-orange-600';
+          } else if (n.type === 'hr_registration') {
+            icon = <ShieldCheck size={16} />;
+            bgColor = 'bg-indigo-50';
+            textColor = 'text-indigo-600';
+            tag = 'System';
+            tagColor = 'bg-indigo-100 text-indigo-700';
+          } else if (n.type === 'job_creation') {
+            icon = <Zap size={16} />;
+            bgColor = 'bg-green-50';
+            textColor = 'text-green-600';
+          } else if (n.type === 'job_update') {
+            icon = <Edit3 size={16} />;
+            bgColor = 'bg-amber-50';
+            textColor = 'text-amber-600';
           }
 
           const formattedNewNotif = {
@@ -200,7 +218,7 @@ const Header = () => {
   const unreadCount = notifications.filter(n => !n.read).length;
 
   const handleMarkAllRead = async () => {
-    if (isHRRole) {
+    if (isAdminRole || isHRRole) {
       try {
         await axios.put('http://localhost:8000/notifications/mark-read');
       } catch (err) {

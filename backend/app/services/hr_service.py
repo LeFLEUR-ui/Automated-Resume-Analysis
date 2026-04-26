@@ -4,6 +4,7 @@ from sqlalchemy.future import select
 from app.models.hr import HR
 from app.schemas.hr_schema import HRCreate, HRUpdate
 from app.utils.auth import hash_password
+from app.services.notification_service import create_notification
 
 async def create_hr_profile(db: AsyncSession, hr_in: HRCreate):
     new_hr = HR(
@@ -18,6 +19,15 @@ async def create_hr_profile(db: AsyncSession, hr_in: HRCreate):
     db.add(new_hr)
     await db.commit()
     await db.refresh(new_hr)
+    
+    # Trigger notification for Admin
+    await create_notification(
+        db=db,
+        title="New HR Registration",
+        message=f"{new_hr.fullname} has registered as HR for {new_hr.company_name}.",
+        type="hr_registration"
+    )
+    
     return new_hr
 
 async def get_hr_profile(db: AsyncSession, hr_id: int):
