@@ -25,7 +25,8 @@ async def create_hr_profile(db: AsyncSession, hr_in: HRCreate):
         db=db,
         title="New HR Registration",
         message=f"{new_hr.fullname} has registered as HR for {new_hr.company_name}.",
-        type="hr_registration"
+        type="hr_registration",
+        target_role="ADMIN"
     )
     
     return new_hr

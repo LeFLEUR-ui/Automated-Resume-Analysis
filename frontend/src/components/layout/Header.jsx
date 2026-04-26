@@ -49,7 +49,7 @@ const Header = () => {
     const fetchNotifications = async () => {
       if (isAdminRole || isHRRole) {
         try {
-          const res = await axios.get('http://localhost:8000/notifications/');
+          const res = await axios.get(`http://localhost:8000/notifications/?role=${userRole}`);
           const formatted = res.data.map(n => {
             // Determine icon and colors based on type
             let icon = <AlertCircle size={16} />;
@@ -86,6 +86,14 @@ const Header = () => {
               icon = <Edit3 size={16} />;
               bgColor = 'bg-amber-50';
               textColor = 'text-amber-600';
+            } else if (n.type === 'candidate_login') {
+              icon = <Radio size={16} />;
+              bgColor = 'bg-green-50';
+              textColor = 'text-green-600';
+            } else if (n.type === 'hr_login') {
+              icon = <Radio size={16} />;
+              bgColor = 'bg-purple-50';
+              textColor = 'text-purple-600';
             }
 
             // Format relative time (approximate)
@@ -129,10 +137,9 @@ const Header = () => {
     
     fetchNotifications();
 
-    let ws;
     if (isAdminRole || isHRRole) {
-      // Connect to WebSocket
-      ws = new WebSocket('ws://localhost:8000/notifications/ws');
+      // Connect to WebSocket with role filtering
+      ws = new WebSocket(`ws://localhost:8000/notifications/ws?role=${userRole}`);
       
       ws.onmessage = (event) => {
         try {
@@ -172,6 +179,14 @@ const Header = () => {
             icon = <Edit3 size={16} />;
             bgColor = 'bg-amber-50';
             textColor = 'text-amber-600';
+          } else if (n.type === 'candidate_login') {
+            icon = <Radio size={16} />;
+            bgColor = 'bg-green-50';
+            textColor = 'text-green-600';
+          } else if (n.type === 'hr_login') {
+            icon = <Radio size={16} />;
+            bgColor = 'bg-purple-50';
+            textColor = 'text-purple-600';
           }
 
           const formattedNewNotif = {

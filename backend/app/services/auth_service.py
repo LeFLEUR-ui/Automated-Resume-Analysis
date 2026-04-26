@@ -3,6 +3,7 @@ from sqlalchemy.future import select
 
 from app.models.user import User
 from app.utils.auth import hash_password, verify_password, create_access_token
+from app.services.notification_service import create_notification
 
 async def register_user(db: AsyncSession, email: str, password: str, role: str):
     result = await db.execute(select(User).where(User.email == email))
@@ -41,5 +42,19 @@ async def login_user(db: AsyncSession, email: str, password: str):
         "sub": user.email,
         "role": user.role
     })
+
+    # Trigger notification for logins (Candidate and HR)
+    if user.role in ["CANDIDATE", "HR"]:
+        title = "User Logged In"
+        message = f"{user.fullname or user.email} has just logged into the system."
+        notif_type = "candidate_login" if user.role == "CANDIDATE" else "hr_login"
+        
+        await create_notification(
+            db=db,
+            title=title,
+            message=message,
+            type=notif_type,
+            target_role="ADMIN"
+        )
 
     return {"token": token, "role": user.role, "fullname": user.fullname, "user_id": user.id, "profile_image_url": user.profile_image_url}

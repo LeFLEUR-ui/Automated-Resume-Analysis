@@ -11,11 +11,11 @@ from app.utils.websocket_manager import manager
 router = APIRouter(prefix="/notifications", tags=["Notifications"])
 
 @router.get("/", response_model=List[NotificationResponse])
-async def get_notifications(db: AsyncSession = Depends(get_db)):
+async def get_notifications(role: str = None, db: AsyncSession = Depends(get_db)):
     """
-    Get recent notifications.
+    Get recent notifications, filtered by role if provided.
     """
-    return await notification_service.get_all_notifications(db)
+    return await notification_service.get_all_notifications(db, role)
 
 @router.put("/mark-read", status_code=status.HTTP_200_OK)
 async def mark_all_read(db: AsyncSession = Depends(get_db)):
@@ -26,14 +26,14 @@ async def mark_all_read(db: AsyncSession = Depends(get_db)):
     return {"message": "All notifications marked as read"}
 
 @router.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
+async def websocket_endpoint(websocket: WebSocket, role: str = "Guest"):
     """
-    WebSocket endpoint for real-time notifications.
+    WebSocket endpoint for real-time notifications, partitioned by role.
     """
-    await manager.connect(websocket)
+    await manager.connect(websocket, role)
     try:
         while True:
             # Keep connection open
             await websocket.receive_text()
     except WebSocketDisconnect:
-        manager.disconnect(websocket)
+        manager.disconnect(websocket, role)
