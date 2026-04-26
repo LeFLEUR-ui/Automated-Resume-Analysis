@@ -1,10 +1,11 @@
 # Mariwasa Automated Resume Analysis System (ARAS)
 ### *Revolutionizing Recruitment with AI-Driven Intelligence*
 
-[![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![React](https://img.shields.io/badge/Frontend-React_19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
-[![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![Redis](https://img.shields.io/badge/Cache-Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io/)
+<p align="center">
+  <a href="https://skillicons.dev">
+    <img src="https://skillicons.dev/icons?i=react,redux,fastapi,redis,postgres,tailwind,py,js" />
+  </a>
+</p>
 
 ---
 
@@ -16,7 +17,8 @@ The **Mariwasa Automated Resume Analysis System (ARAS)** is an enterprise-grade 
 ## 🚀 Core Ecosystem: The Three Portals
 
 ### 1. 👤 Candidate Portal
-*   **Smart Upload**: Drag-and-drop resume upload with instant AI parsing.
+*   **Smart Resume Upload Portal**: A revolutionary feature where candidates can upload their resume directly, and the system automatically identifies and recommends the most suitable job opening based on their parsed skills and experience.
+*   **Smart Upload (Job-Specific)**: Drag-and-drop resume upload for specific roles with instant AI parsing.
 *   **Preview & Verify**: A dedicated interface for candidates to review and correct AI-extracted data before final submission.
 *   **AI Match Scoring**: Immediate feedback on how well their profile aligns with the specific job requirements.
 *   **Application Tracking**: A real-time timeline view of application statuses (Pending, Under Review, Accepted, Rejected).
@@ -55,7 +57,7 @@ The "Match Score" is calculated using a multi-factor algorithm:
 ## 🛠️ Technical Architecture
 
 ### **The Stack**
-- **Frontend**: React 19 (Vite), Tailwind CSS (Premium Glassmorphism Design), Lucide Icons, Recharts (Data Visualization).
+- **Frontend**: React 19 (Vite), **Redux Toolkit** (Global State Management), Tailwind CSS (Premium Glassmorphism Design).
 - **Backend**: FastAPI (Python 3.12), SQLAlchemy 2.0 (Async Engine).
 - **Database**: PostgreSQL (Relational Data), Redis (Rate Limiting & Caching).
 - **Security**: JWT (JSON Web Tokens), BCrypt Hashing, Role-Based Access Control (RBAC).
@@ -71,7 +73,7 @@ The "Match Score" is calculated using a multi-factor algorithm:
 
 ### **For Candidates**
 1.  **Sign Up**: Create an account via the Registration page.
-2.  **Smart Upload**: Navigate to the "Careers" page, select a job, and click "Smart Upload".
+2.  **Smart Resume Upload**: Use the global "Smart Upload" portal. Simply drop your resume, and let the AI find the best job for you!
 3.  **Verify**: Review the data the AI extracted. If the AI missed a skill, you can manually add it in the next step.
 4.  **Submit**: Confirm your application. You can track its progress in your Candidate Dashboard.
 
@@ -80,35 +82,6 @@ The "Match Score" is calculated using a multi-factor algorithm:
 2.  **Screening**: Use the "Screening Portal" to see the "Best Match" candidates first.
 3.  **Manage Jobs**: Create new job descriptions via the "Job Management" portal. Use the "Archive" feature to temporarily hide filled roles.
 4.  **Notifications**: Keep an eye on the notification bell for instant updates on new applicants.
-
----
-
-## 💻 Installation & Deployment
-
-### **Prerequisites**
-- **Node.js** (v18+)
-- **Python** (v3.10+)
-- **PostgreSQL** (Running)
-- **Redis Server** (Running on port 6379)
-
-### **Quick Start**
-1.  **Clone the Repository**:
-    ```bash
-    git clone https://github.com/LeFLEUR-ui/Automated-Resume-Analysis.git
-    cd Automated-Resume-Analysis
-    ```
-
-2.  **Configure Environment**:
-    Create a `.env` file in the `backend/` directory (see `.env.example`).
-
-3.  **Launch the System**:
-    Use the unified development CLI:
-    - **Linux/macOS**: `chmod +x start.sh && ./start.sh`
-    - **Windows**: `powershell ./start.ps1`
-
-4.  **Access Portals**:
-    - **Frontend**: [http://localhost:5173](http://localhost:5173)
-    - **API Docs (Swagger)**: [http://localhost:8000/docs](http://localhost:8000/docs)
 
 ---
 
