@@ -48,6 +48,34 @@ export const apiSlice = createApi({
       invalidatesTags: ['Jobs', 'Dashboard'], // Refetch jobs and dashboard stats after creating a job
     }),
     
+    // Applications / Screening
+    getApplications: builder.query({
+      query: () => '/applications/',
+      providesTags: ['Applications'],
+      transformResponse: (response) => {
+        return response.map(app => ({
+          id: app.id,
+          name: app.candidate_name,
+          status: app.status,
+          preferredJob: app.job_title || app.job?.job_title || "Unknown",
+          skills: app.skills || [],
+          profileImage: app.profile_image_url || null,
+          date: app.created_at,
+          location: app.job?.location || "N/A",
+          matchScore: app.match_score || 0
+        }));
+      },
+    }),
+    
+    updateApplicationStatus: builder.mutation({
+      query: ({ id, status }) => ({
+        url: `/applications/${id}/status`,
+        method: 'PATCH',
+        body: { status },
+      }),
+      invalidatesTags: ['Applications', 'Dashboard'], // Update dashboard counts too
+    }),
+
     updateJob: builder.mutation({
       query: ({ jobId, body }) => ({
         url: `/hr/update-job/${jobId}`,
@@ -72,7 +100,9 @@ export const {
   useGetCandidateCountQuery,
   useGetResumeCountQuery,
   useGetJobsQuery,
+  useGetApplicationsQuery,
   useCreateJobMutation,
   useUpdateJobMutation,
   useUpdateJobStatusMutation,
+  useUpdateApplicationStatusMutation,
 } = apiSlice;

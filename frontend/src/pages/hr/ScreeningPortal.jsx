@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
@@ -69,9 +68,12 @@ const MOCK_CANDIDATES = [
   },
 ];
 
+import { useGetApplicationsQuery, useUpdateApplicationStatusMutation } from '../../redux/api/apiSlice';
+
 const ScreeningPortal = () => {
-  const [candidates, setCandidates] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: candidates = [], isLoading } = useGetApplicationsQuery();
+  const [updateStatus] = useUpdateApplicationStatusMutation();
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -79,33 +81,6 @@ const ScreeningPortal = () => {
   const [interviewModalOpen, setInterviewModalOpen] = useState(false);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
-
-  useEffect(() => {
-    const fetchApplications = async () => {
-      try {
-        setIsLoading(true);
-        const response = await axios.get('http://localhost:8000/applications/');
-        // Map backend data to frontend format
-        const mapped = response.data.map(app => ({
-          id: app.id,
-          name: app.candidate_name,
-          status: app.status,
-          preferredJob: app.job_title || app.job?.job_title || "Unknown",
-          skills: app.skills || [],
-          profileImage: app.profile_image_url || null,
-          date: app.created_at,
-          location: app.job?.location || "N/A",
-          matchScore: app.match_score || 0
-        }));
-        setCandidates(mapped);
-      } catch (error) {
-        console.error("Failed to fetch applications:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchApplications();
-  }, []);
 
   const handleOpenInterview = (candidate) => {
     setSelectedCandidate(candidate);
@@ -119,13 +94,7 @@ const ScreeningPortal = () => {
 
   const handleUpdateStatus = async (candidateId, newStatus) => {
     try {
-      await axios.patch(`http://localhost:8000/applications/${candidateId}/status`, {
-        status: newStatus
-      });
-      // Update local state
-      setCandidates(prev => prev.map(c => 
-        c.id === candidateId ? { ...c, status: newStatus } : c
-      ));
+      await updateStatus({ id: candidateId, status: newStatus }).unwrap();
     } catch (error) {
       console.error("Failed to update status:", error);
       alert("Failed to update status. Please try again.");
