@@ -9,6 +9,7 @@ from app.schemas.hr_schema import HRCreate, HRResponse, HRUpdate
 from app.schemas.job_description_schema import JobCreate, JobResponse, JobUpdate
 from app.services import hr_service
 from app.services.job_description_service import create_job, get_all_active_jobs, get_job, set_job_status, update_job
+from app.utils.cache import cache_response, clear_cache_pattern
 
 router = APIRouter(prefix="/hr", tags=["HR Management"])
 
@@ -21,16 +22,19 @@ async def register_hr(hr_in: HRCreate, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=400, detail=f"Registration failed: {str(e)}")
 
 @router.get("/candidate-count")
+@cache_response("candidate_count", ttl=300)
 async def get_candidates_count(db: AsyncSession = Depends(get_db)):
     count = await hr_service.get_total_candidates_count(db)
     return {"count": count}
 
 @router.get("/resume-count")
+@cache_response("resume_count", ttl=300)
 async def get_resumes_count(db: AsyncSession = Depends(get_db)):
     count = await hr_service.get_total_resumes_count(db)
     return {"count": count}
 
 @router.get("/application-stats")
+@cache_response("app_stats", ttl=300)
 async def get_app_stats(db: AsyncSession = Depends(get_db)):
     stats = await hr_service.get_application_stats(db)
     return stats
@@ -74,9 +78,12 @@ async def create_job_description(
     job: JobCreate, 
     db: AsyncSession = Depends(get_db)
 ):
-    return await create_job(db=db, job=job)
+    result = await create_job(db=db, job=job)
+    await clear_cache_pattern("active_jobs:*")
+    return result
 
 @router.get("/read-jobs", response_model=List[JobResponse])
+@cache_response("active_jobs", ttl=600)
 async def read_active_jobs(
     skip: int = 0, 
     limit: int = 100, 
@@ -85,6 +92,7 @@ async def read_active_jobs(
     return await get_all_active_jobs(db, skip=skip, limit=limit)
 
 @router.get("/read-job/{job_id}", response_model=JobResponse)
+@cache_response("job_detail", ttl=600)
 async def read_job(job_id: str, db: AsyncSession = Depends(get_db)):
     db_job = await get_job(db, job_id=job_id)
     if not db_job:
@@ -98,6 +106,9 @@ async def update_job_details(
     db: AsyncSession = Depends(get_db)
 ):
     db_job = await update_job(db=db, job_id=job_id, job_data=job_data)
+    if db_job:
+        await clear_cache_pattern(f"job_detail:*job_id\":\"{job_id}\"*")
+        await clear_cache_pattern("active_jobs:*")
     if not db_job:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, 
@@ -108,6 +119,9 @@ async def update_job_details(
 @router.patch("/archive-job/{job_id}", response_model=JobResponse)
 async def archive_job(job_id: str, db: AsyncSession = Depends(get_db)):
     db_job = await set_job_status(db=db, job_id=job_id, active_status=False)
+    if db_job:
+        await clear_cache_pattern("active_jobs:*")
+        await clear_cache_pattern(f"job_detail:*job_id\":\"{job_id}\"*")
     if not db_job:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, 
@@ -119,6 +133,9 @@ async def archive_job(job_id: str, db: AsyncSession = Depends(get_db)):
 @router.patch("/unarchive-job/{job_id}", response_model=JobResponse)
 async def unarchive_job(job_id: str, db: AsyncSession = Depends(get_db)):
     db_job = await set_job_status(db=db, job_id=job_id, active_status=True)
+    if db_job:
+        await clear_cache_pattern("active_jobs:*")
+        await clear_cache_pattern(f"job_detail:*job_id\":\"{job_id}\"*")
     if not db_job:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, 

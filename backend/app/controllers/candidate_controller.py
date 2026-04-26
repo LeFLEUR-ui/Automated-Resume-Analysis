@@ -8,6 +8,7 @@ from app.database import get_db
 from app.schemas.candidate_schema import CandidateCreate, CandidateResponse, CandidateUpdate
 from app.services import candidate_service, resume_service
 from app.utils.limiter import limiter
+from app.utils.cache import cache_response, clear_cache_pattern, delete_cache
 
 router = APIRouter(prefix="/candidate", tags=["Candidates"])
 
@@ -20,9 +21,15 @@ async def parse_resume(request: Request, file: UploadFile = File(...), db: Async
     extracted_data = await resume_service.parse_resume_file(db, file)
     if not extracted_data:
         raise HTTPException(status_code=400, detail="Failed to parse resume or unsupported file type.")
+    
+    # Invalidate HR stats cache
+    await delete_cache("resume_count:{}")
+    await delete_cache("app_stats:{}")
+    
     return extracted_data
 
 @router.get("/profile/{candidate_id}", response_model=CandidateResponse)
+@cache_response("candidate_profile", ttl=1800)
 async def get_profile(candidate_id: int, db: AsyncSession = Depends(get_db)):
     profile = await candidate_service.get_candidate_profile(db, candidate_id)
     if not profile:
@@ -32,6 +39,8 @@ async def get_profile(candidate_id: int, db: AsyncSession = Depends(get_db)):
 @router.put("/profile/{candidate_id}", response_model=CandidateResponse)
 async def update_profile(candidate_id: int, profile_in: CandidateUpdate, db: AsyncSession = Depends(get_db)):
     updated_profile = await candidate_service.update_candidate_profile(db, candidate_id, profile_in)
+    if updated_profile:
+        await clear_cache_pattern(f"candidate_profile:*candidate_id\":{candidate_id}*")
     if not updated_profile:
         raise HTTPException(status_code=404, detail="Candidate not found")
     return updated_profile
@@ -58,6 +67,7 @@ async def upload_profile_image(candidate_id: int, file: UploadFile = File(...), 
     image_url = f"http://localhost:8000/{file_path}"
     print(f"Updating database with image_url: {image_url}")
     await candidate_service.update_candidate_profile(db, candidate_id, CandidateUpdate(profile_image_url=image_url))
+    await clear_cache_pattern(f"candidate_profile:*candidate_id\":{candidate_id}*")
     print("Database updated successfully")
     
     return {"image_url": image_url}
