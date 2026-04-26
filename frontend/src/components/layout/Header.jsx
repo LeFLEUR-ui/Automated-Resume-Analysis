@@ -49,7 +49,11 @@ const Header = () => {
     const fetchNotifications = async () => {
       if (isAdminRole || isHRRole) {
         try {
+<<<<<<< HEAD
           const res = await axios.get(`http://localhost:8000/notifications/?role=${userRole}`);
+=======
+          const res = await axios.get('http://127.0.0.1:8000/notifications/');
+>>>>>>> ba88f1a (backup current work before pull)
           const formatted = res.data.map(n => {
             // Determine icon and colors based on type
             let icon = <AlertCircle size={16} />;
@@ -138,8 +142,13 @@ const Header = () => {
     fetchNotifications();
 
     if (isAdminRole || isHRRole) {
+<<<<<<< HEAD
       // Connect to WebSocket with role filtering
       ws = new WebSocket(`ws://localhost:8000/notifications/ws?role=${userRole}`);
+=======
+      // Connect to WebSocket
+      ws = new WebSocket('ws://127.0.0.1:8000/notifications/ws');
+>>>>>>> ba88f1a (backup current work before pull)
       
       ws.onmessage = (event) => {
         try {
@@ -224,7 +233,7 @@ const Header = () => {
     }
     
     return () => {
-      if (ws) {
+      if (ws && ws.readyState === WebSocket.OPEN) {
         ws.close();
       }
     };
@@ -235,7 +244,7 @@ const Header = () => {
   const handleMarkAllRead = async () => {
     if (isAdminRole || isHRRole) {
       try {
-        await axios.put('http://localhost:8000/notifications/mark-read');
+        await axios.put('http://127.0.0.1:8000/notifications/mark-read');
       } catch (err) {
         console.error("Failed to mark read:", err);
       }

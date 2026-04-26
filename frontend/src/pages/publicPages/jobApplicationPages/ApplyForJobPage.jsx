@@ -11,7 +11,11 @@ import {
   ShieldCheck,
   Briefcase,
   Info,
-  ArrowRight
+  ArrowRight,
+  Target,
+  Zap,
+  GraduationCap,
+  Cpu
 } from 'lucide-react';
 import Header from '../../../components/layout/Header';
 import Footer from '../../../components/layout/Footer';
@@ -36,6 +40,8 @@ const ApplyForJobPage = () => {
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [extractedData, setExtractedData] = useState(null);
+  const [matchData, setMatchData] = useState(null);
+  const [isMatching, setIsMatching] = useState(false);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
@@ -131,6 +137,22 @@ const ApplyForJobPage = () => {
       
       setExtractedData(response.data);
       setIsComplete(true);
+
+      // Fetch match score for this specific job
+      if (job?.job_id) {
+        setIsMatching(true);
+        try {
+          const matchRes = await axios.post(
+            `http://127.0.0.1:8000/matching/match-data/${job.job_id}`,
+            response.data
+          );
+          setMatchData(matchRes.data);
+        } catch (matchErr) {
+          console.error("Match scoring failed:", matchErr);
+        } finally {
+          setIsMatching(false);
+        }
+      }
     } catch (error) {
       console.error("Error parsing resume:", error);
       alert("Failed to parse resume. Please try again.");
@@ -244,22 +266,85 @@ const ApplyForJobPage = () => {
                     </div>
                   </div>
                 )}
-
                 {isComplete && (
                   <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="bg-green-50 border border-green-100 p-6 rounded-[24px] flex items-center gap-4">
-                      <div className="bg-white text-green-500 p-3 rounded-xl shadow-sm">
-                        <CheckCircle2 size={24} />
+                    {/* Match Analysis Section */}
+                    {matchData && (
+                      <div className="bg-white border border-slate-100 rounded-[32px] p-8 shadow-sm space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-700">
+                        <div className="flex items-center gap-3 text-[#D60041]">
+                          <div className="p-2.5 bg-pink-50 rounded-xl">
+                            <Target size={20} />
+                          </div>
+                          <h2 className="font-bold uppercase tracking-widest text-xs">AI Match Analysis</h2>
+                        </div>
+
+                        <div className="flex flex-col md:flex-row items-center gap-8">
+                          {/* Gauge */}
+                          <div className="flex flex-col items-center shrink-0">
+                            <div className="relative w-32 h-32">
+                              <svg className="w-32 h-32 -rotate-90" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="42" fill="none" stroke="#f1f5f9" strokeWidth="10" />
+                                <circle
+                                  cx="50" cy="50" r="42" fill="none"
+                                  stroke={matchData.match_percentage >= 70 ? '#22c55e' : matchData.match_percentage >= 40 ? '#f59e0b' : '#ef4444'}
+                                  strokeWidth="10"
+                                  strokeDasharray={`${matchData.match_percentage * 2.64} 264`}
+                                  strokeLinecap="round"
+                                  className="transition-all duration-1000 ease-out"
+                                />
+                              </svg>
+                              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                <span className="text-3xl font-black text-slate-900 leading-none">{matchData.match_percentage}%</span>
+                              </div>
+                            </div>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-3">Overall Match</span>
+                          </div>
+
+                          {/* Sub-Scores */}
+                          <div className="flex-1 grid grid-cols-3 gap-3 w-full">
+                            {[
+                              { label: 'Skills', score: matchData.skills_score, color: 'text-blue-600', bgColor: 'bg-blue-50', icon: <Cpu size={14} /> },
+                              { label: 'Experience', score: matchData.experience_score, color: 'text-purple-600', bgColor: 'bg-purple-50', icon: <Briefcase size={14} /> },
+                              { label: 'Education', score: matchData.education_score, color: 'text-amber-600', bgColor: 'bg-amber-50', icon: <GraduationCap size={14} /> }
+                            ].map((item, idx) => (
+                              <div key={idx} className={`${item.bgColor} ${item.color} p-4 rounded-2xl border border-transparent hover:border-current/10 transition-all text-center group`}>
+                                <div className="flex items-center justify-center mb-1 gap-1">
+                                  {item.icon}
+                                  <span className="text-[9px] font-black uppercase tracking-widest opacity-70 group-hover:opacity-100 transition-opacity">{item.label}</span>
+                                </div>
+                                <p className="text-2xl font-black">{item.score}%</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Matched / Missing Skills */}
+                        {(matchData.matched_skills?.length > 0 || matchData.missing_skills?.length > 0) && (
+                          <div className="pt-6 border-t border-slate-50 space-y-4">
+                            {matchData.matched_skills?.length > 0 && (
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="text-[9px] font-black uppercase tracking-widest text-green-600 mr-2">Matched:</span>
+                                {matchData.matched_skills.map((s, i) => (
+                                  <span key={i} className="px-3 py-1 bg-green-50 text-green-700 rounded-lg text-xs font-bold border border-green-100/50">{s}</span>
+                                ))}
+                              </div>
+                            )}
+                            {matchData.missing_skills?.length > 0 && (
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="text-[9px] font-black uppercase tracking-widest text-red-500 mr-2">Missing:</span>
+                                {matchData.missing_skills.map((s, i) => (
+                                  <span key={i} className="px-3 py-1 bg-red-50 text-red-600 rounded-lg text-xs font-bold border border-red-100/50">{s}</span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
-                      <div>
-                        <h4 className="font-bold text-slate-900">Analysis Complete</h4>
-                        <p className="text-sm text-slate-600">We've successfully extracted your data.</p>
-                      </div>
-                    </div>
+                    )}
 
                     {/* Extracted Data Display */}
-                    <div className="bg-slate-50 border border-slate-100 rounded-[24px] p-8 space-y-6">
-                      <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#D60041] mb-2">Extracted Information</h5>
+                    <div className="bg-slate-50 border border-slate-100 rounded-[32px] p-8 space-y-6">
+                      <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#D60041] mb-2">Extracted Profile Data</h5>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
                         {[
                           { label: "Full Name", value: extractedData?.fullname },
@@ -286,7 +371,8 @@ const ApplyForJobPage = () => {
                         state: { 
                           job, 
                           fileName: file.name,
-                          extractedData 
+                          extractedData,
+                          matchData
                         } 
                       })}
                       className="w-full bg-slate-900 hover:bg-[#D60041] text-white py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 transition-all shadow-xl hover:shadow-pink-100 active:scale-95"
