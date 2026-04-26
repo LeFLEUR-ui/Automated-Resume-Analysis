@@ -1,3 +1,4 @@
+from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from app.models.job_application import JobApplication
@@ -52,3 +53,32 @@ async def get_all_applications(db: AsyncSession) -> list[JobApplication]:
         select(JobApplication).options(selectinload(JobApplication.job)).order_by(JobApplication.created_at.desc())
     )
     return result.scalars().all()
+
+async def update_application_status(db: AsyncSession, application_id: int, new_status: str) -> Optional[JobApplication]:
+    from sqlalchemy.orm import selectinload
+    result = await db.execute(
+        select(JobApplication)
+        .options(selectinload(JobApplication.job))
+        .filter(JobApplication.id == application_id)
+    )
+    db_application = result.scalars().first()
+    
+    if not db_application:
+        return None
+        
+    db_application.status = new_status
+    await db.commit()
+    await db.refresh(db_application)
+    
+    # Optional: Send notification about status change
+    try:
+        await create_notification(
+            db=db,
+            title="Application Status Updated",
+            message=f"Application for {db_application.candidate_name} marked as {new_status}.",
+            type="application_update"
+        )
+    except:
+        pass
+        
+    return db_application

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-const CandidateCard = ({ candidate, onOpenDetails, onOpenInterview }) => {
+const CandidateCard = ({ candidate, onOpenDetails, onOpenInterview, onUpdateStatus }) => {
+  const [isUpdating, setIsUpdating] = useState(false);
   const status = candidate.status.toLowerCase();
   const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(candidate.name)}&background=fdf2f8&color=d81159&bold=true`;
 
@@ -20,10 +21,38 @@ const CandidateCard = ({ candidate, onOpenDetails, onOpenInterview }) => {
         <div className="flex-grow">
           <div className="flex flex-wrap items-center gap-3 mb-1.5">
             <h3 className="text-xl font-bold text-gray-900 group-hover:text-[#D60041] transition-colors">{candidate.name}</h3>
-            <span className={`text-[10px] font-bold px-3 py-1 rounded-full border uppercase tracking-wide shadow-sm ${status === 'reviewed' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-amber-50 text-amber-600 border-amber-100'
+            
+            <div className={`relative group/status rounded-xl transition-all ${isUpdating ? 'animate-success-pulse' : ''}`}>
+              <select 
+                value={candidate.status}
+                onChange={async (e) => {
+                  setIsUpdating(true);
+                  await onUpdateStatus(candidate.id, e.target.value);
+                  setTimeout(() => setIsUpdating(false), 1000);
+                }}
+                className={`appearance-none cursor-pointer text-[10px] font-black px-4 py-1.5 pr-9 rounded-xl border-2 uppercase tracking-widest shadow-md transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-opacity-20 ${
+                  candidate.status.toLowerCase() === 'accepted' ? 'bg-green-50 text-green-600 border-green-200 focus:ring-green-500' :
+                  candidate.status.toLowerCase() === 'rejected' ? 'bg-red-50 text-red-600 border-red-200 focus:ring-red-500' :
+                  candidate.status.toLowerCase() === 'reviewed' ? 'bg-blue-50 text-blue-600 border-blue-200 focus:ring-blue-500' :
+                  'bg-orange-50 text-orange-600 border-orange-200 focus:ring-orange-500'
+                }`}
+              >
+                <option value="Pending">🕒 Pending</option>
+                <option value="Reviewed">🔍 Reviewed</option>
+                <option value="Accepted">✅ Accepted</option>
+                <option value="Rejected">❌ Rejected</option>
+              </select>
+              <div className={`pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 transition-colors ${
+                candidate.status.toLowerCase() === 'accepted' ? 'text-green-600' :
+                candidate.status.toLowerCase() === 'rejected' ? 'text-red-600' :
+                candidate.status.toLowerCase() === 'reviewed' ? 'text-blue-600' :
+                'text-orange-600'
               }`}>
-              {status}
-            </span>
+                <svg className="h-4 w-4 animate-bounce-subtle" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
           </div>
 
           <p className="text-sm text-gray-500 font-medium mb-3">Preferred: {candidate.preferredJob}</p>

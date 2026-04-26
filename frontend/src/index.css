@@ -13,6 +13,26 @@
     scrollbar-gutter: stable;
   }
 }
+
+@keyframes bounce-subtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+@keyframes success-ring {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 2s infinite ease-in-out;
+}
+
+.animate-success-pulse {
+  animation: success-ring 1s cubic-bezier(0, 0, 0.2, 1);
+}
+
 html, body, #root {
   font-family: 'Miranda sans', sans-serif;
 }

@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
 from app.utils.database import get_db
-from app.schemas.job_application_schema import JobApplicationCreate, JobApplicationResponse
+from app.schemas.job_application_schema import JobApplicationCreate, JobApplicationResponse, JobApplicationStatusUpdate
 from app.services import job_application_service
 from app.models.job_description import JobDescription
 from sqlalchemy.future import select
@@ -46,3 +46,24 @@ async def get_applications_for_job(job_id: int, db: AsyncSession = Depends(get_d
     Get all applications for a specific job.
     """
     return await job_application_service.get_applications_by_job(db, job_id)
+
+@router.patch("/{application_id}/status", response_model=JobApplicationResponse)
+async def update_application_status(
+    application_id: int, 
+    status_update: JobApplicationStatusUpdate, 
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Update the status of a job application.
+    """
+    db_application = await job_application_service.update_application_status(
+        db, application_id, status_update.status
+    )
+    if not db_application:
+        raise HTTPException(status_code=404, detail="Application not found")
+        
+    # Invalidate cache since stats might change
+    from app.utils.cache import delete_cache
+    await delete_cache("app_stats:{}")
+    
+    return db_application

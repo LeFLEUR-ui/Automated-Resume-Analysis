@@ -24,6 +24,9 @@ class JobApplicationBase(BaseModel):
 class JobApplicationCreate(JobApplicationBase):
     job_id: str
 
+class JobApplicationStatusUpdate(BaseModel):
+    status: str
+
 class JobApplicationResponse(JobApplicationBase):
     id: int
     job_id: int

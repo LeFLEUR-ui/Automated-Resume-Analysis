@@ -117,6 +117,21 @@ const ScreeningPortal = () => {
     setDetailsModalOpen(true);
   };
 
+  const handleUpdateStatus = async (candidateId, newStatus) => {
+    try {
+      await axios.patch(`http://localhost:8000/applications/${candidateId}/status`, {
+        status: newStatus
+      });
+      // Update local state
+      setCandidates(prev => prev.map(c => 
+        c.id === candidateId ? { ...c, status: newStatus } : c
+      ));
+    } catch (error) {
+      console.error("Failed to update status:", error);
+      alert("Failed to update status. Please try again.");
+    }
+  };
+
   const filteredCandidates = candidates.filter(c => {
     const matchesStatus =
       statusFilter === "All Status" ||
@@ -167,6 +182,7 @@ const ScreeningPortal = () => {
             candidates={filteredCandidates}
             onOpenDetails={handleOpenDetails}
             onOpenInterview={handleOpenInterview}
+            onUpdateStatus={handleUpdateStatus}
           />
         )}
       </main>

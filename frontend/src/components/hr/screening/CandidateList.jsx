@@ -2,7 +2,7 @@ import React from 'react';
 import { Search } from 'lucide-react';
 import CandidateCard from './CandidateCard';
 
-const CandidateList = ({ candidates, onOpenDetails, onOpenInterview }) => {
+const CandidateList = ({ candidates, onOpenDetails, onOpenInterview, onUpdateStatus }) => {
   if (candidates.length === 0) {
     return (
       <div className="text-center py-24 bg-white rounded-[32px] border-2 border-dashed border-gray-200 text-gray-400 shadow-sm">
@@ -21,6 +21,7 @@ const CandidateList = ({ candidates, onOpenDetails, onOpenInterview }) => {
           candidate={candidate} 
           onOpenDetails={onOpenDetails} 
           onOpenInterview={onOpenInterview} 
+          onUpdateStatus={onUpdateStatus}
         />
       ))}
     </div>
