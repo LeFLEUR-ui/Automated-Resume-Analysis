@@ -16,7 +16,7 @@ rm -rf uploads/resume_images/*
 mkdir -p uploads/resumes
 mkdir -p uploads/resume_images
 
-echo "Database and uploads reset! All tables and uploaded files have been wiped clean."
+echo "Initializing fresh database tables..."
+python3 init-db.py
 
-echo "Seeding database with test job..."
-python3 seed-db.py
+echo "Database and uploads reset! All tables are empty and uploaded files have been wiped clean."
