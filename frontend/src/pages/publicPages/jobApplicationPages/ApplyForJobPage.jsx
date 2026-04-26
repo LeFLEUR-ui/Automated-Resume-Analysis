@@ -13,14 +13,9 @@ import {
   Info,
   ArrowRight,
   Target,
-<<<<<<< HEAD
   Zap,
   GraduationCap,
   Cpu
-=======
-  Cpu,
-  GraduationCap
->>>>>>> 5106f13 (Restored and fixed Job Matching system, Header WebSocket, and Resume Analysis UI. Added debug logs and database migrations for target_role.)
 } from 'lucide-react';
 import Header from '../../../components/layout/Header';
 import Footer from '../../../components/layout/Footer';
@@ -148,11 +143,7 @@ const ApplyForJobPage = () => {
         setIsMatching(true);
         try {
           const matchRes = await axios.post(
-<<<<<<< HEAD
-            `http://127.0.0.1:8000/matching/match-data/${job.job_id}`,
-=======
             `http://localhost:8000/matching/match-data/${job.job_id}`,
->>>>>>> 5106f13 (Restored and fixed Job Matching system, Header WebSocket, and Resume Analysis UI. Added debug logs and database migrations for target_role.)
             response.data
           );
           setMatchData(matchRes.data);
@@ -413,11 +404,7 @@ const ApplyForJobPage = () => {
                           job, 
                           fileName: file.name,
                           extractedData,
-<<<<<<< HEAD
                           matchData
-=======
-                          matchData: matchData
->>>>>>> 5106f13 (Restored and fixed Job Matching system, Header WebSocket, and Resume Analysis UI. Added debug logs and database migrations for target_role.)
                         } 
                       })}
                       className="w-full bg-slate-900 hover:bg-[#D60041] text-white py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 transition-all shadow-xl hover:shadow-pink-100 active:scale-95"

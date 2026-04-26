@@ -50,11 +50,7 @@ const Header = () => {
     const fetchNotifications = async () => {
       if (isAdminRole || isHRRole) {
         try {
-<<<<<<< HEAD
           const res = await axios.get(`http://localhost:8000/notifications/?role=${userRole}`);
-=======
-          const res = await axios.get('http://127.0.0.1:8000/notifications/');
->>>>>>> ba88f1a (backup current work before pull)
           const formatted = res.data.map(n => {
             // Determine icon and colors based on type
             let icon = <AlertCircle size={16} />;
@@ -109,7 +105,7 @@ const Header = () => {
             let timeStr = 'just now';
             if (diffMins > 0 && diffMins < 60) timeStr = `${diffMins}m ago`;
             else if (diffMins >= 60 && diffMins < 1440) timeStr = `${Math.floor(diffMins/60)}h ago`;
-            else if (diffMins >= 1440) timeStr = `${Math.floor(diffMins/1440)}d ago`;
+            else if (diffMins >= 1440) timeStr = `${Math.floor(diffMins/14440)}d ago`;
 
             return {
               id: n.id,
@@ -143,13 +139,8 @@ const Header = () => {
     fetchNotifications();
 
     if (isAdminRole || isHRRole) {
-<<<<<<< HEAD
       // Connect to WebSocket with role filtering
       ws = new WebSocket(`ws://localhost:8000/notifications/ws?role=${userRole}`);
-=======
-      // Connect to WebSocket
-      ws = new WebSocket('ws://127.0.0.1:8000/notifications/ws');
->>>>>>> ba88f1a (backup current work before pull)
       
       ws.onmessage = (event) => {
         try {
@@ -228,6 +219,10 @@ const Header = () => {
         console.error("WebSocket error:", error);
       };
       
+      ws.onopen = () => {
+        console.log("WebSocket connection established.");
+      };
+
       ws.onclose = () => {
         console.log("WebSocket connection closed.");
       };
@@ -237,8 +232,6 @@ const Header = () => {
       if (ws && ws.readyState === WebSocket.OPEN) {
         ws.close();
       } else if (ws && ws.readyState === WebSocket.CONNECTING) {
-        // If it's still connecting, we can still call close() but it triggers the warning.
-        // We'll set the onopen to close it immediately if it finishes connecting later.
         ws.onopen = () => ws.close();
       }
     };
@@ -249,7 +242,7 @@ const Header = () => {
   const handleMarkAllRead = async () => {
     if (isAdminRole || isHRRole) {
       try {
-        await axios.put('http://127.0.0.1:8000/notifications/mark-read');
+        await axios.put('http://localhost:8000/notifications/mark-read');
       } catch (err) {
         console.error("Failed to mark read:", err);
       }

@@ -1,32 +1,15 @@
 import re
 from difflib import SequenceMatcher
-<<<<<<< HEAD
+from app.models.job_description import JobDescription
 
 # Degree hierarchy for education matching
 DEGREE_HIERARCHY = {
     "SENIOR HIGH SCHOOL": 1,
-=======
-from app.models.job_description import JobDescription
-
-# Basic hierarchy for education comparison
-DEGREE_HIERARCHY = {
-    "SENIOR HIGH SCHOOL": 1,
     "SHS": 1,
->>>>>>> 5106f13 (Restored and fixed Job Matching system, Header WebSocket, and Resume Analysis UI. Added debug logs and database migrations for target_role.)
     "DIPLOMA/VOCATIONAL": 2,
     "ASSOCIATE": 3,
     "BACHELOR": 4,
     "MASTER": 5,
-<<<<<<< HEAD
-    "DOCTORATE": 6
-}
-
-
-def _normalize_skill(skill: str) -> str:
-    """Normalize a skill string for comparison."""
-    s = skill.strip().lower()
-    # Remove common suffixes/variations
-=======
     "DOCTORATE": 6,
     "PHD": 6
 }
@@ -37,7 +20,6 @@ def _normalize_skill(s: str) -> str:
         return ""
     s = s.lower().strip()
     # Remove common suffixes/versions to improve matching (e.g., React.js -> react)
->>>>>>> 5106f13 (Restored and fixed Job Matching system, Header WebSocket, and Resume Analysis UI. Added debug logs and database migrations for target_role.)
     s = re.sub(r'\.js$', '', s)
     s = re.sub(r'[^a-z0-9+#/ ]', '', s)
     return s.strip()
@@ -199,14 +181,11 @@ def calculate_education_match(resume_degree: str, job_description: str) -> float
 def calculate_match_score(resume_data: dict, job) -> dict:
     """
     Calculate the overall match score between a parsed resume and a job.
-<<<<<<< HEAD
     
     Weights:
     - Skills: 50%
     - Experience: 30%
     - Education: 20%
-=======
->>>>>>> 5106f13 (Restored and fixed Job Matching system, Header WebSocket, and Resume Analysis UI. Added debug logs and database migrations for target_role.)
     """
     # Skills matching (50%)
     resume_skills = resume_data.get("skills", "")
@@ -251,10 +230,7 @@ def calculate_match_score(resume_data: dict, job) -> dict:
 async def match_resume_to_all_jobs(db, resume_data: dict) -> list[dict]:
     """
     Match parsed resume data against all active jobs in the database.
-<<<<<<< HEAD
     Returns a list of match results sorted by match_percentage descending.
-=======
->>>>>>> 5106f13 (Restored and fixed Job Matching system, Header WebSocket, and Resume Analysis UI. Added debug logs and database migrations for target_role.)
     """
     from sqlalchemy.future import select
     from app.models.job_description import JobDescription
