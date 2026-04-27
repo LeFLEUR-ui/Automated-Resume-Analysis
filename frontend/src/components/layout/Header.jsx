@@ -11,6 +11,7 @@ import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout as logoutAction } from '../../redux/slices/authSlice';
 import { setNotifications, addNotification, markAllRead as markAllReadAction } from '../../redux/slices/notificationSlice';
+import { closeSidebar } from '../../redux/slices/uiSlice';
 
 const BRAND_RED = "#D60041";
 
@@ -27,13 +28,18 @@ const Header = () => {
   const dispatch = useDispatch();
   const { user: userEmail, role: userRole, profileImageUrl } = useSelector(state => state.auth);
   const { notifications, unreadCount } = useSelector(state => state.notifications);
-
-  // Remove local storage listeners as Redux handles the state now
+  const { isSidebarOpen } = useSelector(state => state.ui);
 
   const isCandidateRole = userRole === 'CANDIDATE';
   const isHRRole = userRole === 'HR';
   const isAdminRole = userRole === 'ADMIN';
   const isGuest = userRole === 'Guest';
+
+  useEffect(() => {
+    if (window.innerWidth < 1024) {
+      dispatch(closeSidebar());
+    }
+  }, [dispatch]);
 
   useEffect(() => {
     let ws;
@@ -42,7 +48,6 @@ const Header = () => {
         try {
           const res = await axios.get(`http://localhost:8000/notifications/?role=${userRole}`);
           const formatted = res.data.map(n => {
-            // Determine icon and colors based on type
             let iconName = 'AlertCircle';
             let bgColor = 'bg-slate-50';
             let textColor = 'text-slate-600';
@@ -87,15 +92,14 @@ const Header = () => {
               textColor = 'text-purple-600';
             }
 
-            // Format relative time (approximate)
             const created = new Date(n.created_at);
             const now = new Date();
             const diffMs = now - created;
             const diffMins = Math.floor(diffMs / 60000);
             let timeStr = 'just now';
             if (diffMins > 0 && diffMins < 60) timeStr = `${diffMins}m ago`;
-            else if (diffMins >= 60 && diffMins < 1440) timeStr = `${Math.floor(diffMins/60)}h ago`;
-            else if (diffMins >= 1440) timeStr = `${Math.floor(diffMins/14440)}d ago`;
+            else if (diffMins >= 60 && diffMins < 1440) timeStr = `${Math.floor(diffMins / 60)}h ago`;
+            else if (diffMins >= 1440) timeStr = `${Math.floor(diffMins / 14440)}d ago`;
 
             return {
               id: n.id,
@@ -116,7 +120,7 @@ const Header = () => {
           console.error("Failed to fetch notifications:", err);
         }
       }
-      
+
       if (isCandidateRole) {
         const candidateNotifs = [
           { id: 1, title: 'Status Update', desc: 'Your application for Frontend Lead is now "Under Review".', time: '2m ago', type: 'application', icon: 'Briefcase', bgColor: 'bg-blue-50', textColor: 'text-blue-600', tag: 'Update', tagColor: 'bg-blue-100 text-blue-700', read: false },
@@ -126,122 +130,52 @@ const Header = () => {
         dispatch(setNotifications(candidateNotifs));
       }
     };
-    
+
     fetchNotifications();
 
     if (isAdminRole || isHRRole) {
-      // Connect to WebSocket with role filtering
       ws = new WebSocket(`ws://localhost:8000/notifications/ws?role=${userRole}`);
-      
       ws.onmessage = (event) => {
         try {
           const n = JSON.parse(event.data);
-          
           let iconName = 'AlertCircle';
           let bgColor = 'bg-slate-50';
           let textColor = 'text-slate-600';
           let tag = null;
           let tagColor = null;
 
-          if (n.type === 'registration') {
-            iconName = 'UserPlus';
-            bgColor = 'bg-blue-50';
-            textColor = 'text-blue-600';
-          } else if (n.type === 'application') {
-            iconName = 'Briefcase';
-            bgColor = 'bg-pink-50';
-            textColor = 'text-[#D60041]';
-            tag = 'New';
-            tagColor = 'bg-pink-100 text-[#D60041]';
-          } else if (n.type === 'upload') {
-            iconName = 'FileText';
-            bgColor = 'bg-orange-50';
-            textColor = 'text-orange-600';
-          } else if (n.type === 'hr_registration') {
-            iconName = 'ShieldCheck';
-            bgColor = 'bg-indigo-50';
-            textColor = 'text-indigo-600';
-            tag = 'System';
-            tagColor = 'bg-indigo-100 text-indigo-700';
-          } else if (n.type === 'job_creation') {
-            iconName = 'Zap';
-            bgColor = 'bg-green-50';
-            textColor = 'text-green-600';
-          } else if (n.type === 'job_update') {
-            iconName = 'Edit3';
-            bgColor = 'bg-amber-50';
-            textColor = 'text-amber-600';
-          } else if (n.type === 'candidate_login') {
-            iconName = 'Radio';
-            bgColor = 'bg-green-50';
-            textColor = 'text-green-600';
-          } else if (n.type === 'hr_login') {
-            iconName = 'Radio';
-            bgColor = 'bg-purple-50';
-            textColor = 'text-purple-600';
-          }
+          if (n.type === 'registration') { iconName = 'UserPlus'; bgColor = 'bg-blue-50'; textColor = 'text-blue-600'; }
+          else if (n.type === 'application') { iconName = 'Briefcase'; bgColor = 'bg-pink-50'; textColor = 'text-[#D60041]'; tag = 'New'; tagColor = 'bg-pink-100 text-[#D60041]'; }
+          else if (n.type === 'upload') { iconName = 'FileText'; bgColor = 'bg-orange-50'; textColor = 'text-orange-600'; }
+          else if (n.type === 'hr_registration') { iconName = 'ShieldCheck'; bgColor = 'bg-indigo-50'; textColor = 'text-indigo-600'; tag = 'System'; tagColor = 'bg-indigo-100 text-indigo-700'; }
+          else if (n.type === 'job_creation') { iconName = 'Zap'; bgColor = 'bg-green-50'; textColor = 'text-green-600'; }
+          else if (n.type === 'job_update') { iconName = 'Edit3'; bgColor = 'bg-amber-50'; textColor = 'text-amber-600'; }
+          else if (n.type === 'candidate_login') { iconName = 'Radio'; bgColor = 'bg-green-50'; textColor = 'text-green-600'; }
+          else if (n.type === 'hr_login') { iconName = 'Radio'; bgColor = 'bg-purple-50'; textColor = 'text-purple-600'; }
 
           const formattedNewNotif = {
-            id: n.id,
-            title: n.title,
-            desc: n.message,
-            time: 'just now',
-            type: n.type,
-            icon: iconName,
-            bgColor,
-            textColor,
-            tag,
-            tagColor,
-            read: n.is_read
+            id: n.id, title: n.title, desc: n.message, time: 'just now', type: n.type, icon: iconName, bgColor, textColor, tag, tagColor, read: n.is_read
           };
 
-          // Prepend the new notification to the list
           dispatch(addNotification(formattedNewNotif));
-          
-          // Trigger pulse animation
           setPulse(true);
           setTimeout(() => setPulse(false), 2000);
-        } catch (err) {
-          console.error("Error processing websocket message:", err);
-        }
-      };
-
-      ws.onerror = (error) => {
-        console.error("WebSocket error:", error);
-      };
-      
-      ws.onopen = () => {
-        console.log("WebSocket connection established.");
-      };
-
-      ws.onclose = () => {
-        console.log("WebSocket connection closed.");
+        } catch (err) { console.error("Error processing websocket message:", err); }
       };
     }
-    
+
     return () => {
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.close();
-      } else if (ws && ws.readyState === WebSocket.CONNECTING) {
-        ws.onopen = () => ws.close();
-      }
+      if (ws && ws.readyState === WebSocket.OPEN) ws.close();
     };
   }, [userRole, dispatch]);
 
   const handleMarkAllRead = async () => {
     if (isHRRole || isAdminRole) {
-      try {
-        await axios.put('http://localhost:8000/notifications/mark-all-read');
-      } catch (err) {
-        console.error("Failed to mark all read:", err);
-      }
+      try { await axios.put('http://localhost:8000/notifications/mark-all-read'); }
+      catch (err) { console.error("Failed to mark all read:", err); }
     }
     dispatch(markAllReadAction());
   };
-
-  const isAdminPath = location.pathname.startsWith('/admin');
-  const isHRPath = location.pathname.startsWith('/hr');
-  const isCandidatePath = location.pathname.startsWith('/candidate');
 
   const isApplicationPage =
     location.pathname.includes('/job-details/') ||
@@ -258,17 +192,9 @@ const Header = () => {
   };
 
   useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [location.pathname]);
-
-  useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsProfileOpen(false);
-      }
-      if (notificationsRef.current && !notificationsRef.current.contains(event.target)) {
-        setIsNotificationsOpen(false);
-      }
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) setIsProfileOpen(false);
+      if (notificationsRef.current && !notificationsRef.current.contains(event.target)) setIsNotificationsOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -302,22 +228,24 @@ const Header = () => {
     <header className="bg-white border-b border-gray-100 px-4 sm:px-6 md:px-10 py-4 sticky top-0 z-50 font-sans shadow-sm">
       <div className="max-w-[1400px] mx-auto flex items-center justify-between">
 
-        <div className="flex items-center space-x-4 cursor-pointer shrink-0 group" onClick={() => navigate(isGuest ? '/' : location.pathname)}>
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden transition-all duration-300 ${!isGuest && 'group-hover:shadow-[0_0_15px_rgba(209,0,67,0.3)]'}`}>
-            <img src="/src/assets/logo.png" alt="logo" className="w-full h-full object-contain" />
-          </div>
-          <div>
-            <h1 className="text-base font-black tracking-tight text-gray-900 leading-tight">
-              {isAdminRole ? "Admin Portal" : isHRRole ? "HR Portal" : isCandidateRole ? "Candidate Portal" : "Mariwasa"}
-            </h1>
-            <p className={`text-[10px] font-bold uppercase tracking-widest mt-0.5 ${isGuest ? 'text-gray-400' : 'text-[#D60041]'}`}>
-              {isGuest ? "Siam Ceramics Inc." : "Resume Analysis System"}
-            </p>
+        <div className="flex items-center space-x-4 shrink-0">
+          <div className="flex items-center space-x-4 cursor-pointer group" onClick={() => navigate(isGuest ? '/' : location.pathname)}>
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden transition-all duration-300 ${!isGuest && 'group-hover:shadow-[0_0_15px_rgba(209,0,67,0.3)]'}`}>
+              <img src="/src/assets/logo.png" alt="logo" className="w-full h-full object-contain" />
+            </div>
+            <div>
+              <h1 className="text-base font-black tracking-tight text-gray-900 leading-tight">
+                {isAdminRole ? "Admin Portal" : isHRRole ? "HR Portal" : isCandidateRole ? "Candidate Portal" : "Mariwasa"}
+              </h1>
+              <p className={`text-[10px] font-bold uppercase tracking-widest mt-0.5 ${isGuest ? 'text-gray-400' : 'text-[#D60041]'}`}>
+                {isGuest ? "Siam Ceramics Inc." : "Resume Analysis System"}
+              </p>
+            </div>
           </div>
         </div>
 
         <div className={`hidden lg:flex flex-1 items-center ${isGuest || isApplicationPage ? 'justify-end pr-8' : 'justify-center'}`}>
-          {!isApplicationPage && (
+          {!isApplicationPage && isGuest && (
             <nav className="flex items-center space-x-1 bg-gray-50/50 p-1 rounded-2xl border border-gray-100">
               {navItems.map((item, index) => {
                 const isActive = location.pathname === item.path;
@@ -325,10 +253,7 @@ const Header = () => {
                   <button
                     key={index}
                     onClick={() => navigate(item.path)}
-                    className={`px-5 py-2.5 rounded-xl flex items-center space-x-2.5 transition-all duration-300 group ${isActive
-                        ? 'bg-white text-[#D60041] shadow-sm ring-1 ring-gray-200/50'
-                        : 'text-gray-500 hover:bg-gray-100/50 hover:text-gray-900'
-                      }`}
+                    className={`px-5 py-2.5 rounded-xl flex items-center space-x-2.5 transition-all duration-300 group ${isActive ? 'bg-white text-[#D60041] shadow-sm ring-1 ring-gray-200/50' : 'text-gray-500 hover:bg-gray-100/50 hover:text-gray-900'}`}
                   >
                     <span className={`transition-transform duration-300 ${isActive ? 'text-[#D60041]' : 'text-gray-400 group-hover:text-gray-600'} ${!isActive && 'group-hover:scale-110'}`}>
                       {item.icon}
@@ -366,9 +291,8 @@ const Header = () => {
             </div>
           ) : (
             <>
-              {/* Notification Bell */}
               <div className="relative mr-2" ref={notificationsRef}>
-                <button 
+                <button
                   onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
                   className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 border ${pulse ? 'ring-4 ring-pink-100 scale-110' : ''} ${isNotificationsOpen ? 'bg-slate-900 border-slate-900 shadow-xl' : 'bg-gray-50/50 border-gray-100 hover:bg-white hover:border-pink-100 hover:shadow-md hover:scale-105 active:scale-95'}`}
                 >
@@ -379,38 +303,21 @@ const Header = () => {
                     </span>
                   )}
                 </button>
-
-                {isNotificationsOpen && (
-                  <NotificationDropdown 
-                    userRole={userRole} 
-                    notifications={notifications} 
-                    onMarkAllRead={handleMarkAllRead}
-                  />
-                )}
+                {isNotificationsOpen && <NotificationDropdown userRole={userRole} notifications={notifications} onMarkAllRead={handleMarkAllRead} />}
               </div>
-            <div onClick={() => setIsProfileOpen(!isProfileOpen)} className={`hidden lg:flex items-center space-x-4 border px-2 py-2 pr-5 rounded-full cursor-pointer transition-all duration-300 group ${isProfileOpen ? 'bg-gray-50 border-gray-200 shadow-inner' : 'hover:border-pink-200 border-gray-100 hover:shadow-md hover:bg-white bg-gray-50/50'}`}>
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center border transition-all duration-300 overflow-hidden ${isProfileOpen ? 'bg-[#D60041] border-[#D60041] shadow-md shadow-pink-200' : 'bg-white border-gray-200 group-hover:border-pink-200'}`}>
-                {profileImageUrl ? (
-                  <img 
-                    src={profileImageUrl} 
-                    alt="Profile" 
-                    className="w-full h-full object-cover" 
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.nextSibling.style.display = 'flex';
-                    }}
-                  />
-                ) : null}
-                <div className={`items-center justify-center w-full h-full ${profileImageUrl ? 'hidden' : 'flex'}`}>
-                  {isAdminRole ? <ShieldCheck className={`h-4 w-4 ${isProfileOpen ? 'text-white' : 'text-gray-600 group-hover:text-[#D60041]'}`} /> : <User className={`h-4 w-4 ${isProfileOpen ? 'text-white' : 'text-gray-600 group-hover:text-[#D60041]'}`} />}
+              <div onClick={() => setIsProfileOpen(!isProfileOpen)} className={`hidden lg:flex items-center space-x-4 border px-2 py-2 pr-5 rounded-full cursor-pointer transition-all duration-300 group ${isProfileOpen ? 'bg-gray-50 border-gray-200 shadow-inner' : 'hover:border-pink-200 border-gray-100 hover:shadow-md hover:bg-white bg-gray-50/50'}`}>
+                <div className={`w-9 h-9 rounded-full flex items-center justify-center border transition-all duration-300 overflow-hidden ${isProfileOpen ? 'bg-[#D60041] border-[#D60041] shadow-md shadow-pink-200' : 'bg-white border-gray-200 group-hover:border-pink-200'}`}>
+                  {profileImageUrl && <img src={profileImageUrl} alt="Profile" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />}
+                  <div className={`items-center justify-center w-full h-full ${profileImageUrl ? 'hidden' : 'flex'}`}>
+                    {isAdminRole ? <ShieldCheck className={`h-4 w-4 ${isProfileOpen ? 'text-white' : 'text-gray-600 group-hover:text-[#D60041]'}`} /> : <User className={`h-4 w-4 ${isProfileOpen ? 'text-white' : 'text-gray-600 group-hover:text-[#D60041]'}`} />}
+                  </div>
                 </div>
+                <div className="flex flex-col items-start overflow-hidden">
+                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none mb-0.5">{userRole}</span>
+                  <span className="text-xs font-bold text-gray-900 truncate max-w-[130px]">{userEmail}</span>
+                </div>
+                <ChevronDown size={14} className={`text-gray-400 transition-transform duration-300 ml-1 ${isProfileOpen ? 'rotate-180 text-[#D60041]' : 'group-hover:text-gray-600'}`} />
               </div>
-              <div className="flex flex-col items-start overflow-hidden">
-                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none mb-0.5">{userRole}</span>
-                <span className="text-xs font-bold text-gray-900 truncate max-w-[130px]">{userEmail}</span>
-              </div>
-              <ChevronDown size={14} className={`text-gray-400 transition-transform duration-300 ml-1 ${isProfileOpen ? 'rotate-180 text-[#D60041]' : 'group-hover:text-gray-600'}`} />
-            </div>
             </>
           )}
 
@@ -431,86 +338,8 @@ const Header = () => {
               </button>
             </div>
           )}
-
-          <button
-            className="lg:hidden p-2 text-gray-600 hover:bg-red-50 hover:text-[#D60041] rounded-xl transition-all"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
         </div>
       </div>
-
-      {isMobileMenuOpen && (
-        <div className="lg:hidden absolute top-[100%] left-0 w-full bg-white border-b border-gray-100 shadow-2xl py-4 px-6 space-y-2 z-[100] animate-in slide-in-from-top-2 duration-300">
-
-          {!isGuest && !isApplicationPage && (
-            <div className="flex items-center space-x-4 p-4 mb-4 bg-gray-50 rounded-2xl border border-gray-100">
-              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-white shadow-md shadow-pink-200 overflow-hidden border border-gray-100">
-                {profileImageUrl ? (
-                  <img src={profileImageUrl} alt="Profile" className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full bg-[#D60041] flex items-center justify-center">
-                    {isAdminRole ? <ShieldCheck size={20} /> : <User size={20} />}
-                  </div>
-                )}
-              </div>
-              <div className="overflow-hidden">
-                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-0.5">{userRole}</p>
-                <p className="text-sm font-bold text-gray-900 truncate">{userEmail}</p>
-              </div>
-            </div>
-          )}
-
-          {!isApplicationPage && (
-            <div className="space-y-1.5">
-              {navItems.map((item, index) => (
-                <button
-                  key={index}
-                  onClick={() => navigate(item.path)}
-                  className={`w-full flex items-center space-x-4 p-4 rounded-xl transition-all ${location.pathname === item.path
-                      ? 'bg-red-50 text-[#D60041] shadow-sm'
-                      : 'text-gray-600 hover:bg-gray-50'
-                    }`}
-                >
-                  <span className={location.pathname === item.path ? 'text-[#D60041]' : 'text-gray-400'}>
-                    {item.icon}
-                  </span>
-                  <span className="text-sm font-bold tracking-tight">{item.label}</span>
-                </button>
-              ))}
-            </div>
-          )}
-
-          <div className="pt-4 mt-4 border-t border-gray-100">
-            {isApplicationPage ? (
-              <button onClick={() => navigate('/')} className="w-full flex items-center justify-center space-x-2 p-4 bg-red-50 text-[#D60041] rounded-2xl font-bold text-sm border border-pink-100 hover:bg-red-100 transition-all">
-                <X size={20} /> <span>Cancel Application</span>
-              </button>
-            ) : isGuest ? (
-              <div className="grid grid-cols-2 gap-3 p-2">
-                <button onClick={() => navigate('/login')} className="flex items-center justify-center space-x-2 p-3.5 bg-gray-50 text-gray-700 rounded-xl font-bold text-sm border border-gray-200 hover:bg-gray-100"><LogIn size={16} /> <span>Login</span></button>
-                <button onClick={() => navigate('/register')} className="flex items-center justify-center space-x-2 p-3.5 bg-[#D60041] text-white rounded-xl font-bold text-sm shadow-md shadow-red-100 hover:bg-[#b50037]"><UserPlus size={16} /> <span>Register</span></button>
-              </div>
-            ) : (
-              <>
-                <button onClick={() => navigate(isAdminRole ? '/admin/profile' : isHRRole ? '/hr/profile' : '/candidate/profile')} className="w-full flex items-center space-x-4 p-4 text-gray-700 font-bold transition-all hover:bg-gray-50 rounded-xl mb-1">
-                  <User size={18} className="text-gray-400" />
-                  <span>View Profile</span>
-                </button>
-                <button onClick={() => navigate(isAdminRole ? '/admin/settings' : isHRRole ? '/hr/settings' : '/candidate/settings')} className="w-full flex items-center space-x-4 p-4 text-gray-700 font-bold transition-all hover:bg-gray-50 rounded-xl mb-1">
-                  <Settings size={18} className="text-gray-400" />
-                  <span>Account Settings</span>
-                </button>
-                <button onClick={handleLogout} className="w-full flex items-center space-x-4 p-4 text-red-600 font-bold transition-all hover:bg-red-50 rounded-xl">
-                  <LogOut size={18} />
-                  <span>Secure Sign Out</span>
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      )}
     </header>
   );
 };

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Header from '../../components/layout/Header';
-import Footer from '../../components/layout/Footer';
+import Sidebar from '../../components/layout/Sidebar';
 
 // Sub-components
 import WelcomeHeader from '../../components/candidate/dashboard/WelcomeHeader';
@@ -41,8 +41,10 @@ const CandidateDashboard = () => {
       </Helmet>
 
       <Header />
-
-      <main className="max-w-[1400px] mx-auto px-6 py-12 w-full flex-grow">
+      
+      <div className="flex flex-1">
+        <Sidebar />
+        <main className="flex-1 max-w-[1400px] mx-auto px-6 py-12 w-full flex-grow">
 
         <WelcomeHeader />
 
@@ -59,9 +61,8 @@ const CandidateDashboard = () => {
           </div>
 
         </div>
-      </main>
-
-      <Footer />
+        </main>
+      </div>
     </div>
   );
 };

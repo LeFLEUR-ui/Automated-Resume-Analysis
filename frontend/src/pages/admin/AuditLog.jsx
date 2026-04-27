@@ -17,6 +17,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import Header from '../../components/layout/Header';
+import Sidebar from '../../components/layout/Sidebar';
 
 const AUDIT_LOGS = [
   { id: 'LOG-8821', user: "Marcus Aurelius", role: "Super Admin", action: "Modified Security Policy", target: "Firewall Settings", ip: "192.168.1.1", time: "Oct 24, 2023 14:20:05", status: "Success" },
@@ -29,13 +30,15 @@ const AUDIT_LOGS = [
 
 const AuditLogPage = () => {
   return (
-    <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter']">
+    <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter'] flex flex-col">
       <Helmet>
         <title>Admin Page - Audit Log</title>
       </Helmet>
       <Header />
-
-      <main className="max-w-[1400px] mx-auto px-10 py-10">
+      
+      <div className="flex flex-1">
+        <Sidebar />
+        <main className="flex-1 max-w-[1400px] mx-auto px-10 py-10">
         
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4">
           <div>
@@ -192,7 +195,8 @@ const AuditLogPage = () => {
             </div>
           </div>
         </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };

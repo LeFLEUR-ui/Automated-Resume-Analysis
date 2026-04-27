@@ -7,7 +7,7 @@ import {
   CheckCircle, ArrowLeft, Edit3
 } from 'lucide-react';
 import Header from '../../components/layout/Header';
-import Footer from '../../components/layout/Footer';
+import Sidebar from '../../components/layout/Sidebar';
 
 const CandidatePreviewAndVerify = () => {
   const { state } = useLocation();
@@ -42,7 +42,9 @@ const CandidatePreviewAndVerify = () => {
 
       <Header />
 
-      <main className="max-w-7xl mx-auto px-6 py-12">
+      <div className="flex flex-1">
+        <Sidebar />
+        <main className="max-w-7xl mx-auto px-6 py-12 flex-grow">
 
         <div className="flex justify-between items-end mb-8">
           <div>
@@ -155,9 +157,8 @@ const CandidatePreviewAndVerify = () => {
             </button>
           </div>
         </div>
-      </main>
-
-      <Footer />
+        </main>
+      </div>
     </div>
   );
 };

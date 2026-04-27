@@ -9,7 +9,7 @@ import {
   ArrowLeft, Save
 } from 'lucide-react';
 import Header from '../../components/layout/Header';
-import Footer from '../../components/layout/Footer';
+import Sidebar from '../../components/layout/Sidebar';
 import ApplicationSuccessModal from '../../components/modals/shared/ApplicationSuccessModal';
 
 const CandidateProfileForm = () => {
@@ -90,7 +90,9 @@ const CandidateProfileForm = () => {
 
       <Header />
 
-      <main className="max-w-7xl mx-auto px-6 py-12">
+      <div className="flex flex-1">
+        <Sidebar />
+        <main className="max-w-7xl mx-auto px-6 py-12 flex-grow">
         <button
           onClick={() => navigate(-1)}
           className="flex items-center text-slate-500 hover:text-[#D10043] transition-all mb-8 font-semibold text-sm group"
@@ -320,9 +322,8 @@ const CandidateProfileForm = () => {
           onConfirm={handleFinalRedirect}
           // We can pass different props here if we want to customize the modal text
         />
-      </main>
-
-      <Footer />
+        </main>
+      </div>
     </div>
   );
 };

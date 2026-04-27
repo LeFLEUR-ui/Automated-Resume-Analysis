@@ -6,7 +6,7 @@ import KeyMetrics from '../../components/hr/dashboard/KeyMetrics';
 import ApplicationTrends from '../../components/hr/dashboard/ApplicationTrends';
 import RecentSubmissions from '../../components/hr/dashboard/RecentSubmissions';
 import Header from '../../components/layout/Header';
-import Footer from '../../components/layout/Footer';
+import Sidebar from '../../components/layout/Sidebar';
 
 import { 
   useGetDashboardStatsQuery, 
@@ -38,22 +38,25 @@ const HRDashboard = () => {
   const isLoading = isStatsLoading || isCandidateLoading || isResumeLoading || isJobsLoading || isAppsLoading;
 
   return (
-    <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter'] pb-12">
+    <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter'] flex flex-col">
       <Helmet>
         <title>Dashboard | Mariwasa ARAS</title>
       </Helmet>
       <Header />
 
-      {isLoading && (
-        <div className="fixed inset-0 bg-white/60 backdrop-blur-sm z-[999] flex items-center justify-center">
-          <div className="flex flex-col items-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D60041] mb-4"></div>
-            <p className="text-sm font-bold text-gray-600 animate-pulse">Syncing dashboard data...</p>
-          </div>
-        </div>
-      )}
+      <div className="flex flex-1">
+        <Sidebar />
+        <div className="flex-1">
+          {isLoading && (
+            <div className="fixed inset-0 bg-white/60 backdrop-blur-sm z-[999] flex items-center justify-center">
+              <div className="flex flex-col items-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D60041] mb-4"></div>
+                <p className="text-sm font-bold text-gray-600 animate-pulse">Syncing dashboard data...</p>
+              </div>
+            </div>
+          )}
 
-      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-10 py-6 md:py-8">
+          <main className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-10 py-6 md:py-8">
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 md:mb-10 gap-6">
           <div>
@@ -139,10 +142,11 @@ const HRDashboard = () => {
 
         </div>
 
-      </main>
-      <Footer />
+        </main>
+      </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default HRDashboard;

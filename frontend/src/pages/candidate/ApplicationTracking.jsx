@@ -19,7 +19,7 @@ import {
   Clock
 } from 'lucide-react';
 import Header from '../../components/layout/Header';
-import Footer from '../../components/layout/Footer';
+import Sidebar from '../../components/layout/Sidebar';
 
 const BRAND_RED = "#D10043";
 
@@ -80,7 +80,9 @@ const ApplicationTracking = () => {
 
       <Header />
       
-      <main className="max-w-[1400px] mx-auto px-6 py-12 w-full flex-grow">
+      <div className="flex flex-1">
+        <Sidebar />
+        <main className="flex-1 max-w-[1400px] mx-auto px-6 py-12 w-full flex-grow">
         
         {/* Navigation & Header */}
         <div className="mb-12">
@@ -249,9 +251,8 @@ const ApplicationTracking = () => {
 
           </div>
         </div>
-      </main>
-
-      <Footer />
+        </main>
+      </div>
     </div>
   );
 };

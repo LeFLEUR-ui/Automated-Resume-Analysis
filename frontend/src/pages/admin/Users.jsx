@@ -17,6 +17,7 @@ import {
   Settings2
 } from 'lucide-react';
 import Header from '../../components/layout/Header';
+import Sidebar from '../../components/layout/Sidebar';
 
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
@@ -36,13 +37,15 @@ const UsersPage = () => {
     fetchUsers();
   }, []);
   return (
-    <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter']">
+    <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter'] flex flex-col">
       <Helmet>
         <title>Admin Page - User Management</title>
       </Helmet>
       <Header />
-
-      <main className="max-w-[1400px] mx-auto px-10 py-10">
+      
+      <div className="flex flex-1">
+        <Sidebar />
+        <main className="flex-1 max-w-[1400px] mx-auto px-10 py-10">
 
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4">
           <div>
@@ -180,7 +183,8 @@ const UsersPage = () => {
           </div>
 
         </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };

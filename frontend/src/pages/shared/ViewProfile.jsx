@@ -23,7 +23,7 @@ import {
   Users
 } from 'lucide-react';
 import Header from '../../components/layout/Header';
-import Footer from '../../components/layout/Footer';
+import Sidebar from '../../components/layout/Sidebar';
 
 const BRAND_RED = "#D10043";
 
@@ -104,8 +104,10 @@ const ViewProfile = () => {
       </Helmet>
 
       <Header />
-
-      <main className="flex-grow">
+      
+      <div className="flex flex-1">
+        <Sidebar />
+        <main className="flex-grow">
 
         <div className="relative h-64 md:h-80 w-full bg-slate-900 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-[#D10043]/40 to-slate-900 opacity-60" />
@@ -273,9 +275,8 @@ const ViewProfile = () => {
             </div>
           </div>
         </div>
-      </main>
-
-      <Footer />
+        </main>
+      </div>
     </div>
   );
 };

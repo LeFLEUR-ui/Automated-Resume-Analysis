@@ -13,7 +13,7 @@ import {
   Zap
 } from 'lucide-react';
 import Header from '../../components/layout/Header';
-import Footer from '../../components/layout/Footer';
+import Sidebar from '../../components/layout/Sidebar';
 import RecruitmentTermsModal from '../../components/modals/shared/RecruitmentTermsModal';
 
 const CandidateSmartUpload = () => {
@@ -100,7 +100,9 @@ const CandidateSmartUpload = () => {
 
       <Header />
 
-      <main className="max-w-7xl mx-auto px-6 py-12">
+      <div className="flex flex-1">
+        <Sidebar />
+        <main className="max-w-7xl mx-auto px-6 py-12 flex-grow">
         <div className="bg-white rounded-[40px] shadow-xl shadow-slate-200/60 border border-slate-100 overflow-hidden relative">
           <div className="absolute top-0 right-0 w-80 h-80 bg-[#D60041]/5 rounded-bl-[300px] -mr-20 -mt-20 opacity-50"></div>
 
@@ -265,7 +267,7 @@ const CandidateSmartUpload = () => {
         onAccept={() => setIsTermsAccepted(true)}
       />
 
-      <Footer />
+      </div>
 
       <style dangerouslySetInnerHTML={{
         __html: `

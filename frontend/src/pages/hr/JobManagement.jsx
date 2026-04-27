@@ -4,7 +4,7 @@ import { ArrowRight } from 'lucide-react';
 
 // Layout components
 import Header from '../../components/layout/Header';
-import Footer from '../../components/layout/Footer';
+import Sidebar from '../../components/layout/Sidebar';
 import JobManagementHeader from '../../components/hr/jobManagement/JobManagementHeader';
 import JobSearchAndFilter from '../../components/hr/jobManagement/JobSearchAndFilter';
 import JobList from '../../components/hr/jobManagement/JobList';
@@ -86,11 +86,13 @@ const JobManagementPage = () => {
   const handleNextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
 
   return (
-    <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter'] pb-12">
+    <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter'] flex flex-col">
       <Helmet><title>HR - Job Management</title></Helmet>
       <Header />
-
-      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-10 py-6 md:py-8">
+      
+      <div className="flex flex-1">
+        <Sidebar />
+        <main className="flex-1 max-w-[1400px] mx-auto px-4 sm:px-6 md:px-10 py-6 md:py-8">
         <JobManagementHeader onCreateJob={() => setModalState({ type: 'create', selectedJob: null })} />
 
         <JobSearchAndFilter
@@ -161,7 +163,8 @@ const JobManagementPage = () => {
             )}
           </>
         )}
-      </main>
+        </main>
+      </div>
 
       <CreateJobModal
         isOpen={modalState.type === 'create'}
@@ -181,7 +184,6 @@ const JobManagementPage = () => {
         job={modalState.selectedJob}
         onClose={closeModal}
       />
-      <Footer />
     </div>
   );
 };

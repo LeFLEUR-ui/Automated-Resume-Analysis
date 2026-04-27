@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Header from '../../components/layout/Header';
-import Footer from '../../components/layout/Footer';
+import Sidebar from '../../components/layout/Sidebar';
 import ScheduleInterviewModal from '../../components/modals/hr/ScheduleInterviewModal';
 import ViewCandidateDetailsModal from '../../components/modals/hr/ViewCandidateDetailsModal';
 
@@ -121,14 +121,16 @@ const ScreeningPortal = () => {
     : [];
 
   return (
-    <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter'] pb-12">
+    <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter'] flex flex-col">
       <Helmet>
         <title>HR - Screening Portal</title>
       </Helmet>
 
       <Header />
-
-      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-10 py-6 md:py-8">
+      
+      <div className="flex flex-1">
+        <Sidebar />
+        <main className="flex-1 max-w-[1400px] mx-auto px-4 sm:px-6 md:px-10 py-6 md:py-8">
         <ScreeningHeader />
 
         <SearchAndFilter 
@@ -154,7 +156,8 @@ const ScreeningPortal = () => {
             onUpdateStatus={handleUpdateStatus}
           />
         )}
-      </main>
+        </main>
+      </div>
 
       <ScheduleInterviewModal
         isOpen={interviewModalOpen}
@@ -167,7 +170,6 @@ const ScreeningPortal = () => {
         onClose={() => setDetailsModalOpen(false)}
         candidate={selectedCandidate}
       />
-      <Footer />
     </div>
   );
 };
