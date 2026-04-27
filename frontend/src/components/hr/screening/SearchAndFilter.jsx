@@ -60,6 +60,8 @@ const SearchAndFilter = ({
           <option value="All Status">All Statuses</option>
           <option value="Pending">Pending Review</option>
           <option value="Reviewed">Already Reviewed</option>
+          <option value="Accepted">Accepted</option>
+          <option value="Rejected">Rejected</option>
         </select>
         <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
           <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>

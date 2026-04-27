@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { Download, AlertCircle, Briefcase, BarChart3 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import KeyMetrics from '../../components/hr/dashboard/KeyMetrics';
@@ -9,66 +8,12 @@ import RecentSubmissions from '../../components/hr/dashboard/RecentSubmissions';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 
-const STATIC_STATS = {
-  total: 1248,
-  pending: 42,
-  reviewed: 1206,
-  activeJobs: 12
-};
-
-const STATIC_CANDIDATES = [
-  {
-    id: 1,
-    name: "Alex Thompson",
-    preferredJob: "Senior Frontend Developer",
-    skills: ["React", "TypeScript", "Tailwind CSS"],
-    matchScore: 94,
-    status: "approved",
-    profileImage: null
-  },
-  {
-    id: 2,
-    name: "Sarah Jenkins",
-    preferredJob: "UI/UX Designer",
-    skills: ["Figma", "Adobe XD", "Prototyping"],
-    matchScore: 88,
-    status: "pending",
-    profileImage: null
-  },
-  {
-    id: 3,
-    name: "Michael Chen",
-    preferredJob: "Backend Engineer",
-    skills: ["Node.js", "PostgreSQL", "Docker"],
-    matchScore: 82,
-    status: "reviewed",
-    profileImage: null
-  },
-  {
-    id: 4,
-    name: "Emily Rodriguez",
-    preferredJob: "Project Manager",
-    skills: ["Agile", "Scrum", "Jira"],
-    matchScore: 75,
-    status: "pending",
-    profileImage: null
-  },
-  {
-    id: 5,
-    name: "David Kim",
-    preferredJob: "Data Analyst",
-    skills: ["Python", "SQL", "Tableau"],
-    matchScore: 91,
-    status: "approved",
-    profileImage: null
-  }
-];
-
 import { 
   useGetDashboardStatsQuery, 
   useGetCandidateCountQuery, 
   useGetResumeCountQuery,
-  useGetJobsQuery
+  useGetJobsQuery,
+  useGetApplicationsQuery
 } from '../../redux/api/apiSlice';
 
 const HRDashboard = () => {
@@ -79,17 +24,23 @@ const HRDashboard = () => {
   const { data: candidateCountData, isLoading: isCandidateLoading } = useGetCandidateCountQuery();
   const { data: resumeCountData, isLoading: isResumeLoading } = useGetResumeCountQuery();
   const { data: jobs = [], isLoading: isJobsLoading } = useGetJobsQuery();
+  const { data: applications = [], isLoading: isAppsLoading } = useGetApplicationsQuery();
 
   const activeJobsCount = jobs.filter(j => j.is_active).length;
   const totalCandidates = candidateCountData?.count || 0;
   const totalResumes = resumeCountData?.count || 0;
 
-  const isLoading = isStatsLoading || isCandidateLoading || isResumeLoading || isJobsLoading;
+  // Get the 5 most recent applications
+  const recentCandidates = [...applications]
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 5);
+
+  const isLoading = isStatsLoading || isCandidateLoading || isResumeLoading || isJobsLoading || isAppsLoading;
 
   return (
     <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter'] pb-12">
       <Helmet>
-        <title>HR - Dashboard</title>
+        <title>Dashboard | Mariwasa ARAS</title>
       </Helmet>
       <Header />
 
@@ -106,7 +57,7 @@ const HRDashboard = () => {
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 md:mb-10 gap-6">
           <div>
-            <h2 className="text-2xl md:text-3xl font-black tracking-tight text-gray-900">
+            <h2 className="text-2xl md:text-3xl font-black tracking-tight text-gray-900 leading-tight">
               Dashboard Overview
             </h2>
             <p className="text-sm text-gray-500 font-medium tracking-wide mt-1">
@@ -128,14 +79,13 @@ const HRDashboard = () => {
         </div>
 
         <KeyMetrics 
-          stats={STATIC_STATS} 
           activeJobsCount={activeJobsCount} 
           totalCandidates={totalCandidates} 
           totalResumes={totalResumes}
           appStats={appStats}
         />
         <ApplicationTrends />
-        <RecentSubmissions candidates={STATIC_CANDIDATES} />
+        <RecentSubmissions candidates={recentCandidates} />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
@@ -151,7 +101,7 @@ const HRDashboard = () => {
                 Pending Reviews
               </h4>
               <p className="text-sm text-gray-500 font-bold mt-2">
-                {STATIC_STATS.pending} applications waiting
+                {appStats.pending} applications waiting
               </p>
             </div>
           </div>

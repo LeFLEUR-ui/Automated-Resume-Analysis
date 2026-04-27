@@ -1,112 +1,160 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Calendar, MapPin, ChevronDown, CheckCircle2, XCircle, Clock, Search, Check } from 'lucide-react';
 
 const CandidateCard = ({ candidate, onOpenDetails, onOpenInterview, onUpdateStatus }) => {
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  
   const status = candidate.status.toLowerCase();
+  
   const avatarUrl = candidate.profileImage 
-    ? candidate.profileImage 
+    ? (candidate.profileImage.startsWith('http') ? candidate.profileImage : `http://localhost:8000/${candidate.profileImage}`)
     : `https://ui-avatars.com/api/?name=${encodeURIComponent(candidate.name)}&background=fdf2f8&color=d81159&bold=true`;
 
   const formatDate = (dateStr) => {
     if (!dateStr) return "N/A";
     const date = new Date(dateStr);
-    return date.toISOString().replace('T', ' ').substring(0, 16);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const getStatusInfo = (status) => {
+    switch(status.toLowerCase()) {
+      case 'accepted': return { icon: <CheckCircle2 className="w-4 h-4" />, color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-100', label: 'Accepted' };
+      case 'rejected': return { icon: <XCircle className="w-4 h-4" />, color: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-100', label: 'Rejected' };
+      case 'reviewed': return { icon: <Search className="w-4 h-4" />, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100', label: 'Reviewed' };
+      default: return { icon: <Clock className="w-4 h-4" />, color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-100', label: 'Pending' };
+    }
+  };
+
+  const statusInfo = getStatusInfo(candidate.status);
+
   return (
-    <div className="bg-white p-6 md:p-8 rounded-[32px] border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-pink-100 transition-all duration-300 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 lg:gap-8 group">
-      <div className="flex flex-col sm:flex-row gap-5 lg:gap-6 w-full lg:w-auto">
-        <div className="w-16 h-16 rounded-2xl overflow-hidden border border-pink-100 bg-gradient-to-br from-pink-50 to-red-50 shadow-inner group-hover:scale-105 transition-transform duration-300 shrink-0">
-          <img src={avatarUrl} alt={candidate.name} className="w-full h-full object-cover" />
+    <div className="bg-white p-6 md:p-8 rounded-[32px] border border-gray-100 shadow-sm hover:shadow-[0_20px_50px_rgba(0,0,0,0.04)] hover:-translate-y-1 transition-all duration-500 group">
+      <div className="flex flex-col lg:flex-row gap-8 items-start lg:items-center">
+        {/* Profile Section */}
+        <div className="relative shrink-0">
+          <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-white shadow-xl group-hover:scale-105 transition-transform duration-500">
+            <img 
+              src={avatarUrl} 
+              alt={candidate.name} 
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(candidate.name)}&background=fdf2f8&color=d81159&bold=true`;
+              }}
+            />
+          </div>
+          <div className={`absolute -bottom-1 -right-1 p-1.5 rounded-xl border-4 border-white shadow-lg ${statusInfo.bg} ${statusInfo.color}`}>
+            {statusInfo.icon}
+          </div>
         </div>
 
-        <div className="flex-grow">
-          <div className="flex flex-wrap items-center gap-3 mb-1.5">
-            <h3 className="text-xl font-bold text-gray-900 group-hover:text-[#D60041] transition-colors">{candidate.name}</h3>
-            
-            <div className={`relative group/status rounded-xl transition-all ${isUpdating ? 'animate-success-pulse' : ''}`}>
-              <select 
-                value={candidate.status}
-                onChange={async (e) => {
-                  setIsUpdating(true);
-                  await onUpdateStatus(candidate.id, e.target.value);
-                  setTimeout(() => setIsUpdating(false), 1000);
-                }}
-                className={`appearance-none cursor-pointer text-[10px] font-black px-4 py-1.5 pr-9 rounded-xl border-2 uppercase tracking-widest shadow-md transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-opacity-20 ${
-                  candidate.status.toLowerCase() === 'accepted' ? 'bg-green-50 text-green-600 border-green-200 focus:ring-green-500' :
-                  candidate.status.toLowerCase() === 'rejected' ? 'bg-red-50 text-red-600 border-red-200 focus:ring-red-500' :
-                  candidate.status.toLowerCase() === 'reviewed' ? 'bg-blue-50 text-blue-600 border-blue-200 focus:ring-blue-500' :
-                  'bg-orange-50 text-orange-600 border-orange-200 focus:ring-orange-500'
-                }`}
-              >
-                <option value="Pending">🕒 Pending</option>
-                <option value="Reviewed">🔍 Reviewed</option>
-                <option value="Accepted">✅ Accepted</option>
-                <option value="Rejected">❌ Rejected</option>
-              </select>
-              <div className={`pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 transition-colors ${
-                candidate.status.toLowerCase() === 'accepted' ? 'text-green-600' :
-                candidate.status.toLowerCase() === 'rejected' ? 'text-red-600' :
-                candidate.status.toLowerCase() === 'reviewed' ? 'text-blue-600' :
-                'text-orange-600'
-              }`}>
-                <svg className="h-4 w-4 animate-bounce-subtle" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
-                </svg>
+        {/* Content Section */}
+        <div className="flex-grow w-full">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+            <div>
+              <div className="flex items-center gap-3 mb-1">
+                <h3 className="text-xl font-bold text-gray-900 tracking-tight leading-none">{candidate.name}</h3>
+                <span className="px-3 py-1 bg-gray-900 text-white text-[10px] font-bold uppercase tracking-widest rounded-full">
+                  {Math.round(candidate.matchScore)}% Match
+                </span>
               </div>
+              <p className="text-sm text-gray-500 font-semibold flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-[#D60041] rounded-full"></span>
+                {candidate.preferredJob}
+              </p>
             </div>
           </div>
 
-          <p className="text-sm text-gray-500 font-medium mb-3">Preferred: {candidate.preferredJob}</p>
-
-          <div className="flex flex-wrap gap-2 mb-4">
-            {candidate.skills.slice(0, 4).map((skill, idx) => (
-              <span key={idx} className="bg-gray-50 border border-gray-200 text-gray-600 text-[11px] font-bold px-3 py-1.5 rounded-lg group-hover:border-pink-100 transition-colors shadow-sm">
+          <div className="flex flex-wrap gap-2 mb-6">
+            {candidate.skills.slice(0, 5).map((skill, idx) => (
+              <span key={idx} className="bg-gray-50 border border-gray-100 text-gray-400 text-[10px] font-bold uppercase tracking-tight px-3 py-1.5 rounded-xl transition-all duration-300 group-hover:bg-white group-hover:border-pink-100 group-hover:text-[#D60041]">
                 {skill}
               </span>
             ))}
-            {candidate.skills.length > 4 && (
-              <span className="bg-gray-50 border border-gray-100 text-gray-400 text-[11px] font-bold px-2 py-1.5 rounded-lg">
-                +{candidate.skills.length - 4}
+            {candidate.skills.length > 5 && (
+              <span className="bg-gray-50 text-gray-300 text-[10px] font-bold px-2 py-1.5 rounded-xl">
+                +{candidate.skills.length - 5}
               </span>
             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-gray-400">
-            <span className="flex items-center gap-1.5">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              {formatDate(candidate.date)}
-            </span>
-            <span className="hidden sm:block text-gray-300">•</span>
-            <span className="flex items-center gap-1.5">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
+          <div className="flex flex-wrap items-center gap-6 pt-6 border-t border-gray-50">
+            <div className="flex items-center gap-2 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+              <Calendar className="w-3.5 h-3.5 text-gray-300" />
+              Applied on {formatDate(candidate.date)}
+            </div>
+            <div className="flex items-center gap-2 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+              <MapPin className="w-3.5 h-3.5 text-gray-300" />
               {candidate.location}
-            </span>
-            <span className="hidden sm:block text-gray-300">•</span>
-            <span className="text-[#D60041] font-extrabold px-2 py-0.5 bg-red-50 rounded-md">{Math.round(candidate.matchScore)}% Match</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="flex flex-row lg:flex-col xl:flex-row gap-3 w-full lg:w-auto shrink-0 mt-4 lg:mt-0 pt-4 lg:pt-0 border-t lg:border-t-0 border-gray-100">
-        <button
-          onClick={() => onOpenDetails(candidate)}
-          className="flex-1 lg:flex-none px-6 py-3 bg-white border border-gray-200 rounded-xl text-xs font-bold text-gray-700 hover:bg-[#D60041] hover:text-white hover:border-[#D60041] transition-all duration-300 shadow-sm text-center"
-        >
-          View Details
-        </button>
+        {/* Action Section */}
+        <div className="flex flex-row flex-wrap lg:flex-nowrap gap-3 w-full lg:w-auto shrink-0 mt-6 lg:mt-0 pt-6 lg:pt-0 border-t lg:border-t-0 border-gray-50">
+          {/* Custom Status Dropdown as a Button */}
+          <div className="relative flex-1 lg:flex-none lg:min-w-[140px]" ref={dropdownRef}>
+            <button 
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              disabled={isUpdating}
+              className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 text-[10px] font-bold uppercase tracking-widest transition-all duration-300 ${statusInfo.bg} ${statusInfo.color} ${statusInfo.border} ${isUpdating ? 'opacity-50 animate-pulse' : 'hover:shadow-md hover:scale-[1.02] active:scale-95'}`}
+            >
+              {statusInfo.icon}
+              {statusInfo.label}
+              <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
 
-        <button
-          onClick={() => onOpenInterview(candidate)}
-          className="flex-1 lg:flex-none px-6 py-3 bg-[#D60041] border border-[#D60041] text-white rounded-xl text-xs font-bold hover:bg-[#b50037] hover:border-[#b50037] transition-all duration-300 shadow-sm text-center"
-        >
-          Schedule Interview
-        </button>
+            {isDropdownOpen && (
+              <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-100 rounded-2xl shadow-2xl z-50 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                {['Pending', 'Reviewed', 'Accepted', 'Rejected'].map((s) => {
+                  const info = getStatusInfo(s);
+                  return (
+                    <button
+                      key={s}
+                      onClick={async () => {
+                        setIsDropdownOpen(false);
+                        setIsUpdating(true);
+                        await onUpdateStatus(candidate.id, s);
+                        setTimeout(() => setIsUpdating(false), 800);
+                      }}
+                      className={`w-full flex items-center justify-between px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest transition-colors ${candidate.status === s ? info.bg + ' ' + info.color : 'text-gray-500 hover:bg-gray-50'}`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className={info.color}>{info.icon}</span>
+                        {s}
+                      </div>
+                      {candidate.status === s && <Check className="w-3 h-3" />}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          <button
+            onClick={() => onOpenDetails(candidate)}
+            className="flex-1 lg:flex-none px-6 py-3 bg-gray-50 text-gray-700 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-gray-100 transition-all active:scale-95 border border-transparent hover:border-gray-200 whitespace-nowrap"
+          >
+            Details
+          </button>
+          <button
+            onClick={() => onOpenInterview(candidate)}
+            className="flex-1 lg:flex-none px-6 py-3 bg-[#D60041] text-white rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-[#B50037] shadow-lg shadow-pink-100/50 transition-all active:scale-95 whitespace-nowrap"
+          >
+            Schedule
+          </button>
+        </div>
       </div>
     </div>
   );

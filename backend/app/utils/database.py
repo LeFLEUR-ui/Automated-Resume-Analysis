@@ -73,14 +73,22 @@ async def get_db():
 async def init_db():
     """
     Create database tables asynchronously.
-    Usually called during FastAPI startup.
+    Ensures all models are imported so SQLAlchemy can track them.
     """
     try:
+        # Import all models here so they register with Base.metadata
+        import app.models
+        
+        logger.info("Initializing database schema...")
         async with engine.begin() as conn:
+            # We use run_sync because metadata.create_all is a synchronous method
             await conn.run_sync(Base.metadata.create_all)
+            
+        logger.info("Database schema initialized successfully.")
 
-        logger.info("Database initialized successfully.")
-
+    except SQLAlchemyError as e:
+        logger.error(f"SQLAlchemy error during database initialization: {str(e)}")
+        raise
     except Exception as e:
-        logger.error(f"Failed to initialize database: {str(e)}")
+        logger.error(f"Unexpected error during database initialization: {str(e)}")
         raise
