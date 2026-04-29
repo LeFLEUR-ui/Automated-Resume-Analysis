@@ -23,16 +23,25 @@ class ConnectionManager:
                 
     async def send_personal_message(self, message: dict, user_id: int):
         if user_id in self.active_connections:
-            for connection in self.active_connections[user_id]:
-                await connection.send_json(message)
+            # Use list() to avoid "Set changed size during iteration" errors
+            for connection in list(self.active_connections[user_id]):
+                try:
+                    await connection.send_json(message)
+                except Exception:
+                    if connection in self.active_connections[user_id]:
+                        self.active_connections[user_id].remove(connection)
 
     async def broadcast_status(self, user_id: int, is_online: bool):
         # Notify all connected clients about the status change
         message = {"type": "status", "user_id": user_id, "is_online": is_online}
-        for uid, connections in self.active_connections.items():
+        for uid in list(self.active_connections.keys()):
             if uid != user_id:
-                for connection in connections:
-                    await connection.send_json(message)
+                for connection in list(self.active_connections[uid]):
+                    try:
+                        await connection.send_json(message)
+                    except Exception:
+                        if connection in self.active_connections[uid]:
+                            self.active_connections[uid].remove(connection)
 
     def is_user_online(self, user_id: int) -> bool:
         return user_id in self.active_connections

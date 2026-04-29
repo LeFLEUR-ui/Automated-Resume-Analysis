@@ -55,20 +55,41 @@ async def send_message(
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket, token: str = Query(...)):
     from app.utils.database import AsyncSessionLocal
+    import logging
+    logger = logging.getLogger(__name__)
     
-    # Use a short-lived session for verification to avoid holding a connection from the pool
-    async with AsyncSessionLocal() as db:
-        user = await chat_service.verify_token(token, db)
-        if not user:
-            await websocket.close(code=1008)
-            return
-        user_id = user.id
-
-    await manager.connect(websocket, user_id)
     try:
-        while True:
-            await websocket.receive_text()
-            # We just keep connection open.
-    except WebSocketDisconnect:
-        manager.disconnect(websocket, user_id)
-        await manager.broadcast_status(user_id, False)
+        # Use a short-lived session for verification to avoid holding a connection from the pool
+        async with AsyncSessionLocal() as db:
+            user = await chat_service.verify_token(token, db)
+            if not user:
+                logger.warning(f"WebSocket connection rejected: Invalid token")
+                await websocket.close(code=1008)
+                return
+            user_id = user.id
+
+        await manager.connect(websocket, user_id)
+        logger.info(f"WebSocket connected: User {user_id}")
+        
+        try:
+            while True:
+                data_str = await websocket.receive_text()
+                try:
+                    import json
+                    data = json.loads(data_str)
+                    if data.get("type") == "send_message":
+                        await chat_service.handle_websocket_message(AsyncSessionLocal, user_id, data)
+                except json.JSONDecodeError:
+                    continue
+        except WebSocketDisconnect:
+            logger.info(f"WebSocket disconnected: User {user_id}")
+            manager.disconnect(websocket, user_id)
+            await manager.broadcast_status(user_id, False)
+        except Exception as e:
+            logger.error(f"WebSocket error for user {user_id}: {e}")
+            manager.disconnect(websocket, user_id)
+            await manager.broadcast_status(user_id, False)
+            
+    except Exception as e:
+        logger.error(f"WebSocket handshake failed: {e}")
+        # Cannot use websocket.close() if not accepted yet, but Starlette handles it

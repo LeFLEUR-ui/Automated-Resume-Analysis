@@ -13,6 +13,12 @@ const ChatWidget = () => {
     const [loading, setLoading] = useState(false);
     const wsRef = useRef(null);
     const messagesEndRef = useRef(null);
+    const activeContactRef = useRef(null);
+
+    // Sync ref with state
+    useEffect(() => {
+        activeContactRef.current = activeContact;
+    }, [activeContact]);
 
     const token = localStorage.getItem('token');
     const currentUserRole = localStorage.getItem('role') || 'Guest';
@@ -36,21 +42,28 @@ const ChatWidget = () => {
         if (!token) return;
 
         const connectWebSocket = () => {
-            const ws = new WebSocket(`ws://localhost:8000/chat/ws?token=${token}`);
+            const ws = new WebSocket(`ws://localhost:8000/chat/ws?token=${encodeURIComponent(token)}`);
             
             ws.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 
                 if (data.type === 'new_message') {
-                    // If chat is open with the sender, add to messages
                     setMessages(prev => {
-                        // Prevent duplicates
+                        if (data.client_id) {
+                            const index = prev.findIndex(m => m.client_id === data.client_id);
+                            if (index !== -1) {
+                                const newMessages = [...prev];
+                                newMessages[index] = { ...data, is_optimistic: false };
+                                return newMessages;
+                            }
+                        }
+
                         if (prev.find(m => m.id === data.id)) return prev;
                         
-                        // Check if we are currently chatting with the sender/receiver
-                        const isRelevant = activeContact && (
-                            data.sender_id === activeContact.id || 
-                            data.receiver_id === activeContact.id ||
+                        const currentActive = activeContactRef.current;
+                        const isRelevant = currentActive && (
+                            data.sender_id === currentActive.id || 
+                            data.receiver_id === currentActive.id ||
                             data.sender_id === currentUserId
                         );
                         
@@ -60,21 +73,19 @@ const ChatWidget = () => {
                         return prev;
                     });
                     
-                    // Always refresh contacts to update unread counts and last message
                     fetchContacts();
                 } else if (data.type === 'status') {
-                    // Update user online status
                     setContacts(prev => prev.map(c => 
                         c.id === data.user_id ? { ...c, is_online: data.is_online } : c
                     ));
-                    if (activeContact && activeContact.id === data.user_id) {
+                    const currentActive = activeContactRef.current;
+                    if (currentActive && currentActive.id === data.user_id) {
                         setActiveContact(prev => ({ ...prev, is_online: data.is_online }));
                     }
                 }
             };
 
             ws.onclose = () => {
-                // Try to reconnect after 5s
                 setTimeout(connectWebSocket, 5000);
             };
 
@@ -88,7 +99,7 @@ const ChatWidget = () => {
                 wsRef.current.close();
             }
         };
-    }, [token, activeContact, currentUserId]);
+    }, [token, currentUserId]);
 
     const fetchContacts = async () => {
         try {
@@ -132,21 +143,52 @@ const ChatWidget = () => {
     const sendMessage = async () => {
         if (!inputMessage.trim() || !activeContact) return;
         
-        try {
-            const res = await axios.post(`http://localhost:8000/chat/messages/${activeContact.id}`, 
-                { content: inputMessage },
-                { headers: { Authorization: `Bearer ${token}` }}
-            );
-            
-            // Optimistically add the message if it wasn't added by WS yet
-            setMessages(prev => {
-                if (prev.find(m => m.id === res.data.id)) return prev;
-                return [...prev, res.data];
-            });
-            setInputMessage('');
-            fetchContacts(); // Update last message in list
-        } catch (error) {
-            console.error("Failed to send message", error);
+        const content = inputMessage;
+        const clientId = `client_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        
+        // Clear input immediately for "smooth" feel
+        setInputMessage('');
+
+        const optimisticMessage = {
+            sender_id: currentUserId,
+            receiver_id: activeContact.id,
+            content: content,
+            timestamp: new Date().toISOString(),
+            is_optimistic: true,
+            client_id: clientId
+        };
+
+        // Add to messages state immediately (Optimistic Update)
+        setMessages(prev => [...prev, optimisticMessage]);
+
+        const messageData = {
+            type: 'send_message',
+            receiver_id: activeContact.id,
+            content: content,
+            client_id: clientId
+        };
+
+        // Try sending via WebSocket
+        if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+            wsRef.current.send(JSON.stringify(messageData));
+        } else {
+            // Fallback to HTTP if WebSocket is not connected
+            try {
+                const res = await axios.post(`http://localhost:8000/chat/messages/${activeContact.id}`, 
+                    { content: content },
+                    { headers: { Authorization: `Bearer ${token}` }}
+                );
+                
+                // Replace optimistic message with real one
+                setMessages(prev => prev.map(m => 
+                    m.client_id === clientId ? { ...res.data, is_optimistic: false } : m
+                ));
+                fetchContacts();
+            } catch (error) {
+                console.error("Failed to send message via HTTP", error);
+                // Optionally remove the optimistic message if it failed
+                setMessages(prev => prev.filter(m => m.client_id !== clientId));
+            }
         }
     };
 
@@ -271,16 +313,16 @@ const ChatWidget = () => {
                                     messages.map((msg, idx) => {
                                         const isMe = msg.sender_id === currentUserId;
                                         return (
-                                            <div key={idx} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                                                <div className={`max-w-[80%] group`}>
-                                                    <div className={`px-4 py-2.5 rounded-[20px] text-sm font-medium shadow-sm ${isMe
-                                                            ? 'bg-[#D60041] text-white rounded-tr-none'
+                                            <div key={idx} className={`flex ${isMe ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
+                                                <div className={`max-w-[80%] group ${msg.is_optimistic ? 'opacity-70' : 'opacity-100'}`}>
+                                                    <div className={`px-4 py-2.5 rounded-[20px] text-sm font-medium shadow-sm transition-all hover:shadow-md ${isMe
+                                                            ? 'bg-gradient-to-br from-[#D60041] to-[#b50037] text-white rounded-tr-none'
                                                             : 'bg-white text-gray-800 border border-gray-100 rounded-tl-none'
                                                         }`}>
                                                         {msg.content}
                                                     </div>
                                                     <p className={`text-[10px] mt-1 font-semibold text-gray-400 ${isMe ? 'text-right' : 'text-left'}`}>
-                                                        {new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                                        {msg.is_optimistic ? 'Sending...' : new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                                                     </p>
                                                 </div>
                                             </div>

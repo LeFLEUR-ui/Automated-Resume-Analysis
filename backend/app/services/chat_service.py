@@ -116,7 +116,7 @@ async def get_messages(db: AsyncSession, current_user: User, other_user_id: int)
     result = await db.execute(query)
     return result.scalars().all()
 
-async def send_message(db: AsyncSession, current_user: User, other_user_id: int, content: str) -> Message:
+async def send_message(db: AsyncSession, current_user: User, other_user_id: int, content: str, client_id: Optional[str] = None) -> Message:
     """
     Sends a message to another user if the roles are compatible, 
     and broadcasts it via WebSocket.
@@ -146,7 +146,8 @@ async def send_message(db: AsyncSession, current_user: User, other_user_id: int,
         "receiver_id": new_msg.receiver_id,
         "content": new_msg.content,
         "timestamp": new_msg.timestamp.isoformat(),
-        "is_read": new_msg.is_read
+        "is_read": new_msg.is_read,
+        "client_id": client_id
     }
 
     # Broadcast to receiver
@@ -155,3 +156,31 @@ async def send_message(db: AsyncSession, current_user: User, other_user_id: int,
     await manager.send_personal_message(msg_data, current_user.id)
 
     return new_msg
+
+async def handle_websocket_message(db_factory, sender_id: int, data: dict):
+    """
+    Handles a message received through a WebSocket connection.
+    Parses the data, saves the message to the database, and broadcasts it.
+    """
+    try:
+        receiver_id = data.get("receiver_id")
+        content = data.get("content")
+        client_id = data.get("client_id")
+
+        if not receiver_id or not content:
+            return
+
+        async with db_factory() as db:
+            # Get sender object
+            result = await db.execute(select(User).where(User.id == sender_id))
+            sender = result.scalar_one_or_none()
+            if not sender:
+                return
+
+            # Use existing send_message logic
+            await send_message(db, sender, receiver_id, content, client_id=client_id)
+            
+    except Exception as e:
+        # Log error but don't crash the WS loop
+        import logging
+        logging.error(f"Error handling WS message: {e}")
