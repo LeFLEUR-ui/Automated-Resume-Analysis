@@ -83,12 +83,10 @@ async def websocket_endpoint(websocket: WebSocket, token: str = Query(...)):
                     continue
         except WebSocketDisconnect:
             logger.info(f"WebSocket disconnected: User {user_id}")
-            manager.disconnect(websocket, user_id)
-            await manager.broadcast_status(user_id, False)
+            await manager.disconnect(websocket, user_id)
         except Exception as e:
             logger.error(f"WebSocket error for user {user_id}: {e}")
-            manager.disconnect(websocket, user_id)
-            await manager.broadcast_status(user_id, False)
+            await manager.disconnect(websocket, user_id)
             
     except Exception as e:
         logger.error(f"WebSocket handshake failed: {e}")

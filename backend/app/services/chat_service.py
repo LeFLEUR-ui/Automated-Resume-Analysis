@@ -7,6 +7,9 @@ from app.models.user import User
 from app.models.message import Message
 from app.schemas.message_schema import ChatUser
 from app.utils.websocket import manager
+from app.utils.redis_client import redis_client
+import json
+from datetime import datetime
 
 async def get_allowed_roles(user_role: str) -> List[str]:
     """
@@ -38,7 +41,27 @@ async def verify_token(token: str, db: AsyncSession):
 async def get_contacts(db: AsyncSession, current_user: User, search: Optional[str] = None) -> List[ChatUser]:
     """
     Fetches the list of contacts for the current user, including last message and unread count.
+    Uses Redis for caching to improve performance.
     """
+    cache_key = f"contacts:{current_user.id}:{search or ''}"
+    redis = await redis_client.get_redis()
+    
+    # Try to get from cache
+    cached_data = await redis.get(cache_key)
+    if cached_data:
+        try:
+            cached_users = json.loads(cached_data)
+            chat_users = []
+            for u_data in cached_users:
+                # Convert back to ChatUser objects and refresh online status
+                u_data['is_online'] = await manager.is_user_online(u_data['id'])
+                if u_data.get('last_message_time'):
+                    u_data['last_message_time'] = datetime.fromisoformat(u_data['last_message_time'])
+                chat_users.append(ChatUser(**u_data))
+            return chat_users
+        except Exception:
+            pass # Fallback to DB if cache parsing fails
+
     allowed_roles = await get_allowed_roles(current_user.role)
     if not allowed_roles:
         return []
@@ -77,7 +100,7 @@ async def get_contacts(db: AsyncSession, current_user: User, search: Optional[st
             fullname=u.fullname,
             role=u.role,
             profile_image_url=u.profile_image_url,
-            is_online=manager.is_user_online(u.id),
+            is_online=await manager.is_user_online(u.id),
             last_message=last_msg.content if last_msg else None,
             last_message_time=last_msg.timestamp if last_msg else None,
             unread_count=unread_count
@@ -85,7 +108,27 @@ async def get_contacts(db: AsyncSession, current_user: User, search: Optional[st
 
     # Sort by recent message time
     chat_users.sort(key=lambda x: x.last_message_time.timestamp() if x.last_message_time else 0, reverse=True)
+    
+    # Save to cache (TTL 10 seconds for safety, though we invalidate on message events)
+    cache_users = []
+    for u in chat_users:
+        u_dict = u.model_dump() if hasattr(u, 'model_dump') else u.dict()
+        if u_dict.get('last_message_time'):
+            u_dict['last_message_time'] = u_dict['last_message_time'].isoformat()
+        cache_users.append(u_dict)
+    
+    await redis.setex(cache_key, 10, json.dumps(cache_users))
+    
     return chat_users
+
+async def invalidate_contacts_cache(user_id: int):
+    """Invalidates the contacts cache for a specific user."""
+    redis = await redis_client.get_redis()
+    # We use keys() with pattern because there might be multiple search variants cached
+    # For production, consider keeping track of keys in a set instead of using keys()
+    keys = await redis.keys(f"contacts:{user_id}:*")
+    if keys:
+        await redis.delete(*keys)
 
 async def get_messages(db: AsyncSession, current_user: User, other_user_id: int) -> List[Message]:
     """
@@ -104,6 +147,8 @@ async def get_messages(db: AsyncSession, current_user: User, other_user_id: int)
         msg.is_read = True
     if unreads:
         await db.commit()
+        # Invalidate cache for current user since unread counts changed
+        await invalidate_contacts_cache(current_user.id)
 
     # Get history
     query = select(Message).where(
@@ -154,6 +199,10 @@ async def send_message(db: AsyncSession, current_user: User, other_user_id: int,
     await manager.send_personal_message(msg_data, other_user_id)
     # Also to sender (if they have multiple tabs open)
     await manager.send_personal_message(msg_data, current_user.id)
+
+    # Invalidate caches
+    await invalidate_contacts_cache(current_user.id)
+    await invalidate_contacts_cache(other_user_id)
 
     return new_msg
 
