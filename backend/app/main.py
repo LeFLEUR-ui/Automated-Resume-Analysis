@@ -23,6 +23,11 @@ import logging
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+
+    "http://192.168.1.15:5173",
 ]
 
 logging.basicConfig(level=logging.INFO)
@@ -57,7 +62,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Static files for uploads
 if not os.path.exists("uploads"):
     os.makedirs("uploads")
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
