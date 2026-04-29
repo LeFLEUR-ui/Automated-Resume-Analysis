@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import {
   FileUp,
   X,
@@ -22,10 +23,18 @@ const SmartUploadPage = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (cooldown > 0) {
+      const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldown]);
 
   const validateAndSetFile = (selectedFile) => {
     const validTypes = [
@@ -59,21 +68,53 @@ const SmartUploadPage = () => {
     }
   };
 
-  const simulateUpload = () => {
-    if (!file || !isTermsAccepted) return;
+  const handleUpload = async () => {
+    if (!file || !isTermsAccepted || cooldown > 0) return;
     setIsUploading(true);
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 5;
-      setUploadProgress(progress);
-      if (progress >= 100) {
-        clearInterval(interval);
-        setTimeout(() => {
-          setIsUploading(false);
-          setIsComplete(true);
-        }, 800);
+    setUploadProgress(20);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await axios.post('http://localhost:8000/candidate/parse-resume', formData, {
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setUploadProgress(Math.max(20, Math.min(80, percentCompleted))); // Save last 20% for matching
+        }
+      });
+      
+      const extracted = response.data;
+      setUploadProgress(90);
+      
+      const matchRes = await axios.post('http://localhost:8000/matching/match-data', extracted);
+      setUploadProgress(100);
+
+      setIsComplete(true);
+
+      setTimeout(() => {
+        navigate('/preview-and-verify/smart', { 
+          state: { 
+            fileName: file.name, 
+            isSmart: true,
+            extractedData: extracted,
+            matches: matchRes.data.results
+          } 
+        });
+      }, 1500); // Give user a moment to see the success state
+      
+    } catch (error) {
+      console.error("Error analyzing resume:", error);
+      if (error.response?.status === 429) {
+        alert("Too many requests! Please wait a moment before trying again.");
+        setCooldown(30);
+      } else {
+        const detail = error.response?.data?.detail || "Failed to analyze resume. Please ensure you uploaded a valid PDF or Word document.";
+        alert(detail);
       }
-    }, 50);
+      setIsUploading(false);
+      setCooldown(10);
+    }
   };
 
   return (
@@ -186,7 +227,6 @@ const SmartUploadPage = () => {
                   </div>
                 )}
 
-                {isComplete && (
                   <div className="space-y-8 animate-in fade-in zoom-in-95 duration-500">
                     <div className="bg-green-50 border border-green-100 p-8 rounded-[32px] flex items-center gap-6 shadow-sm">
                       <div className="bg-white text-green-500 p-4 rounded-2xl shadow-md border border-green-50">
@@ -194,19 +234,10 @@ const SmartUploadPage = () => {
                       </div>
                       <div>
                         <h4 className="text-xl font-black text-slate-900">Analysis Successful</h4>
-                        <p className="text-slate-600 font-medium">Our AI has extracted your profile information and is ready to match you with roles.</p>
+                        <p className="text-slate-600 font-medium">Our AI has extracted your profile information and matched you with roles. Redirecting...</p>
                       </div>
                     </div>
-
-                    <button
-                      onClick={() => navigate('/preview-and-verify/smart', { state: { fileName: file.name, isSmart: true } })}
-                      className="w-full bg-slate-900 hover:bg-[#D60041] text-white py-6 rounded-[28px] font-black text-lg flex items-center justify-center gap-4 transition-all shadow-2xl shadow-slate-200 hover:shadow-pink-200 hover:-translate-y-1 active:scale-95 group"
-                    >
-                      <span>Proceed to AI Verification</span>
-                      <ArrowRight size={24} className="group-hover:translate-x-2 transition-transform" />
-                    </button>
                   </div>
-                )}
 
                 {!isUploading && !isComplete && (
                   <div className="space-y-8">
@@ -226,16 +257,16 @@ const SmartUploadPage = () => {
                     </div>
 
                     <button
-                      onClick={simulateUpload}
+                      onClick={handleUpload}
                       disabled={!isTermsAccepted}
                       className={`w-full py-6 rounded-[28px] font-black text-lg flex items-center justify-center gap-4 transition-all transform shadow-2xl active:scale-95 ${
-                        isTermsAccepted
+                        isTermsAccepted && cooldown === 0
                           ? "bg-[#D60041] hover:bg-slate-900 text-white shadow-pink-200 hover:shadow-slate-200 hover:-translate-y-1"
                           : "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none"
                       }`}
                     >
                       <ShieldCheck size={26} />
-                      <span>Start Smart Analysis</span>
+                      <span>{cooldown > 0 ? `Wait ${cooldown}s` : 'Start Smart Analysis'}</span>
                     </button>
                   </div>
                 )}

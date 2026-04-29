@@ -14,6 +14,7 @@ from app.controllers.resume_controller import router as resume_router
 from app.controllers.job_application_controller import router as job_application_router
 from app.controllers.notification_controller import router as notification_router
 from app.controllers.job_matching_controller import router as job_matching_router
+from app.controllers.chat_controller import router as chat_router
 
 import os
 import asyncio
@@ -52,6 +53,7 @@ app.include_router(resume_router)
 app.include_router(job_application_router)
 app.include_router(notification_router)
 app.include_router(job_matching_router)
+app.include_router(chat_router)
 
 async def create_tables():
     from app.models.user import User
@@ -61,6 +63,7 @@ async def create_tables():
     from app.models.resume import Resume
     from app.models.job_application import JobApplication
     from app.models.notification import Notification
+    from app.models.message import Message
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

@@ -60,13 +60,15 @@ const PreviewAndVerifyPage = () => {
               Verify the information extracted from <span className="text-slate-900 font-bold">{state?.fileName || "your resume"}</span>.
             </p>
           </div>
-          <button
-            id="btn-edit-details"
-            onClick={() => navigate(`/applicationform/${jobId}`, { state: { ...extractedData, fileName: state?.fileName } })}
-            className="flex items-center text-sm font-bold text-[#D60041] hover:underline bg-pink-50 px-4 py-2 rounded-xl transition-colors"
-          >
-            <Edit3 size={16} className="mr-2" /> Edit Details
-          </button>
+          {jobId !== 'smart' && (
+            <button
+              id="btn-edit-details"
+              onClick={() => navigate(`/applicationform/${jobId}`, { state: { ...extractedData, fileName: state?.fileName } })}
+              className="flex items-center text-sm font-bold text-[#D60041] hover:underline bg-pink-50 px-4 py-2 rounded-xl transition-colors"
+            >
+              <Edit3 size={16} className="mr-2" /> Edit Details
+            </button>
+          )}
         </div>
 
         <div className="space-y-6">
@@ -229,14 +231,24 @@ const PreviewAndVerifyPage = () => {
             >
               Cancel
             </button>
-            <button
-              id="btn-confirm-submit"
-              onClick={() => navigate(`/applicationform/${jobId}`, { state: { ...extractedData, fileName: state?.fileName, matchData } })}
-              className="flex-[2] bg-[#D60041] hover:bg-slate-900 text-white py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 transition-all shadow-xl shadow-pink-100 active:scale-95"
-            >
-              <CheckCircle size={22} />
-              Confirm & Submit Final Application
-            </button>
+            {jobId === 'smart' ? (
+              <button
+                onClick={() => navigate(`/smart-matches`, { state: { matches: state?.matches, extractedData, fileName: state?.fileName } })}
+                className="flex-[2] bg-[#D60041] hover:bg-slate-900 text-white py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 transition-all shadow-xl shadow-pink-100 active:scale-95"
+              >
+                <Target size={22} />
+                View Recommended Jobs
+              </button>
+            ) : (
+              <button
+                id="btn-confirm-submit"
+                onClick={() => navigate(`/applicationform/${jobId}`, { state: { ...extractedData, fileName: state?.fileName, matchData } })}
+                className="flex-[2] bg-[#D60041] hover:bg-slate-900 text-white py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 transition-all shadow-xl shadow-pink-100 active:scale-95"
+              >
+                <CheckCircle size={22} />
+                Confirm & Submit Final Application
+              </button>
+            )}
           </div>
         </div>
       </main>

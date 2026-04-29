@@ -6,6 +6,7 @@ from app.models.resume import Resume
 from app.models.job_description import JobDescription
 from app.models.job_application import JobApplication
 from app.models.notification import Notification
+from app.models.message import Message
 
 __all__ = [
     "User",
@@ -15,5 +16,6 @@ __all__ = [
     "Resume",
     "JobDescription",
     "JobApplication",
-    "Notification"
+    "Notification",
+    "Message"
 ]

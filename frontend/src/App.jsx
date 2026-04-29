@@ -18,6 +18,7 @@ import ApplyForJobPage from './pages/publicPages/jobApplicationPages/ApplyForJob
 import PreviewAndVerifyPage from './pages/publicPages/jobApplicationPages/PreviewAndVerify';
 import SubmissionSuccessPage from './pages/publicPages/jobApplicationPages/SubmissionSuccess';
 import JobDetailsPage from './pages/publicPages/jobApplicationPages/JobDetailsPage';
+import SmartMatchResult from './pages/publicPages/jobApplicationPages/SmartMatchResult';
 
 import ApplicationTracking from './pages/candidate/ApplicationTracking';
 import CandidateDashboard from './pages/candidate/CandidateDashboard';
@@ -50,6 +51,7 @@ const App = () => {
         <Route path="/aboutpage" element={<AboutPage />} />
 
         <Route path="/smart-upload" element={<SmartUploadPage />} />
+        <Route path="/smart-matches" element={<SmartMatchResult />} />
         <Route path="/apply/:jobId" element={<ApplyForJobPage />} />
         <Route path="/job-details/:jobId" element={<JobDetailsPage />} />
         <Route path="/preview-and-verify/:jobId" element={<PreviewAndVerifyPage />} />

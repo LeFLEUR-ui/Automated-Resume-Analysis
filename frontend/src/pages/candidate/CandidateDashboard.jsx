@@ -9,6 +9,7 @@ import ApplicationList from '../../components/candidate/dashboard/ApplicationLis
 import ProfileStrength from '../../components/candidate/dashboard/ProfileStrength';
 import UpcomingInterviews from '../../components/candidate/dashboard/UpcomingInterviews';
 import QuickActions from '../../components/candidate/dashboard/QuickActions';
+import ChatWidget from '../../components/layout/ChatWidget';
 
 const CandidateDashboard = () => {
   const APPLICATION_STATUS = [
@@ -41,26 +42,27 @@ const CandidateDashboard = () => {
       </Helmet>
 
       <Header />
-      
+
       <div className="flex flex-1">
         <Sidebar />
         <main className="flex-1 max-w-[1400px] mx-auto px-6 py-12 w-full flex-grow">
 
-        <WelcomeHeader />
+          <WelcomeHeader />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
-          <div className="lg:col-span-2 space-y-10 animate-in fade-in slide-in-from-left-6 duration-700">
-            <ApplicationList applications={APPLICATION_STATUS} />
-            <ProfileStrength />
+            <div className="lg:col-span-2 space-y-10 animate-in fade-in slide-in-from-left-6 duration-700">
+              <ApplicationList applications={APPLICATION_STATUS} />
+              <ProfileStrength />
+            </div>
+
+            <div className="space-y-10 animate-in fade-in slide-in-from-right-6 duration-700">
+              <UpcomingInterviews />
+              <QuickActions />
+            </div>
+
           </div>
-
-          <div className="space-y-10 animate-in fade-in slide-in-from-right-6 duration-700">
-            <UpcomingInterviews />
-            <QuickActions />
-          </div>
-
-        </div>
+          <ChatWidget />
         </main>
       </div>
     </div>
