@@ -20,17 +20,34 @@ import os
 import asyncio
 import logging
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-app = FastAPI()
-app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
-
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+app = FastAPI(
+    title="Fast API",
+    description="""
+    An AI-powered system for analyzing resumes and providing automated job recommendations.
+    
+    ## Features
+    * **Authentication**: Secure login and registration.
+    * **Resume Analysis**: Extract and process candidate data.
+    * **Job Matching**: AI-driven job recommendations based on candidate profiles.
+    * **Real-time Notifications**: Updates for job applications and status changes.
+    """,
+    version="1.0.0",
+    contact={
+        "name": "API Support",
+        "url": "http://127.0.0.1:8000/docs",
+    }
+)
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,
@@ -73,7 +90,7 @@ async def startup():
     await create_tables()
 
 @app.get("/", tags=["Testing"])
-def root():
+async def root():
     logger.info("API Documentation: http://127.0.0.1:8000/docs")
     return {
         "message": "Automated Resume Analysis with Job Recommendation!", 
