@@ -33,6 +33,8 @@ const ApplicationForm = () => {
   const [jobTitle, setJobTitle] = useState(location.state?.job?.title || "Position");
   const [currentSkill, setCurrentSkill] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [matchScore, setMatchScore] = useState(location.state?.matchData?.match_percentage || 0);
+  const [isCalculating, setIsCalculating] = useState(false);
 
   useEffect(() => {
     const fetchJobTitle = async () => {
@@ -48,6 +50,43 @@ const ApplicationForm = () => {
     };
     fetchJobTitle();
   }, [jobId, location.state]);
+
+  useEffect(() => {
+    const calculateMatchScore = async () => {
+      if (!jobId || (!formData.skills.length && !formData.relevance && !formData.degree)) return;
+      setIsCalculating(true);
+      try {
+        const payload = {
+          skills: formData.skills.join(', '),
+          experience: formData.relevance,
+          education: formData.degree,
+          highest_degree: formData.degree,
+          fullname: formData.fullName,
+          location: formData.location
+        };
+        const response = await axios.post(`http://localhost:8000/matching/match-data/${jobId}`, payload);
+        if (response.data?.match_percentage !== undefined) {
+          setMatchScore(response.data.match_percentage);
+        }
+      } catch (err) {
+        console.error("Failed to recalculate match score:", err);
+      } finally {
+        setIsCalculating(false);
+      }
+    };
+
+    const timeoutId = setTimeout(() => {
+      calculateMatchScore();
+    }, 800);
+
+    return () => clearTimeout(timeoutId);
+  }, [formData.skills, formData.relevance, formData.degree, formData.fullName, formData.location, jobId]);
+
+  const getMatchColor = (pct) => {
+    if (pct >= 70) return '#22c55e';
+    if (pct >= 40) return '#f59e0b';
+    return '#ef4444';
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -87,7 +126,7 @@ const ApplicationForm = () => {
         degree: formData.degree,
         college: formData.college,
         skills: formData.skills,
-        match_score: location.state?.matchData?.match_percentage || 0,
+        match_score: matchScore,
         profile_image_url: location.state?.profile_image_url || null
       });
       setShowSuccessModal(true);
@@ -124,11 +163,42 @@ const ApplicationForm = () => {
           Back to Review
         </button>
 
-        <div className="mb-10">
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">Application Details</h1>
-          <p className="text-slate-500 font-medium">
-            Update or manually enter your professional information below.
-          </p>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
+          <div>
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">Application Details</h1>
+            <p className="text-slate-500 font-medium">
+              Update or manually enter your professional information below.
+            </p>
+          </div>
+          
+          <div className="bg-white p-4 rounded-[24px] border border-slate-200 shadow-sm flex items-center gap-4 min-w-[220px]">
+            <div className="relative w-14 h-14 shrink-0">
+              <svg className="w-14 h-14 -rotate-90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="42" fill="none" stroke="#f1f5f9" strokeWidth="12" />
+                <circle
+                  cx="50" cy="50" r="42" fill="none"
+                  stroke={getMatchColor(matchScore)}
+                  strokeWidth="12"
+                  strokeDasharray={`${matchScore * 2.64} 264`}
+                  strokeLinecap="round"
+                  className="transition-all duration-1000 ease-out"
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                {isCalculating ? (
+                  <div className="w-4 h-4 border-2 border-slate-300 border-t-[#D10043] rounded-full animate-spin"></div>
+                ) : (
+                  <span className="text-[13px] font-black text-slate-900 leading-none">{matchScore}%</span>
+                )}
+              </div>
+            </div>
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">AI Match Score</div>
+              <div className="text-xs font-semibold text-slate-600">
+                {isCalculating ? 'Analyzing...' : 'Live updated'}
+              </div>
+            </div>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
