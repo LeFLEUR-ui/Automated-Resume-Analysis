@@ -26,17 +26,13 @@ const ForgotPassword = () => {
     setLoading(true);
 
     try {
-      // Assuming there's a forgot-password endpoint or a mock behavior
-      // await axios.post('http://localhost:8000/auth/forgot-password', { email });
-
-      // For now, simulate success
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await axios.post('http://localhost:8000/auth/forgot-password', { email });
 
       setModalState({
         isOpen: true,
         type: 'success',
-        title: 'Email Sent',
-        message: `A password reset link has been sent to ${email}. Please check your inbox.`
+        title: 'Recovery Email Sent',
+        message: `If an account exists for ${email}, a password reset link has been sent. Please check your inbox and spam folder.`
       });
     } catch (err) {
       setModalState({
