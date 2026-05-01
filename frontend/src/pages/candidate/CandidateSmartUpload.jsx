@@ -24,6 +24,9 @@ const CandidateSmartUpload = () => {
   const [isComplete, setIsComplete] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
+  const [extractedData, setExtractedData] = useState(null);
+  const [matchData, setMatchData] = useState(null);
+  const [cooldown, setCooldown] = useState(0);
   const { jobId } = useParams();
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
@@ -42,6 +45,13 @@ const CandidateSmartUpload = () => {
     };
     if (jobId) fetchJobDetails();
   }, [jobId]);
+
+  useEffect(() => {
+    if (cooldown > 0) {
+      const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldown]);
 
   const validateAndSetFile = (selectedFile) => {
     const validTypes = [
@@ -75,21 +85,49 @@ const CandidateSmartUpload = () => {
     }
   };
 
-  const simulateUpload = () => {
-    if (!file || !isTermsAccepted) return;
+  const handleUpload = async () => {
+    if (!file || !isTermsAccepted || cooldown > 0) return;
     setIsUploading(true);
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 5;
-      setUploadProgress(progress);
-      if (progress >= 100) {
-        clearInterval(interval);
-        setTimeout(() => {
-          setIsUploading(false);
-          setIsComplete(true);
-        }, 800);
+    setUploadProgress(20);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await axios.post('http://localhost:8000/candidate/parse-resume', formData, {
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setUploadProgress(Math.max(20, Math.min(80, percentCompleted))); // Save last 20% for matching
+        }
+      });
+      
+      const extracted = response.data;
+      setExtractedData(extracted);
+      setUploadProgress(90);
+      
+      if (jobId) {
+        const matchRes = await axios.post(`http://localhost:8000/matching/match-data/${jobId}`, extracted);
+        setMatchData(matchRes.data);
       }
-    }, 50);
+      setUploadProgress(100);
+
+      setTimeout(() => {
+        setIsUploading(false);
+        setIsComplete(true);
+      }, 800);
+      
+    } catch (error) {
+      console.error("Error analyzing resume:", error);
+      if (error.response?.status === 429) {
+        alert("Too many requests! Please wait a moment before trying again.");
+        setCooldown(30);
+      } else {
+        const detail = error.response?.data?.detail || "Failed to analyze resume. Please ensure you uploaded a valid PDF or Word document.";
+        alert(detail);
+      }
+      setIsUploading(false);
+      setCooldown(10);
+    }
   };
 
   return (
@@ -216,7 +254,7 @@ const CandidateSmartUpload = () => {
                     </div>
 
                     <button
-                      onClick={() => navigate(jobId ? `/candidate/preview-profile/${jobId}` : '/candidate/preview-profile', { state: { fileName: file.name, job: { title: jobTitle } } })}
+                      onClick={() => navigate(jobId ? `/candidate/preview-profile/${jobId}` : '/candidate/preview-profile', { state: { fileName: file.name, job: { title: jobTitle }, extractedData, matchData } })}
                       className="w-full bg-slate-900 hover:bg-[#D60041] text-white py-6 rounded-[28px] font-black text-lg flex items-center justify-center gap-4 transition-all shadow-2xl shadow-slate-200 hover:shadow-pink-200 hover:-translate-y-1 active:scale-95 group"
                     >
                       <span>Review Profile Updates</span>
@@ -243,15 +281,15 @@ const CandidateSmartUpload = () => {
                     </div>
 
                     <button
-                      onClick={simulateUpload}
-                      disabled={!isTermsAccepted}
-                      className={`w-full py-6 rounded-[28px] font-black text-lg flex items-center justify-center gap-4 transition-all transform shadow-2xl active:scale-95 ${isTermsAccepted
+                      onClick={handleUpload}
+                      disabled={!isTermsAccepted || cooldown > 0}
+                      className={`w-full py-6 rounded-[28px] font-black text-lg flex items-center justify-center gap-4 transition-all transform shadow-2xl active:scale-95 ${isTermsAccepted && cooldown === 0
                         ? "bg-[#D60041] hover:bg-slate-900 text-white shadow-pink-200 hover:shadow-slate-200 hover:-translate-y-1"
                         : "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none"
                         }`}
                     >
                       <ShieldCheck size={26} />
-                      <span>Process Profile Update</span>
+                      <span>{cooldown > 0 ? `Wait ${cooldown}s` : 'Process Profile Update'}</span>
                     </button>
                   </div>
                 )}
