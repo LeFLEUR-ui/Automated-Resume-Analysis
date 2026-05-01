@@ -1,10 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+const token = localStorage.getItem('token');
 const initialState = {
-  user: localStorage.getItem('saved_email') || null,
-  role: localStorage.getItem('role') || 'Guest',
-  profileImageUrl: localStorage.getItem('profile_image_url') || null,
-  isAuthenticated: !!localStorage.getItem('saved_email'),
+  user: token ? localStorage.getItem('saved_email') : null,
+  role: token ? localStorage.getItem('role') : 'Guest',
+  profileImageUrl: token ? localStorage.getItem('profile_image_url') : null,
+  isAuthenticated: !!token,
 };
 
 const authSlice = createSlice({
