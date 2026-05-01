@@ -56,11 +56,11 @@ const Register = () => {
 
     setLoading(true);
 
-    let endpoint = 'http://127.0.0.1:8000/candidate/register';
+    let endpoint = 'http://localhost:8000/candidate/register';
     if (role === 'HR') {
-      endpoint = 'http://127.0.0.1:8000/hr/register';
+      endpoint = 'http://localhost:8000/hr/register';
     } else if (role === 'ADMIN') {
-      endpoint = 'http://127.0.0.1:8000/admins/register';
+      endpoint = 'http://localhost:8000/admins/register';
     }
 
     const payload = {
