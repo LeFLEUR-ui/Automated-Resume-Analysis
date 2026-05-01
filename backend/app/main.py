@@ -85,6 +85,7 @@ async def create_tables():
     from app.models.job_application import JobApplication
     from app.models.notification import Notification
     from app.models.message import Message
+    from app.models.password_reset import PasswordReset
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
