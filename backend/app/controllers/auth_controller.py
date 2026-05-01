@@ -13,7 +13,7 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
     try:
         new_user = await auth_service.register_user(
-            db, user.email, user.password, user.role
+            db, user.email, user.password, user.role, user.fullname
         )
         return {"message": "User registered successfully"}
     except Exception as e:

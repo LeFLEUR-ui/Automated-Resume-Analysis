@@ -9,7 +9,7 @@ from app.services.email_service import EmailService
 import uuid
 from datetime import datetime, timedelta
 
-async def register_user(db: AsyncSession, email: str, password: str, role: str):
+async def register_user(db: AsyncSession, email: str, password: str, role: str, fullname: str = ""):
     result = await db.execute(select(User).where(User.email == email))
     existing_user = result.scalar_one_or_none()
 
@@ -22,7 +22,8 @@ async def register_user(db: AsyncSession, email: str, password: str, role: str):
     new_user = User(
         email=email,
         password=hash_password(password),
-        role=role
+        role=role,
+        fullname=fullname
     )
 
     db.add(new_user)
