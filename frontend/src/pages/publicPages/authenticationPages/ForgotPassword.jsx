@@ -27,7 +27,7 @@ const ForgotPassword = () => {
 
     try {
       // Assuming there's a forgot-password endpoint or a mock behavior
-      // await axios.post('http://127.0.0.1:8000/auth/forgot-password', { email });
+      // await axios.post('http://localhost:8000/auth/forgot-password', { email });
 
       // For now, simulate success
       await new Promise(resolve => setTimeout(resolve, 1500));
