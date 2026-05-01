@@ -185,6 +185,11 @@ const Header = () => {
     location.pathname.includes('/applicationform/') ||
     location.pathname.includes('/submissionsuccess/');
 
+  const isPublicSitePage =
+    location.pathname === '/' ||
+    location.pathname === '/aboutpage' ||
+    location.pathname === '/careerspage';
+
   const handleLogout = () => {
     dispatch(logoutAction());
     navigate('/');
@@ -201,6 +206,10 @@ const Header = () => {
   }, []);
 
   const getNavItems = () => {
+    if (isPublicSitePage) return [
+      { label: 'About', path: '/aboutpage', icon: <Info size={18} /> },
+      { label: 'Careers', path: '/careerspage', icon: <Briefcase size={18} /> },
+    ];
     if (isAdminRole) return [
       { label: 'Dashboard', path: '/admin/dashboard', icon: <LayoutDashboard size={18} /> },
       { label: 'User Management', path: '/admin/users', icon: <Users size={18} /> },
@@ -235,17 +244,17 @@ const Header = () => {
             </div>
             <div>
               <h1 className="text-base font-black tracking-tight text-gray-900 leading-tight">
-                {isAdminRole ? "Admin Portal" : isHRRole ? "HR Portal" : isCandidateRole ? "Candidate Portal" : "Mariwasa"}
+                {isPublicSitePage ? "Mariwasa" : isAdminRole ? "Admin Portal" : isHRRole ? "HR Portal" : isCandidateRole ? "Candidate Portal" : "Mariwasa"}
               </h1>
-              <p className={`text-[10px] font-bold uppercase tracking-widest mt-0.5 ${isGuest ? 'text-gray-400' : 'text-[#D60041]'}`}>
-                {isGuest ? "Siam Ceramics Inc." : "Resume Analysis System"}
+              <p className={`text-[10px] font-bold uppercase tracking-widest mt-0.5 ${isGuest || isPublicSitePage ? 'text-gray-400' : 'text-[#D60041]'}`}>
+                {isGuest || isPublicSitePage ? "Siam Ceramics Inc." : "Resume Analysis System"}
               </p>
             </div>
           </div>
         </div>
 
-        <div className={`hidden lg:flex flex-1 items-center ${isGuest || isApplicationPage ? 'justify-end pr-8' : 'justify-center'}`}>
-          {!isApplicationPage && isGuest && (
+        <div className={`hidden lg:flex flex-1 items-center ${(isGuest || isPublicSitePage) || isApplicationPage ? 'justify-end pr-8' : 'justify-center'}`}>
+          {!isApplicationPage && (isGuest || isPublicSitePage) && (
             <nav className="flex items-center space-x-1 bg-gray-50/50 p-1 rounded-2xl border border-gray-100">
               {navItems.map((item, index) => {
                 const isActive = location.pathname === item.path;
