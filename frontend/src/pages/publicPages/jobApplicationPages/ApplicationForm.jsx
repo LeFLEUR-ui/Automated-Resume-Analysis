@@ -173,35 +173,6 @@ const ApplicationForm = () => {
               Update or manually enter your professional information below.
             </p>
           </div>
-          
-          <div className="bg-white p-4 rounded-[24px] border border-slate-200 shadow-sm flex items-center gap-4 min-w-[220px]">
-            <div className="relative w-14 h-14 shrink-0">
-              <svg className="w-14 h-14 -rotate-90" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="42" fill="none" stroke="#f1f5f9" strokeWidth="12" />
-                <circle
-                  cx="50" cy="50" r="42" fill="none"
-                  stroke={getMatchColor(matchScore)}
-                  strokeWidth="12"
-                  strokeDasharray={`${matchScore * 2.64} 264`}
-                  strokeLinecap="round"
-                  className="transition-all duration-1000 ease-out"
-                />
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                {isCalculating ? (
-                  <div className="w-4 h-4 border-2 border-slate-300 border-t-[#D10043] rounded-full animate-spin"></div>
-                ) : (
-                  <span className="text-[13px] font-black text-slate-900 leading-none">{matchScore}%</span>
-                )}
-              </div>
-            </div>
-            <div>
-              <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">AI Match Score</div>
-              <div className="text-xs font-semibold text-slate-600">
-                {isCalculating ? 'Analyzing...' : 'Live updated'}
-              </div>
-            </div>
-          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
