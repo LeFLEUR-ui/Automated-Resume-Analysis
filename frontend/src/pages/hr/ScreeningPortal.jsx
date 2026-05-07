@@ -69,6 +69,7 @@ const MOCK_CANDIDATES = [
 ];
 
 import { useGetApplicationsQuery, useUpdateApplicationStatusMutation } from '../../redux/api/apiSlice';
+import { exportToCSV } from '../../utils/exportUtils';
 
 const ScreeningPortal = () => {
   const { data: candidates = [], isLoading } = useGetApplicationsQuery();
@@ -81,6 +82,10 @@ const ScreeningPortal = () => {
   const [interviewModalOpen, setInterviewModalOpen] = useState(false);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
+
+  const handleExport = () => {
+    exportToCSV(candidates, `Candidate_List_${new Date().toISOString().split('T')[0]}`);
+  };
 
   const handleOpenInterview = (candidate) => {
     setSelectedCandidate(candidate);
@@ -131,7 +136,7 @@ const ScreeningPortal = () => {
       <div className="flex flex-1">
         <Sidebar />
         <main className="flex-1 max-w-[1400px] mx-auto px-4 sm:px-6 md:px-10 py-6 md:py-8">
-        <ScreeningHeader />
+        <ScreeningHeader onExport={handleExport} />
 
         <SearchAndFilter 
           searchQuery={searchQuery}

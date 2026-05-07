@@ -16,6 +16,7 @@ import {
   useGetApplicationsQuery
 } from '../../redux/api/apiSlice';
 import ChatWidget from '../../components/layout/ChatWidget';
+import { exportToCSV } from '../../utils/exportUtils';
 
 const HRDashboard = () => {
   const navigate = useNavigate();
@@ -75,7 +76,10 @@ const HRDashboard = () => {
                   <div className="w-2 h-2 bg-green-500 rounded-full ml-2 animate-pulse"></div>
                 </button>
 
-                <button className="whitespace-nowrap bg-white border border-gray-200 px-4 py-2 rounded-xl hover:border-pink-100 hover:text-[#D60041] hover:bg-pink-50 transition-all duration-300 text-[11px] md:text-xs font-bold text-gray-700 flex items-center shadow-sm group shrink-0">
+                <button 
+                  onClick={() => exportToCSV(applications, `Recruitment_Report_${new Date().toISOString().split('T')[0]}`)}
+                  className="whitespace-nowrap bg-white border border-gray-200 px-4 py-2 rounded-xl hover:border-pink-100 hover:text-[#D60041] hover:bg-pink-50 transition-all duration-300 text-[11px] md:text-xs font-bold text-gray-700 flex items-center shadow-sm group shrink-0"
+                >
                   <Download className="h-4 w-4 mr-2 text-gray-400 group-hover:text-[#D60041]" />
                   Export Report
                 </button>
