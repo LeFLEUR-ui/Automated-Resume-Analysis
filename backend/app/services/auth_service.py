@@ -6,6 +6,7 @@ from app.models.password_reset import PasswordReset
 from app.utils.auth import hash_password, verify_password, create_access_token
 from app.services.notification_service import create_notification
 from app.services.email_service import EmailService
+from app.services.audit_service import record_activity
 import uuid
 from datetime import datetime, timedelta
 
@@ -45,7 +46,8 @@ async def login_user(db: AsyncSession, email: str, password: str):
 
     token = create_access_token({
         "sub": user.email,
-        "role": user.role
+        "role": user.role,
+        "id": user.id
     })
 
     # Trigger notification for logins (Candidate and HR)
@@ -60,6 +62,14 @@ async def login_user(db: AsyncSession, email: str, password: str):
             message=message,
             type=notif_type,
             target_role="ADMIN"
+        )
+        
+        # Record in audit log
+        await record_activity(
+            db=db,
+            user_id=user.id,
+            action="SIGN_IN",
+            details=f"User {user.email} signed in"
         )
 
     return {"token": token, "role": user.role, "fullname": user.fullname, "user_id": user.id, "profile_image_url": user.profile_image_url}

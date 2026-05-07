@@ -9,7 +9,9 @@ from app.schemas.hr_schema import HRCreate, HRResponse, HRUpdate
 from app.schemas.job_description_schema import JobCreate, JobResponse, JobUpdate
 from app.services import hr_service
 from app.services.job_description_service import create_job, get_all_active_jobs, get_job, set_job_status, update_job
+from app.services.audit_service import record_activity
 from app.utils.cache import cache_response, clear_cache_pattern
+from app.utils.auth import get_current_user
 
 router = APIRouter(prefix="/hr", tags=["HR Management"])
 
@@ -76,10 +78,21 @@ async def upload_hr_profile_image(hr_id: int, file: UploadFile = File(...), db: 
 @router.post("/createjob", response_model=JobResponse, status_code=status.HTTP_201_CREATED)
 async def create_job_description(
     job: JobCreate, 
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
 ):
     result = await create_job(db=db, job=job)
     await clear_cache_pattern("active_jobs:*")
+    
+    # Record in audit log
+    await record_activity(
+        db=db,
+        user_id=current_user.get("id"),
+        action="CREATE_JOB",
+        target=f"Job: {result.job_title}",
+        details=f"HR created a new job position: {result.job_title}"
+    )
+    
     return result
 
 @router.get("/read-jobs", response_model=List[JobResponse])

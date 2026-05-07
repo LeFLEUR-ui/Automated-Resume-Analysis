@@ -92,6 +92,23 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ['Jobs'],
     }),
+    
+    getHRActivities: builder.query({
+      query: () => '/admins/hr-activities',
+      providesTags: ['AuditLogs'],
+      transformResponse: (response) => {
+        return response.map(log => ({
+          id: log.id,
+          user: log.user?.fullname || log.user?.email || "Unknown HR",
+          role: log.user?.role || "HR",
+          action: log.action.replace('_', ' '),
+          time: new Date(log.created_at).toLocaleString(),
+          status: "Success", // Simplified for now
+          details: log.details,
+          target: log.target
+        }));
+      },
+    }),
   }),
 });
 
@@ -105,4 +122,5 @@ export const {
   useUpdateJobMutation,
   useUpdateJobStatusMutation,
   useUpdateApplicationStatusMutation,
+  useGetHRActivitiesQuery,
 } = apiSlice;

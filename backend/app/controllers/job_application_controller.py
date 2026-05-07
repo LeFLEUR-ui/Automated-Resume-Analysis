@@ -7,6 +7,8 @@ from app.schemas.job_application_schema import JobApplicationCreate, JobApplicat
 from app.services import job_application_service
 from app.models.job_description import JobDescription
 from sqlalchemy.future import select
+from app.services.audit_service import record_activity
+from app.utils.auth import get_current_user
 
 router = APIRouter(prefix="/applications", tags=["Job Applications"])
 
@@ -51,7 +53,8 @@ async def get_applications_for_job(job_id: int, db: AsyncSession = Depends(get_d
 async def update_application_status(
     application_id: int, 
     status_update: JobApplicationStatusUpdate, 
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
 ):
     """
     Update the status of a job application.
@@ -61,6 +64,15 @@ async def update_application_status(
     )
     if not db_application:
         raise HTTPException(status_code=404, detail="Application not found")
+        
+    # Record in audit log
+    await record_activity(
+        db=db,
+        user_id=current_user.get("id"),
+        action="UPDATE_STATUS",
+        target=f"Application ID: {application_id}",
+        details=f"HR updated application status for {db_application.candidate_name} to {status_update.status}"
+    )
         
     # Invalidate cache since stats might change
     from app.utils.cache import delete_cache

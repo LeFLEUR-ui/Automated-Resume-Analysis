@@ -7,6 +7,7 @@ from app.models.job_description import JobDescription
 from app.models.job_application import JobApplication
 from app.models.notification import Notification
 from app.models.message import Message
+from app.models.audit_log import AuditLog
 
 __all__ = [
     "User",
@@ -17,5 +18,6 @@ __all__ = [
     "JobDescription",
     "JobApplication",
     "Notification",
-    "Message"
+    "Message",
+    "AuditLog"
 ]

@@ -33,7 +33,11 @@ const RECENT_ACTIVITIES = [
   { id: 4, user: "Sophia Loren", role: "User Manager", action: "Created New Account", time: "3 hours ago", status: "Success" },
 ];
 
+import { useGetHRActivitiesQuery } from '../../redux/api/apiSlice';
+
 const AdminDashboard = () => {
+  const { data: hrActivities = [], isLoading: isActivitiesLoading } = useGetHRActivitiesQuery();
+
   return (
     <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter'] flex flex-col">
       <Helmet>
@@ -87,7 +91,7 @@ const AdminDashboard = () => {
           
           <div className="lg:col-span-2 bg-white border border-gray-100 rounded-[32px] p-8 shadow-sm">
             <div className="flex justify-between items-center mb-8">
-              <h4 className="text-lg font-bold text-gray-900">Recent Admin Activity</h4>
+              <h4 className="text-lg font-bold text-gray-900">Recent HR Activity</h4>
               <div className="flex gap-2">
                 <button className="p-2 hover:bg-gray-50 rounded-lg text-gray-400 transition-colors"><Search size={18} /></button>
                 <button className="p-2 hover:bg-gray-50 rounded-lg text-gray-400 transition-colors"><Filter size={18} /></button>
@@ -95,48 +99,60 @@ const AdminDashboard = () => {
             </div>
             
             <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="border-b border-gray-50 uppercase text-[10px] tracking-[0.1em] text-gray-400 font-bold">
-                    <th className="pb-4 font-bold">Administrator</th>
-                    <th className="pb-4 font-bold">Action Performed</th>
-                    <th className="pb-4 font-bold text-right">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {RECENT_ACTIVITIES.map((log) => (
-                    <tr key={log.id} className="group hover:bg-gray-50/50 transition-colors">
-                      <td className="py-5">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-500 text-xs">
-                            {log.user.charAt(0)}
-                          </div>
-                          <div>
-                            <p className="text-sm font-bold text-gray-900">{log.user}</p>
-                            <p className="text-[11px] text-gray-400 font-medium">{log.role}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="py-5">
-                        <p className="text-sm font-semibold text-gray-700">{log.action}</p>
-                        <p className="text-[11px] text-gray-400 flex items-center gap-1 mt-0.5">
-                          <Clock size={12} /> {log.time}
-                        </p>
-                      </td>
-                      <td className="py-5 text-right">
-                        <span className={`text-[11px] font-bold px-3 py-1 rounded-full ${
-                          log.status === 'Success' ? 'bg-emerald-50 text-emerald-600' : 
-                          log.status === 'Warning' ? 'bg-amber-50 text-amber-600' : 'bg-red-50 text-[#D10043]'
-                        }`}>
-                          {log.status}
-                        </span>
-                      </td>
+              {isActivitiesLoading ? (
+                <div className="py-10 flex flex-col items-center">
+                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D10043] mb-3"></div>
+                   <p className="text-xs text-gray-400 font-bold">Syncing activities...</p>
+                </div>
+              ) : hrActivities.length === 0 ? (
+                <div className="py-10 text-center text-gray-400 text-sm font-medium">No recent HR activity recorded.</div>
+              ) : (
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="border-b border-gray-50 uppercase text-[10px] tracking-[0.1em] text-gray-400 font-bold">
+                      <th className="pb-4 font-bold">HR Officer</th>
+                      <th className="pb-4 font-bold">Action Performed</th>
+                      <th className="pb-4 font-bold text-right">Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {hrActivities.map((log) => (
+                      <tr key={log.id} className="group hover:bg-gray-50/50 transition-colors">
+                        <td className="py-5">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-full bg-red-50 flex items-center justify-center font-bold text-[#D10043] text-xs">
+                              {log.user.charAt(0)}
+                            </div>
+                            <div>
+                              <p className="text-sm font-bold text-gray-900">{log.user}</p>
+                              <p className="text-[11px] text-gray-400 font-medium">{log.role}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-5">
+                          <p className="text-sm font-semibold text-gray-700">{log.action}</p>
+                          <p className="text-[11px] text-gray-400 flex items-center gap-1 mt-0.5 italic">
+                            <Clock size={12} /> {log.time} • {log.target}
+                          </p>
+                        </td>
+                        <td className="py-5 text-right">
+                          <span className={`text-[11px] font-bold px-3 py-1 rounded-full ${
+                            log.status === 'Success' ? 'bg-emerald-50 text-emerald-600' : 
+                            log.status === 'Warning' ? 'bg-amber-50 text-amber-600' : 'bg-red-50 text-[#D10043]'
+                          }`}>
+                            {log.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
-            <button className="w-full mt-6 py-3 text-xs font-bold text-[#D10043] hover:bg-red-50 rounded-xl transition-colors">
+            <button 
+              onClick={() => navigate('/admin/audit')}
+              className="w-full mt-6 py-3 text-xs font-bold text-[#D10043] hover:bg-red-50 rounded-xl transition-colors"
+            >
               View Full Audit Trail
             </button>
           </div>

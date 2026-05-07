@@ -7,11 +7,16 @@ from typing import List
 from app.utils.database import get_db
 from app.schemas.admin_schema import AdminCreate, AdminResponse, AdminUpdate
 from app.schemas.user_schema import UserResponse
-from app.services import admin_service
+from app.services import admin_service, audit_service
 from app.utils.cache import cache_response, clear_cache_pattern
 
 
 router = APIRouter(prefix="/admins", tags=["Adminstrators"])
+
+@router.get("/hr-activities")
+async def get_hr_activities(db: AsyncSession = Depends(get_db)):
+    activities = await audit_service.get_recent_hr_activities(db)
+    return activities
 
 @router.get("/users", response_model=List[UserResponse])
 @cache_response("admin_users", ttl=600)
