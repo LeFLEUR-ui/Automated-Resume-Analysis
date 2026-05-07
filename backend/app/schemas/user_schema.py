@@ -32,6 +32,9 @@ class UserResponse(BaseModel):
     phone: Optional[str] = None
     location: Optional[str] = None
     bio: Optional[str] = None
+    is_archived: bool = False
+    is_online: bool = False
+    last_active: Optional[object] = None
 
     class Config:
         from_attributes = True

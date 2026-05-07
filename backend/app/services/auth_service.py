@@ -43,6 +43,14 @@ async def login_user(db: AsyncSession, email: str, password: str):
 
     if not verify_password(password, user.password):
         raise Exception("Invalid credentials")
+    
+    if user.is_archived:
+        raise Exception("Account has been archived. Please contact administration.")
+
+    # Update online status
+    user.is_online = True
+    user.last_active = datetime.utcnow()
+    await db.commit()
 
     token = create_access_token({
         "sub": user.email,

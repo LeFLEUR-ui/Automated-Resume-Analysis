@@ -109,6 +109,27 @@ export const apiSlice = createApi({
         }));
       },
     }),
+
+    getUsers: builder.query({
+      query: () => '/admins/users',
+      providesTags: ['Users'],
+    }),
+
+    archiveUser: builder.mutation({
+      query: (userId) => ({
+        url: `/admins/users/${userId}/archive`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Users'],
+    }),
+
+    unarchiveUser: builder.mutation({
+      query: (userId) => ({
+        url: `/admins/users/${userId}/unarchive`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Users'],
+    }),
   }),
 });
 
@@ -123,4 +144,7 @@ export const {
   useUpdateJobStatusMutation,
   useUpdateApplicationStatusMutation,
   useGetHRActivitiesQuery,
+  useGetUsersQuery,
+  useArchiveUserMutation,
+  useUnarchiveUserMutation,
 } = apiSlice;

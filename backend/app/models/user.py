@@ -15,6 +15,9 @@ class User(Base):
     phone = Column(String, nullable=True)
     location = Column(String, nullable=True)
     bio = Column(Text, nullable=True)
+    is_archived = Column(Boolean, default=False)
+    is_online = Column(Boolean, default=False)
+    last_active = Column(DateTime, nullable=True)
 
     __mapper_args__ = {
         "polymorphic_on": role,

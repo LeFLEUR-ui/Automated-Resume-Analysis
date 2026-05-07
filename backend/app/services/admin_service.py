@@ -47,3 +47,14 @@ async def update_admin_profile(db: AsyncSession, admin_id: int, admin_update: Ad
     await db.commit()
     await db.refresh(admin)
     return admin
+
+async def toggle_user_archive_status(db: AsyncSession, user_id: int, archive_status: bool):
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if not user:
+        return None
+    
+    user.is_archived = archive_status
+    await db.commit()
+    await db.refresh(user)
+    return user

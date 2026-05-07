@@ -24,6 +24,22 @@ async def read_users(db: AsyncSession = Depends(get_db)):
     users = await admin_service.get_all_users(db)
     return users
 
+@router.patch("/users/{user_id}/archive")
+async def archive_user(user_id: int, db: AsyncSession = Depends(get_db)):
+    user = await admin_service.toggle_user_archive_status(db, user_id, True)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    await clear_cache_pattern("admin_users:*")
+    return {"message": "User archived successfully"}
+
+@router.patch("/users/{user_id}/unarchive")
+async def unarchive_user(user_id: int, db: AsyncSession = Depends(get_db)):
+    user = await admin_service.toggle_user_archive_status(db, user_id, False)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    await clear_cache_pattern("admin_users:*")
+    return {"message": "User unarchived successfully"}
+
 @router.post("/register", response_model=AdminResponse, status_code=status.HTTP_200_OK)
 async def register_admin(
     admin_in: AdminCreate, 

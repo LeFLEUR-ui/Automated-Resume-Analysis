@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { 
   Search, 
-  Filter, 
   UserPlus, 
   MoreHorizontal, 
   Mail, 
@@ -12,30 +10,45 @@ import {
   UserX, 
   ChevronLeft, 
   ChevronRight,
-  MapPin,
-  Calendar,
-  Settings2
+  Settings2,
+  Clock,
+  Archive,
+  RotateCcw,
+  Activity
 } from 'lucide-react';
 import Header from '../../components/layout/Header';
 import Sidebar from '../../components/layout/Sidebar';
+import { 
+  useGetUsersQuery, 
+  useArchiveUserMutation, 
+  useUnarchiveUserMutation 
+} from '../../redux/api/apiSlice';
 
 const UsersPage = () => {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: users = [], isLoading } = useGetUsersQuery();
+  const [archiveUser] = useArchiveUserMutation();
+  const [unarchiveUser] = useUnarchiveUserMutation();
+  
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeMenu, setActiveMenu] = useState(null);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get('http://localhost:8000/admins/users');
-        setUsers(response.data);
-      } catch (err) {
-        console.error("Failed to fetch users:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUsers();
-  }, []);
+  const filteredUsers = users.filter(user => 
+    user.fullname?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.email?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleArchive = async (userId) => {
+    if (window.confirm("Are you sure you want to archive this user? They will no longer be able to log in.")) {
+      await archiveUser(userId);
+      setActiveMenu(null);
+    }
+  };
+
+  const handleUnarchive = async (userId) => {
+    await unarchiveUser(userId);
+    setActiveMenu(null);
+  };
+
   return (
     <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter'] flex flex-col">
       <Helmet>
@@ -61,7 +74,9 @@ const UsersPage = () => {
               <input 
                 type="text" 
                 placeholder="Search by name or email..." 
-                className="w-full bg-white border border-gray-200 rounded-xl py-2.5 pl-10 pr-4 text-xs focus:ring-2 focus:ring-red-100 transition-all outline-none"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-white border border-gray-200 rounded-xl py-2.5 pl-10 pr-4 text-xs focus:ring-2 focus:ring-red-100 transition-all outline-none shadow-sm"
               />
             </div>
             <button className="bg-[#D10043] text-white px-5 py-2.5 rounded-xl hover:bg-[#b00038] transition-all text-xs font-bold tracking-tight flex items-center justify-center shadow-lg shadow-red-100">
@@ -81,20 +96,30 @@ const UsersPage = () => {
                     <tr className="border-b border-gray-50 uppercase text-[10px] tracking-[0.1em] text-gray-400 font-bold bg-gray-50/30">
                       <th className="px-8 py-5">User Profile</th>
                       <th className="px-6 py-5">Role & Access</th>
-                      <th className="px-6 py-5">Status</th>
-                      <th className="px-8 py-5 text-right">Actions</th>
+                      <th className="px-6 py-5">Account Status</th>
+                      <th className="px-6 py-5 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
-                    {users.map((user) => (
-                      <tr key={user.id} className="group hover:bg-gray-50/50 transition-colors">
+                    {isLoading ? (
+                      <tr>
+                        <td colSpan="4" className="px-8 py-12 text-center">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D10043] mx-auto mb-4"></div>
+                          <p className="text-sm text-gray-400 font-bold">Loading users...</p>
+                        </td>
+                      </tr>
+                    ) : filteredUsers.map((user) => (
+                      <tr key={user.id} className={`group hover:bg-gray-50/50 transition-colors ${user.is_archived ? 'opacity-60' : ''}`}>
                         <td className="px-8 py-6">
                           <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-2xl bg-[#D10043]/10 flex items-center justify-center font-bold text-[#D10043] text-sm">
+                            <div className={`relative w-10 h-10 rounded-2xl flex items-center justify-center font-bold text-sm ${user.is_archived ? 'bg-gray-100 text-gray-400' : 'bg-[#D10043]/10 text-[#D10043]'}`}>
                               {user.fullname?.charAt(0) || 'U'}
+                              {user.is_online && !user.is_archived && (
+                                <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
+                              )}
                             </div>
                             <div>
-                              <p className="text-sm font-bold text-gray-900">{user.fullname}</p>
+                              <p className="text-sm font-bold text-gray-900">{user.fullname} {user.is_archived && <span className="text-[10px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded ml-1">ARCHIVED</span>}</p>
                               <p className="text-[11px] text-gray-400 font-medium flex items-center gap-1.5">
                                 <Mail size={12} /> {user.email}
                               </p>
@@ -102,27 +127,70 @@ const UsersPage = () => {
                           </div>
                         </td>
                         <td className="px-6 py-6">
-                          <div className="flex items-center gap-2">
-                            <Shield size={14} className="text-[#D10043]" />
-                            <span className="text-xs font-semibold text-gray-700">{user.role}</span>
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2">
+                              <Shield size={14} className={user.is_archived ? 'text-gray-400' : 'text-[#D10043]'} />
+                              <span className="text-xs font-semibold text-gray-700">{user.role}</span>
+                            </div>
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Level 4 Access</p>
                           </div>
                         </td>
                         <td className="px-6 py-6">
-                          <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-600">
-                            Active
-                          </span>
+                          <div className="flex flex-col gap-1.5">
+                            {user.is_online && !user.is_archived ? (
+                              <span className="inline-flex items-center gap-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 w-fit">
+                                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                                ONLINE NOW
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-50 text-gray-400 w-fit">
+                                OFFLINE
+                              </span>
+                            )}
+                            {user.last_active && (
+                              <p className="text-[10px] text-gray-400 flex items-center gap-1">
+                                <Clock size={10} /> {new Date(user.last_active).toLocaleDateString()}
+                              </p>
+                            )}
+                          </div>
                         </td>
-                        <td className="px-8 py-6 text-right">
-                          <button className="p-2 hover:bg-gray-100 rounded-lg text-gray-400 transition-colors">
+                        <td className="px-6 py-6 text-right relative">
+                          <button 
+                            onClick={() => setActiveMenu(activeMenu === user.id ? null : user.id)}
+                            className="p-2 hover:bg-gray-100 rounded-lg text-gray-400 transition-colors"
+                          >
                             <MoreHorizontal size={18} />
                           </button>
+                          
+                          {activeMenu === user.id && (
+                            <div className="absolute right-8 top-16 w-48 bg-white border border-gray-100 rounded-2xl shadow-xl z-20 py-2 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                              <button className="w-full px-4 py-2 text-left text-xs font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                <Settings2 size={14} /> View Settings
+                              </button>
+                              {user.is_archived ? (
+                                <button 
+                                  onClick={() => handleUnarchive(user.id)}
+                                  className="w-full px-4 py-2 text-left text-xs font-bold text-emerald-600 hover:bg-emerald-50 flex items-center gap-2"
+                                >
+                                  <RotateCcw size={14} /> Unarchive User
+                                </button>
+                              ) : (
+                                <button 
+                                  onClick={() => handleArchive(user.id)}
+                                  className="w-full px-4 py-2 text-left text-xs font-bold text-red-600 hover:bg-red-50 flex items-center gap-2"
+                                >
+                                  <Archive size={14} /> Archive User
+                                </button>
+                              )}
+                            </div>
+                          )}
                         </td>
                       </tr>
                     ))}
-                    {users.length === 0 && !loading && (
+                    {!isLoading && filteredUsers.length === 0 && (
                       <tr>
                         <td colSpan="4" className="px-8 py-12 text-center text-gray-400 font-medium">
-                          No users found in the system.
+                          No users matching "{searchQuery}" found.
                         </td>
                       </tr>
                     )}
@@ -135,7 +203,7 @@ const UsersPage = () => {
                   <button className="p-2 border border-gray-100 rounded-lg text-gray-400 hover:bg-gray-50"><ChevronLeft size={18} /></button>
                   <button className="p-2 border border-gray-100 rounded-lg text-gray-400 hover:bg-gray-50"><ChevronRight size={18} /></button>
                 </div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Page 1 of 12</p>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Showing {filteredUsers.length} Users</p>
               </div>
             </div>
           </div>
@@ -143,28 +211,31 @@ const UsersPage = () => {
           <div className="space-y-6">
             <div className="bg-white border border-gray-100 rounded-[32px] p-8 shadow-sm">
               <h4 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <Settings2 size={18} className="text-[#D10043]" /> User Insights
+                <Activity size={18} className="text-[#D10043]" /> User Insights
               </h4>
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total Users</p>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total Members</p>
                     <p className="text-xl font-bold text-gray-900">{users.length}</p>
                   </div>
                   <UserCheck className="text-emerald-500 opacity-20" size={32} />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Deactivated</p>
-                    <p className="text-xl font-bold text-gray-900">14</p>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Archived</p>
+                    <p className="text-xl font-bold text-gray-900">{users.filter(u => u.is_archived).length}</p>
                   </div>
                   <UserX className="text-red-500 opacity-20" size={32} />
                 </div>
                 <hr className="border-gray-50" />
-                <div>
-                  <p className="text-[11px] font-medium text-gray-500 leading-relaxed">
-                    Most users are currently connecting from <span className="text-gray-900 font-bold">North America</span> and <span className="text-gray-900 font-bold">Europe</span> regions.
-                  </p>
+                <div className="p-4 bg-red-50/50 rounded-2xl border border-red-100/50">
+                   <p className="text-[11px] font-bold text-[#D10043] flex items-center gap-2 mb-1">
+                     <Shield size={12} /> Security Tip
+                   </p>
+                   <p className="text-[10px] text-gray-600 leading-relaxed font-medium">
+                     Archive users who are no longer part of the team to maintain security hygiene.
+                   </p>
                 </div>
               </div>
             </div>
@@ -173,12 +244,13 @@ const UsersPage = () => {
               <div className="relative z-10">
                 <h4 className="text-lg font-bold mb-2">Access Reviews</h4>
                 <p className="text-gray-400 text-xs leading-relaxed mb-6">
-                  It's been 30 days since your last security role audit. 
+                  Perform a bulk audit of user roles and system permissions.
                 </p>
-                <button className="w-full bg-[#D10043] hover:bg-[#b00038] py-3 rounded-xl text-xs font-bold transition-all">
-                  Start Compliance Check
+                <button className="w-full bg-[#D10043] hover:bg-[#b00038] py-3 rounded-xl text-xs font-bold transition-all shadow-lg shadow-red-900/20">
+                  Start Audit Trail
                 </button>
               </div>
+              <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-[#D10043] rounded-full blur-[80px] opacity-20 group-hover:opacity-40 transition-opacity"></div>
             </div>
           </div>
 
