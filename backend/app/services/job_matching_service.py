@@ -105,25 +105,29 @@ def _extract_years_from_text(text: str) -> int:
     return max_years
 
 
-def calculate_experience_match(resume_years: int, job_description: str) -> float:
+def calculate_experience_match(resume_years: int, job_description: str) -> dict:
     """
     Compare resume years of experience against job requirements.
-    Returns a score from 0.0 to 1.0.
+    Returns a dict with score and details.
     """
     required_years = _extract_years_from_text(job_description)
+    resume_years = resume_years or 0
     
     if required_years == 0:
         # No explicit requirement — give full marks if candidate has any experience
-        return 1.0 if resume_years and resume_years > 0 else 0.5
+        score = 1.0 if resume_years > 0 else 0.5
+        reason = "No specific experience requirement found in job description." if resume_years > 0 else "No specific experience requirement, but no experience provided."
+        return {"score": score, "required_years": 0, "candidate_years": resume_years, "reason": reason}
     
-    if not resume_years or resume_years <= 0:
-        return 0.2  # Some credit for applying
+    if resume_years <= 0:
+        return {"score": 0.2, "required_years": required_years, "candidate_years": 0, "reason": f"Required {required_years} years, but no experience was extracted from resume."}
     
     if resume_years >= required_years:
-        return 1.0
+        return {"score": 1.0, "required_years": required_years, "candidate_years": resume_years, "reason": f"Your {resume_years} years of experience meets or exceeds the required {required_years} years."}
     
     # Proportional score
-    return round(resume_years / required_years, 2)
+    score = round(resume_years / required_years, 2)
+    return {"score": score, "required_years": required_years, "candidate_years": resume_years, "reason": f"You have {resume_years} years of experience, meeting {int(score*100)}% of the {required_years}-year requirement."}
 
 
 def _extract_education_requirement(text: str) -> str:
@@ -151,31 +155,32 @@ def _extract_education_requirement(text: str) -> str:
     return ""
 
 
-def calculate_education_match(resume_degree: str, job_description: str) -> float:
+def calculate_education_match(resume_degree: str, job_description: str) -> dict:
     """
     Compare resume education against job requirements.
-    Returns a score from 0.0 to 1.0.
+    Returns a dict with score and details.
     """
     required_degree = _extract_education_requirement(job_description)
     
     if not required_degree:
         # No explicit requirement — give full marks
-        return 1.0
+        return {"score": 1.0, "required_degree": "Any", "candidate_degree": resume_degree or "Not provided", "reason": "No specific education requirement found."}
     
     if not resume_degree:
-        return 0.3  # Some credit
+        return {"score": 0.3, "required_degree": required_degree, "candidate_degree": "Not provided", "reason": f"Job requires {required_degree}, but no degree was extracted."}
     
     resume_level = DEGREE_HIERARCHY.get(resume_degree.upper(), 0)
     required_level = DEGREE_HIERARCHY.get(required_degree.upper(), 0)
     
     if resume_level == 0 or required_level == 0:
-        return 0.5  # Can't determine — neutral score
+        return {"score": 0.5, "required_degree": required_degree, "candidate_degree": resume_degree, "reason": f"Could not determine level for {resume_degree} compared to {required_degree}."}
     
     if resume_level >= required_level:
-        return 1.0
+        return {"score": 1.0, "required_degree": required_degree, "candidate_degree": resume_degree, "reason": f"Your {resume_degree} degree meets or exceeds the required {required_degree} level."}
     
     # Proportional score
-    return round(resume_level / required_level, 2)
+    score = round(resume_level / required_level, 2)
+    return {"score": score, "required_degree": required_degree, "candidate_degree": resume_degree, "reason": f"Your {resume_degree} is below the required {required_degree} level."}
 
 
 def calculate_match_score(resume_data: dict, job) -> dict:
@@ -195,17 +200,17 @@ def calculate_match_score(resume_data: dict, job) -> dict:
     # Experience matching (30%)
     resume_years = resume_data.get("years_experience", 0) or 0
     job_desc = (job.description or "") + " " + (job.skills_requirements or "")
-    experience_score = calculate_experience_match(resume_years, job_desc)
+    experience_result = calculate_experience_match(resume_years, job_desc)
     
     # Education matching (20%)
     resume_degree = resume_data.get("highest_degree", "")
-    education_score = calculate_education_match(resume_degree, job_desc)
+    education_result = calculate_education_match(resume_degree, job_desc)
     
     # Weighted composite
     match_percentage = round(
         (skills_result["score"] * 0.50 +
-         experience_score * 0.30 +
-         education_score * 0.20) * 100,
+         experience_result["score"] * 0.30 +
+         education_result["score"] * 0.20) * 100,
         1
     )
     
@@ -220,10 +225,13 @@ def calculate_match_score(resume_data: dict, job) -> dict:
         "job_type": job.job_type.value if job.job_type else None,
         "match_percentage": match_percentage,
         "skills_score": round(skills_result["score"] * 100, 1),
-        "experience_score": round(experience_score * 100, 1),
-        "education_score": round(education_score * 100, 1),
+        "experience_score": round(experience_result["score"] * 100, 1),
+        "education_score": round(education_result["score"] * 100, 1),
         "matched_skills": [s.title() for s in skills_result["matched"]],
-        "missing_skills": [s.title() for s in skills_result["missing"]]
+        "missing_skills": [s.title() for s in skills_result["missing"]],
+        "experience_reason": experience_result["reason"],
+        "education_reason": education_result["reason"],
+        "skills_reason": f"Matched {len(skills_result['matched'])} out of {len(skills_result['matched']) + len(skills_result['missing'])} required skills."
     }
 
 

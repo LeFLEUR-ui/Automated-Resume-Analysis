@@ -100,14 +100,15 @@ const SmartMatchResult = () => {
 
                 <div className="grid grid-cols-3 gap-3 mb-8 relative z-10">
                   {[
-                    { label: 'Skills', score: match.skills_score, icon: <Cpu size={12} /> },
-                    { label: 'Experience', score: match.experience_score, icon: <Briefcase size={12} /> },
-                    { label: 'Education', score: match.education_score, icon: <GraduationCap size={12} /> }
+                    { label: 'Skills', score: match.skills_score, icon: <Cpu size={12} />, reason: match.skills_reason },
+                    { label: 'Experience', score: match.experience_score, icon: <Briefcase size={12} />, reason: match.experience_reason },
+                    { label: 'Education', score: match.education_score, icon: <GraduationCap size={12} />, reason: match.education_reason }
                   ].map((item, idx) => (
                     <div key={idx} className="bg-slate-50 p-3 rounded-2xl flex flex-col items-center text-center group-hover:bg-pink-50/50 transition-colors">
                       <div className="text-slate-400 mb-1">{item.icon}</div>
                       <p className="text-lg font-black text-slate-800">{item.score}%</p>
-                      <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">{item.label}</span>
+                      <span className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-1">{item.label}</span>
+                      <p className="text-[7px] font-medium leading-tight text-slate-500 mt-1 line-clamp-2">{item.reason}</p>
                     </div>
                   ))}
                 </div>

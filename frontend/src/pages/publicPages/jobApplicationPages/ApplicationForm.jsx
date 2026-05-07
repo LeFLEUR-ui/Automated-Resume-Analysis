@@ -127,7 +127,10 @@ const ApplicationForm = () => {
         college: formData.college,
         skills: formData.skills,
         match_score: matchScore,
-        profile_image_url: location.state?.profile_image_url || null
+        profile_image_url: location.state?.profile_image_url || null,
+        skills_reason: location.state?.matchData?.skills_reason || "",
+        experience_reason: location.state?.matchData?.experience_reason || "",
+        education_reason: location.state?.matchData?.education_reason || ""
       });
       setShowSuccessModal(true);
     } catch (error) {

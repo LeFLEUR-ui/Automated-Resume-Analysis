@@ -44,6 +44,21 @@ const ViewCandidateDetailsModal = ({ isOpen, onClose, candidate }) => {
                 <p className="text-3xl font-black text-emerald-500">{candidate.matchScore}%</p>
               </div>
 
+              <div className="space-y-2">
+                <div className="p-3 bg-blue-50 rounded-xl border border-blue-100">
+                  <p className="text-[9px] font-bold text-blue-400 uppercase mb-0.5">Skills Match</p>
+                  <p className="text-xs font-medium text-blue-700 leading-tight">{candidate.skills_reason || "Analyzed against job requirements."}</p>
+                </div>
+                <div className="p-3 bg-purple-50 rounded-xl border border-purple-100">
+                  <p className="text-[9px] font-bold text-purple-400 uppercase mb-0.5">Experience Match</p>
+                  <p className="text-xs font-medium text-purple-700 leading-tight">{candidate.experience_reason || "Analyzed based on extracted years."}</p>
+                </div>
+                <div className="p-3 bg-amber-50 rounded-xl border border-amber-100">
+                  <p className="text-[9px] font-bold text-amber-400 uppercase mb-0.5">Education Match</p>
+                  <p className="text-xs font-medium text-amber-700 leading-tight">{candidate.education_reason || "Analyzed based on highest degree."}</p>
+                </div>
+              </div>
+
               <div className="space-y-4">
                 <div className="flex items-center gap-3 text-gray-600">
                   <MapPin size={16} className="text-gray-400" />

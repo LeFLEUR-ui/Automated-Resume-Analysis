@@ -30,6 +30,11 @@ class JobApplication(Base):
     match_score = Column(DOUBLE_PRECISION, nullable=True) # Percentage score 0-100
     profile_image_url = Column(String, nullable=True)
     
+    # Interpretation / Reasoning
+    skills_reason = Column(String, nullable=True)
+    experience_reason = Column(String, nullable=True)
+    education_reason = Column(String, nullable=True)
+    
     status = Column(String, default="PENDING") # PENDING, REVIEWED, REJECTED, ACCEPTED
     
     created_at = Column(DateTime, default=datetime.utcnow)

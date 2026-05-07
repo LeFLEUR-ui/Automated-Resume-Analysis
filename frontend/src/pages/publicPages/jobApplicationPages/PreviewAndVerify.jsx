@@ -111,18 +111,19 @@ const PreviewAndVerifyPage = () => {
                 </div>
 
                 {/* Sub-Scores */}
-                <div className="flex-1 grid grid-cols-3 gap-3 w-full">
+                <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
                   {[
-                    { label: 'Skills', score: matchData.skills_score, color: 'text-blue-600', bgColor: 'bg-blue-50', icon: <Cpu size={14} /> },
-                    { label: 'Experience', score: matchData.experience_score, color: 'text-purple-600', bgColor: 'bg-purple-50', icon: <Briefcase size={14} /> },
-                    { label: 'Education', score: matchData.education_score, color: 'text-amber-600', bgColor: 'bg-amber-50', icon: <GraduationCap size={14} /> }
+                    { label: 'Skills', score: matchData.skills_score, color: 'text-blue-600', bgColor: 'bg-blue-50', icon: <Cpu size={14} />, reason: matchData.skills_reason },
+                    { label: 'Experience', score: matchData.experience_score, color: 'text-purple-600', bgColor: 'bg-purple-50', icon: <Briefcase size={14} />, reason: matchData.experience_reason },
+                    { label: 'Education', score: matchData.education_score, color: 'text-amber-600', bgColor: 'bg-amber-50', icon: <GraduationCap size={14} />, reason: matchData.education_reason }
                   ].map((item, idx) => (
-                    <div key={idx} className={`${item.bgColor} ${item.color} p-5 rounded-2xl border border-transparent hover:border-current/10 transition-all text-center group`}>
+                    <div key={idx} className={`${item.bgColor} ${item.color} p-5 rounded-2xl border border-transparent hover:border-current/10 transition-all group flex flex-col items-center justify-center text-center`}>
                       <div className="flex items-center justify-center mb-1 gap-1.5">
                         {item.icon}
                         <span className="text-[9px] font-black uppercase tracking-widest opacity-70 group-hover:opacity-100 transition-opacity">{item.label}</span>
                       </div>
-                      <p className="text-2xl font-black">{item.score}%</p>
+                      <p className="text-2xl font-black mb-1">{item.score}%</p>
+                      <p className="text-[10px] font-medium leading-tight opacity-80 mt-1 max-w-[150px]">{item.reason}</p>
                     </div>
                   ))}
                 </div>

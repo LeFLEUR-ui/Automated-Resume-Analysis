@@ -21,6 +21,9 @@ class JobApplicationBase(BaseModel):
     skills: Optional[List[str]] = None
     match_score: Optional[float] = None
     profile_image_url: Optional[str] = None
+    skills_reason: Optional[str] = None
+    experience_reason: Optional[str] = None
+    education_reason: Optional[str] = None
 
 class JobApplicationCreate(JobApplicationBase):
     job_id: str
