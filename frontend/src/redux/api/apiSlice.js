@@ -130,6 +130,11 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ['Users'],
     }),
+
+    getAdminSystemStats: builder.query({
+      query: () => '/admins/system-stats',
+      providesTags: ['Dashboard'],
+    }),
   }),
 });
 
@@ -147,4 +152,5 @@ export const {
   useGetUsersQuery,
   useArchiveUserMutation,
   useUnarchiveUserMutation,
+  useGetAdminSystemStatsQuery,
 } = apiSlice;

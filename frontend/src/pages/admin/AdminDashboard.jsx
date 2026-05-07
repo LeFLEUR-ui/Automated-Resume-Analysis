@@ -19,24 +19,49 @@ import {
 import Header from '../../components/layout/Header';
 import Sidebar from '../../components/layout/Sidebar';
 
-const SYSTEM_STATS = [
-  { label: 'Total Users', value: '14,205', change: '+12%', icon: Users, color: 'text-[#D10043]', bg: 'bg-red-50' },
-  { label: 'System Uptime', value: '99.98%', change: '+0.02%', icon: Activity, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-  { label: 'Active Sessions', value: '892', change: '-5%', icon: Clock, color: 'text-gray-600', bg: 'bg-gray-50' },
-  { label: 'Security Alerts', value: '3', change: 'Stable', icon: ShieldCheck, color: 'text-amber-600', bg: 'bg-amber-50' },
-];
-
-const RECENT_ACTIVITIES = [
-  { id: 1, user: "Marcus Aurelius", role: "Super Admin", action: "Updated Firewall Rules", time: "2 mins ago", status: "Success" },
-  { id: 2, user: "Helena Troi", role: "Editor", action: "Bulk Asset Upload", time: "15 mins ago", status: "Pending" },
-  { id: 3, user: "Julian Casablancas", role: "Moderator", action: "Flagged Content Review", time: "1 hour ago", status: "Warning" },
-  { id: 4, user: "Sophia Loren", role: "User Manager", action: "Created New Account", time: "3 hours ago", status: "Success" },
-];
-
-import { useGetHRActivitiesQuery } from '../../redux/api/apiSlice';
+import { useGetHRActivitiesQuery, useGetAdminSystemStatsQuery } from '../../redux/api/apiSlice';
+import { Briefcase } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const { data: hrActivities = [], isLoading: isActivitiesLoading } = useGetHRActivitiesQuery();
+  const { data: stats, isLoading: isStatsLoading } = useGetAdminSystemStatsQuery();
+
+  const SYSTEM_STATS = [
+    { 
+      label: 'Total Users', 
+      value: isStatsLoading ? '...' : stats?.total_users?.toLocaleString(), 
+      change: '+12%', 
+      icon: Users, 
+      color: 'text-[#D10043]', 
+      bg: 'bg-red-50' 
+    },
+    { 
+      label: 'HR Officers', 
+      value: isStatsLoading ? '...' : stats?.hr_count?.toLocaleString(), 
+      change: 'Active', 
+      icon: ShieldCheck, 
+      color: 'text-emerald-600', 
+      bg: 'bg-emerald-50' 
+    },
+    { 
+      label: 'Candidates', 
+      value: isStatsLoading ? '...' : stats?.candidate_count?.toLocaleString(), 
+      change: 'Registered', 
+      icon: Users, 
+      color: 'text-blue-600', 
+      bg: 'bg-blue-50' 
+    },
+    { 
+      label: 'Total Jobs', 
+      value: isStatsLoading ? '...' : stats?.job_count?.toLocaleString(), 
+      change: 'Posted', 
+      icon: Briefcase, 
+      color: 'text-amber-600', 
+      bg: 'bg-amber-50' 
+    },
+  ];
 
   return (
     <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter'] flex flex-col">
