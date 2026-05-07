@@ -38,6 +38,7 @@ import UsersPage from './pages/admin/Users';
 
 import AccountSettings from './pages/shared/AccountSettings';
 import ViewProfile from './pages/shared/ViewProfile';
+import MessagesPage from './pages/common/MessagesPage';
 
 const App = () => {
   return (
@@ -65,6 +66,7 @@ const App = () => {
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="users" element={<UsersPage />} />
             <Route path="auditlog" element={<AuditLogPage />} />
+            <Route path="messages" element={<MessagesPage />} />
             <Route path="settings" element={<AccountSettings />} />
             <Route path="profile" element={<ViewProfile />} />
           </Route>
@@ -75,6 +77,7 @@ const App = () => {
             <Route path="dashboard" element={<HRDashboard />} />
             <Route path="screeningportal" element={<ScreeningPortal />} />
             <Route path="jobmanagement" element={<JobManagement />} />
+            <Route path="messages" element={<MessagesPage />} />
             <Route path="settings" element={<AccountSettings />} />
             <Route path="profile" element={<ViewProfile />} />
           </Route>
@@ -85,6 +88,7 @@ const App = () => {
             <Route path="dashboard" element={<CandidateDashboard />} />
             <Route path="findjobs" element={<FindJob />} />
             <Route path="applicationtracking" element={<ApplicationTracking />} />
+            <Route path="messages" element={<MessagesPage />} />
             <Route path="settings" element={<AccountSettings />} />
             <Route path="profile" element={<ViewProfile />} />
             <Route path="upload-resume/:jobId" element={<CandidateSmartUpload />} />

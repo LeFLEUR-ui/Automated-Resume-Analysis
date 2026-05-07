@@ -22,6 +22,10 @@ async def get_hr_activities(db: AsyncSession = Depends(get_db)):
 async def get_system_stats(db: AsyncSession = Depends(get_db)):
     return await admin_service.get_system_stats(db)
 
+@router.get("/audit-logs")
+async def get_audit_logs(db: AsyncSession = Depends(get_db)):
+    return await audit_service.get_all_audit_logs(db)
+
 @router.get("/users", response_model=List[UserResponse])
 @cache_response("admin_users", ttl=600)
 async def read_users(db: AsyncSession = Depends(get_db)):

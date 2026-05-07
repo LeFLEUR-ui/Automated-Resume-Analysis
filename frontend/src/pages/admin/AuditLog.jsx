@@ -8,27 +8,31 @@ import {
   ChevronLeft, 
   ChevronRight,
   Shield,
-  User,
   Globe,
   Database,
-  ExternalLink,
   Clock,
   CheckCircle2,
   AlertCircle
 } from 'lucide-react';
 import Header from '../../components/layout/Header';
 import Sidebar from '../../components/layout/Sidebar';
-
-const AUDIT_LOGS = [
-  { id: 'LOG-8821', user: "Marcus Aurelius", role: "Super Admin", action: "Modified Security Policy", target: "Firewall Settings", ip: "192.168.1.1", time: "Oct 24, 2023 14:20:05", status: "Success" },
-  { id: 'LOG-8820', user: "Helena Troi", role: "Editor", action: "Deleted Asset Bundle", target: "Winter_Campaign_v2", ip: "45.22.11.09", time: "Oct 24, 2023 13:45:12", status: "Success" },
-  { id: 'LOG-8819', user: "Julian Casablancas", role: "Moderator", action: "Account Suspension", target: "User_ID: 99281", ip: "102.12.0.1", time: "Oct 24, 2023 12:10:55", status: "Warning" },
-  { id: 'LOG-8818', user: "Sophia Loren", role: "User Manager", action: "Permission Escalation", target: "Finance Team", ip: "172.16.254.1", time: "Oct 24, 2023 10:05:00", status: "Success" },
-  { id: 'LOG-8817', user: "System Process", role: "Automated", action: "Backup Failed", target: "S3_Bucket_Primary", ip: "Internal", time: "Oct 24, 2023 09:00:00", status: "Critical" },
-  { id: 'LOG-8816', user: "Marcus Aurelius", role: "Super Admin", action: "API Key Generated", target: "Stripe Integration", ip: "192.168.1.1", time: "Oct 23, 2023 22:15:30", status: "Success" },
-];
+import { useGetAuditLogsQuery } from '../../redux/api/apiSlice';
+import { exportToCSV } from '../../utils/exportUtils';
 
 const AuditLogPage = () => {
+  const { data: auditLogs = [], isLoading } = useGetAuditLogsQuery();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredLogs = auditLogs.filter(log => 
+    log.action?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    log.user?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    log.id?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleExport = () => {
+    exportToCSV(auditLogs, `Audit_Trail_${new Date().toISOString().split('T')[0]}`);
+  };
+
   return (
     <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter'] flex flex-col">
       <Helmet>
@@ -56,9 +60,12 @@ const AuditLogPage = () => {
           <div className="flex space-x-3 w-full md:w-auto">
             <button className="flex-1 md:flex-none bg-white border border-gray-200 px-5 py-2.5 rounded-xl hover:shadow-sm transition-all text-xs font-bold tracking-tight text-gray-600 flex items-center justify-center gap-2">
               <Calendar size={16} />
-              Last 30 Days
+              Live Feed
             </button>
-            <button className="flex-1 md:flex-none bg-[#D10043] text-white px-5 py-2.5 rounded-xl hover:bg-[#b00038] transition-all text-xs font-bold tracking-tight flex items-center justify-center shadow-lg shadow-red-100">
+            <button 
+              onClick={handleExport}
+              className="flex-1 md:flex-none bg-[#D10043] text-white px-5 py-2.5 rounded-xl hover:bg-[#b00038] transition-all text-xs font-bold tracking-tight flex items-center justify-center shadow-lg shadow-red-100"
+            >
               <Download className="h-4 w-4 mr-2" />
               Download CSV
             </button>
@@ -80,15 +87,17 @@ const AuditLogPage = () => {
                     <Search className="absolute left-3 top-2.5 text-gray-300" size={14} />
                     <input 
                       type="text" 
-                      placeholder="ID, Action..." 
-                      className="w-full bg-gray-50 border-none rounded-xl py-2 pl-9 pr-4 text-xs focus:ring-2 focus:ring-red-100 transition-all"
+                      placeholder="ID, Action, User..." 
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full bg-gray-50 border-none rounded-xl py-2 pl-9 pr-4 text-xs focus:ring-2 focus:ring-red-100 transition-all outline-none"
                     />
                   </div>
                 </div>
 
                 <div>
                   <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 block">Severity</label>
-                  <select className="w-full bg-gray-50 border-none rounded-xl py-2 px-3 text-xs focus:ring-2 focus:ring-red-100">
+                  <select className="w-full bg-gray-50 border-none rounded-xl py-2 px-3 text-xs focus:ring-2 focus:ring-red-100 outline-none">
                     <option>All Levels</option>
                     <option>Success</option>
                     <option>Warning</option>
@@ -97,14 +106,17 @@ const AuditLogPage = () => {
                 </div>
 
                 <div className="pt-4 border-t border-gray-50">
-                  <button className="w-full py-2.5 text-xs font-bold text-[#D10043] bg-red-50 rounded-xl hover:bg-red-100 transition-colors">
+                  <button 
+                    onClick={() => setSearchQuery("")}
+                    className="w-full py-2.5 text-xs font-bold text-[#D10043] bg-red-50 rounded-xl hover:bg-red-100 transition-colors"
+                  >
                     Reset All Filters
                   </button>
                 </div>
               </div>
             </div>
 
-            <div className="bg-gray-900 rounded-[24px] p-6 text-white">
+            <div className="bg-gray-900 rounded-[24px] p-6 text-white shadow-xl">
               <Shield className="text-emerald-400 mb-3" size={24} />
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Log Integrity</p>
               <p className="text-sm font-medium mt-1">Hashes verified. Logs are tamper-proof.</p>
@@ -123,7 +135,14 @@ const AuditLogPage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {AUDIT_LOGS.map((log) => (
+                  {isLoading ? (
+                    <tr>
+                      <td colSpan="4" className="px-8 py-20 text-center">
+                        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#D10043] mx-auto mb-4"></div>
+                        <p className="text-sm text-gray-400 font-bold">Fetching system logs...</p>
+                      </td>
+                    </tr>
+                  ) : filteredLogs.map((log) => (
                     <tr key={log.id} className="group hover:bg-gray-50/50 transition-colors">
                       <td className="px-8 py-6">
                         <div className="flex items-start gap-4">
@@ -173,21 +192,26 @@ const AuditLogPage = () => {
                       </td>
                     </tr>
                   ))}
+                  {!isLoading && filteredLogs.length === 0 && (
+                    <tr>
+                      <td colSpan="4" className="px-8 py-12 text-center text-gray-400 font-medium">
+                        No audit logs found for "{searchQuery}".
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
 
             <div className="p-6 border-t border-gray-50 flex items-center justify-between">
               <p className="text-xs font-medium text-gray-400">
-                Showing <span className="text-gray-900 font-bold">1-6</span> of <span className="text-gray-900 font-bold">1,240</span> events
+                Showing <span className="text-gray-900 font-bold">{filteredLogs.length}</span> recorded events
               </p>
               <div className="flex gap-2">
                 <button className="p-2 border border-gray-100 rounded-lg text-gray-400 hover:bg-gray-50 transition-colors">
                   <ChevronLeft size={18} />
                 </button>
                 <button className="px-4 py-2 bg-gray-900 text-white rounded-lg text-xs font-bold">1</button>
-                <button className="px-4 py-2 hover:bg-gray-50 rounded-lg text-xs font-bold text-gray-600 transition-colors">2</button>
-                <button className="px-4 py-2 hover:bg-gray-50 rounded-lg text-xs font-bold text-gray-600 transition-colors">3</button>
                 <button className="p-2 border border-gray-100 rounded-lg text-gray-400 hover:bg-gray-50 transition-colors">
                   <ChevronRight size={18} />
                 </button>

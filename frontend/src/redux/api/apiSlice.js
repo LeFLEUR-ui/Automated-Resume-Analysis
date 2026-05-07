@@ -135,6 +135,24 @@ export const apiSlice = createApi({
       query: () => '/admins/system-stats',
       providesTags: ['Dashboard'],
     }),
+
+    getAuditLogs: builder.query({
+      query: () => '/admins/audit-logs',
+      providesTags: ['AuditLogs'],
+      transformResponse: (response) => {
+        return response.map(log => ({
+          id: `LOG-${log.id}`,
+          user: log.user?.fullname || log.user?.email || "Unknown",
+          role: log.user?.role || "N/A",
+          action: log.action.replace('_', ' '),
+          target: log.target || "N/A",
+          ip: log.ip_address || "Internal",
+          time: new Date(log.created_at).toLocaleString(),
+          status: "Success", // Simplified
+          details: log.details
+        }));
+      },
+    }),
   }),
 });
 
@@ -153,4 +171,5 @@ export const {
   useArchiveUserMutation,
   useUnarchiveUserMutation,
   useGetAdminSystemStatsQuery,
+  useGetAuditLogsQuery,
 } = apiSlice;

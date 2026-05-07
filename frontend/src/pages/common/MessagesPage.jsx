@@ -1,0 +1,59 @@
+import React from 'react';
+import { Helmet } from 'react-helmet-async';
+import Header from '../../components/layout/Header';
+import Sidebar from '../../components/layout/Sidebar';
+import ChatLayout from '../../components/chat/ChatLayout';
+import { MessageSquare, Shield, Clock } from 'lucide-react';
+
+const MessagesPage = () => {
+    return (
+        <div className="bg-[#FCFCFC] text-gray-800 antialiased min-h-screen font-['Inter'] flex flex-col">
+            <Helmet>
+                <title>Messages - System Chat</title>
+            </Helmet>
+            
+            <Header />
+            
+            <div className="flex flex-1">
+                <Sidebar />
+                <main className="flex-1 max-w-[1600px] mx-auto px-6 sm:px-10 py-6 sm:py-10 flex flex-col">
+                    
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
+                        <div>
+                            <div className="flex items-center gap-2 text-[10px] font-black text-[#D60041] uppercase tracking-[0.2em] mb-3">
+                                <Shield size={12} />
+                                <span>End-to-End Encrypted</span>
+                            </div>
+                            <h2 className="text-3xl font-black tracking-tight text-gray-900">Communication Center</h2>
+                            <p className="text-sm text-gray-400 font-bold tracking-wide mt-1.5 flex items-center gap-2">
+                                <Clock size={14} className="text-gray-300" />
+                                Real-time messaging with candidates and team members.
+                            </p>
+                        </div>
+                        
+                        <div className="hidden lg:flex items-center gap-6 px-6 py-3 bg-white border border-gray-100 rounded-2xl shadow-sm">
+                            <div className="text-center">
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Active Now</p>
+                                <div className="flex items-center justify-center gap-1.5">
+                                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                                    <span className="text-sm font-black text-gray-900">12 Officers</span>
+                                </div>
+                            </div>
+                            <div className="w-px h-8 bg-gray-100"></div>
+                            <div className="text-center">
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Threads</p>
+                                <span className="text-sm font-black text-gray-900">1,204</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex-1 min-h-[600px]">
+                        <ChatLayout isFullPage={true} />
+                    </div>
+                </main>
+            </div>
+        </div>
+    );
+};
+
+export default MessagesPage;

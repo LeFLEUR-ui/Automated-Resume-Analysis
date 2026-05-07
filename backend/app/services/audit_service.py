@@ -35,3 +35,13 @@ async def get_recent_hr_activities(db: AsyncSession, limit: int = 10) -> List[Au
         .limit(limit)
     )
     return result.scalars().all()
+
+async def get_all_audit_logs(db: AsyncSession) -> List[AuditLog]:
+    from sqlalchemy.orm import selectinload
+    
+    result = await db.execute(
+        select(AuditLog)
+        .options(selectinload(AuditLog.user))
+        .order_by(AuditLog.created_at.desc())
+    )
+    return result.scalars().all()
