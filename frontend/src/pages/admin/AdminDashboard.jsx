@@ -145,8 +145,12 @@ const AdminDashboard = () => {
                       <tr key={log.id} className="group hover:bg-gray-50/50 transition-colors">
                         <td className="py-5">
                           <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-full bg-red-50 flex items-center justify-center font-bold text-[#D10043] text-xs">
-                              {log.user.charAt(0)}
+                            <div className={`w-9 h-9 rounded-full flex items-center justify-center overflow-hidden border border-gray-100 ${!log.profileImage ? 'bg-red-50 font-bold text-[#D10043] text-xs' : ''}`}>
+                              {log.profileImage ? (
+                                <img src={log.profileImage} alt={log.user} className="w-full h-full object-cover" />
+                              ) : (
+                                log.user.charAt(0)
+                              )}
                             </div>
                             <div>
                               <p className="text-sm font-bold text-gray-900">{log.user}</p>

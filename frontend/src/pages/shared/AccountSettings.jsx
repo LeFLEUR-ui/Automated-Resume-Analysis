@@ -27,9 +27,13 @@ import {
 import Header from '../../components/layout/Header';
 import Sidebar from '../../components/layout/Sidebar';
 
+import { updateProfileImage } from '../../redux/slices/authSlice';
+import { useDispatch } from 'react-redux';
+
 const BRAND_RED = "#D10043";
 
 const AccountSettings = () => {
+  const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState('profile');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -121,7 +125,7 @@ const AccountSettings = () => {
       const response = await axios.post(endpoint, formDataImage);
       const imageUrl = response.data.image_url;
       setFormData(prev => ({ ...prev, profile_image_url: imageUrl }));
-      localStorage.setItem('profile_image_url', imageUrl);
+      dispatch(updateProfileImage(imageUrl));
       alert("Profile image uploaded!");
     } catch (err) {
       console.error("Failed to upload image:", err);

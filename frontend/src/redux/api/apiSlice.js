@@ -100,6 +100,7 @@ export const apiSlice = createApi({
         return response.map(log => ({
           id: log.id,
           user: log.user?.fullname || log.user?.email || "Unknown HR",
+          profileImage: log.user?.profile_image_url || null,
           role: log.user?.role || "HR",
           action: log.action.replace('_', ' '),
           time: new Date(log.created_at).toLocaleString(),

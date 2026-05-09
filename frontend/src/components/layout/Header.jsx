@@ -9,7 +9,7 @@ import {
 import NotificationDropdown from './NotificationDropdown';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
-import { logout as logoutAction } from '../../redux/slices/authSlice';
+import { logout as logoutAction, updateProfileImage } from '../../redux/slices/authSlice';
 import { setNotifications, addNotification, markAllRead as markAllReadAction } from '../../redux/slices/notificationSlice';
 import { closeSidebar } from '../../redux/slices/uiSlice';
 
@@ -168,6 +168,30 @@ const Header = () => {
       if (ws && ws.readyState === WebSocket.OPEN) ws.close();
     };
   }, [userRole, dispatch]);
+
+  // Sync profile image from database on mount
+  useEffect(() => {
+    const syncProfileImage = async () => {
+      const userId = localStorage.getItem('user_id');
+      if (!userId || isGuest) return;
+
+      try {
+        let endpoint = `http://localhost:8000/candidate/profile/${userId}`;
+        if (isAdminRole) endpoint = `http://localhost:8000/admins/profile/${userId}`;
+        if (isHRRole) endpoint = `http://localhost:8000/hr/profile/${userId}`;
+
+        const response = await axios.get(endpoint);
+        const data = response.data;
+        if (data.profile_image_url && data.profile_image_url !== profileImageUrl) {
+          dispatch(updateProfileImage(data.profile_image_url));
+        }
+      } catch (err) {
+        console.error("Failed to sync profile image from database:", err);
+      }
+    };
+
+    syncProfileImage();
+  }, [isAdminRole, isHRRole, isGuest, dispatch]);
 
   const handleMarkAllRead = async () => {
     if (isHRRole || isAdminRole) {
@@ -332,9 +356,18 @@ const Header = () => {
 
           {isProfileOpen && !isGuest && (
             <div className="absolute right-0 top-[calc(100%+16px)] w-72 bg-white border border-gray-100 rounded-[24px] shadow-2xl py-3 z-[60] animate-in fade-in slide-in-from-top-4 duration-200">
-              <div className="px-6 py-4 border-b border-gray-50 mb-2">
-                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-1">{isAdminRole ? "Admin Session" : "Active Account"}</p>
-                <p className="text-sm font-bold text-gray-900 truncate">{userEmail}</p>
+              <div className="px-6 py-5 border-b border-gray-50 mb-2 flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl overflow-hidden border border-gray-100 shrink-0 bg-gray-50 flex items-center justify-center">
+                  {profileImageUrl ? (
+                    <img src={profileImageUrl} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    isAdminRole ? <ShieldCheck size={24} className="text-[#D60041]" /> : <User size={24} className="text-gray-400" />
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-0.5">{isAdminRole ? "Admin Session" : "Active Account"}</p>
+                  <p className="text-sm font-bold text-gray-900 truncate">{userEmail}</p>
+                </div>
               </div>
               <button onClick={() => navigate(isAdminRole ? '/admin/profile' : isHRRole ? '/hr/profile' : '/candidate/profile')} className="w-full text-left px-6 py-3.5 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-gray-900 flex items-center space-x-4 transition-all group">
                 <User size={18} className="text-gray-400 group-hover:text-gray-600" /> <span>View Profile</span>

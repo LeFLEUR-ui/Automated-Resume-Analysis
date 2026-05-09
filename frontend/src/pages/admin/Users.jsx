@@ -112,8 +112,12 @@ const UsersPage = () => {
                       <tr key={user.id} className={`group hover:bg-gray-50/50 transition-colors ${user.is_archived ? 'opacity-60' : ''}`}>
                         <td className="px-8 py-6">
                           <div className="flex items-center gap-4">
-                            <div className={`relative w-10 h-10 rounded-2xl flex items-center justify-center font-bold text-sm ${user.is_archived ? 'bg-gray-100 text-gray-400' : 'bg-[#D10043]/10 text-[#D10043]'}`}>
-                              {user.fullname?.charAt(0) || 'U'}
+                            <div className={`relative w-10 h-10 rounded-2xl flex items-center justify-center overflow-hidden border border-gray-100 ${!user.profile_image_url ? (user.is_archived ? 'bg-gray-100 text-gray-400' : 'bg-[#D10043]/10 text-[#D10043]') : ''}`}>
+                              {user.profile_image_url ? (
+                                <img src={user.profile_image_url} alt={user.fullname} className="w-full h-full object-cover" />
+                              ) : (
+                                <span className="font-bold text-sm">{user.fullname?.charAt(0) || 'U'}</span>
+                              )}
                               {user.is_online && !user.is_archived && (
                                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
                               )}

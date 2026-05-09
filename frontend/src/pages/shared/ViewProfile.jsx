@@ -24,6 +24,8 @@ import {
 } from 'lucide-react';
 import Header from '../../components/layout/Header';
 import Sidebar from '../../components/layout/Sidebar';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateProfileImage } from '../../redux/slices/authSlice';
 
 const BRAND_RED = "#D10043";
 
@@ -35,20 +37,8 @@ const ViewProfile = () => {
   const userEmail = localStorage.getItem('saved_email') || 'user@system.com';
   const userRole = localStorage.getItem('role') || 'Guest';
   const userId = localStorage.getItem('user_id');
-  const [profileImageUrl, setProfileImageUrl] = useState(localStorage.getItem('profile_image_url'));
-
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setProfileImageUrl(localStorage.getItem('profile_image_url'));
-    };
-    window.addEventListener('storage', handleStorageChange);
-    // Also check periodically or on mount
-    const interval = setInterval(handleStorageChange, 1000);
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      clearInterval(interval);
-    };
-  }, []);
+  const dispatch = useDispatch();
+  const { profileImageUrl } = useSelector(state => state.auth);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -63,10 +53,9 @@ const ViewProfile = () => {
 
         const response = await axios.get(endpoint);
         const data = response.data;
-        // If it's the current user, sync with localStorage just in case
+        // If it's the current user, sync with Redux
         if (data.id === parseInt(userId) && data.profile_image_url) {
-          localStorage.setItem('profile_image_url', data.profile_image_url);
-          setProfileImageUrl(data.profile_image_url);
+          dispatch(updateProfileImage(data.profile_image_url));
         }
         setProfile(data);
       } catch (err) {
