@@ -276,6 +276,28 @@ SMS Backup: Enabled`);
                 Schedule & Initialize AI
                 <ChevronRight size={18} />
               </button>
+
+              <button
+                type="button"
+                onClick={async () => {
+                  const phone = candidate.phone || "+1234567890"; // Fallback for testing
+                  try {
+                    const res = await fetch(`http://localhost:8000/ai-caller/call-candidate/${encodeURIComponent(phone)}`, {
+                      method: 'POST'
+                    });
+                    const data = await res.json();
+                    if (res.ok) alert(`AI Interview Call Initiated!\nCall SID: ${data.call_sid}`);
+                    else alert(`Failed to start call: ${data.detail}`);
+                  } catch (err) {
+                    alert("Connection error occurred while initiating AI call.");
+                  }
+                }}
+                className="w-full px-8 py-5 bg-slate-900 text-white rounded-[24px] font-black uppercase tracking-widest text-xs hover:bg-[#D10043] transition-all shadow-2xl shadow-slate-200 active:scale-[0.97] flex items-center justify-center gap-3"
+              >
+                <PhoneCall size={18} />
+                Start Live AI Interview
+              </button>
+
               <button
                 type="button"
                 onClick={onClose}

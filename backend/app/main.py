@@ -15,6 +15,7 @@ from app.controllers.job_application_controller import router as job_application
 from app.controllers.notification_controller import router as notification_router
 from app.controllers.job_matching_controller import router as job_matching_router
 from app.controllers.chat_controller import router as chat_router
+from app.controllers.ai_caller_controller import router as ai_caller_router
 
 import os
 import asyncio
@@ -75,6 +76,7 @@ app.include_router(job_application_router)
 app.include_router(notification_router)
 app.include_router(job_matching_router)
 app.include_router(chat_router)
+app.include_router(ai_caller_router)
 
 async def create_tables():
     from app.models.user import User
