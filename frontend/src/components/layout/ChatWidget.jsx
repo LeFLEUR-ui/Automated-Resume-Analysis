@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageSquare, Send, Minus, Search, ArrowLeft, Circle } from 'lucide-react';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 
 const ChatWidget = () => {
+    const { profileImageUrl: myProfileImage } = useSelector(state => state.auth);
     const [isOpen, setIsOpen] = useState(false);
     const [view, setView] = useState('contacts'); // 'contacts' | 'chat'
     const [contacts, setContacts] = useState([]);
@@ -312,18 +314,33 @@ const ChatWidget = () => {
                                 ) : (
                                     messages.map((msg, idx) => {
                                         const isMe = msg.sender_id === currentUserId;
+                                        const showAvatar = idx === 0 || messages[idx - 1].sender_id !== msg.sender_id;
+
                                         return (
-                                            <div key={idx} className={`flex ${isMe ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
-                                                <div className={`max-w-[80%] group ${msg.is_optimistic ? 'opacity-70' : 'opacity-100'}`}>
-                                                    <div className={`px-4 py-2.5 rounded-[20px] text-sm font-medium shadow-sm transition-all hover:shadow-md ${isMe
-                                                            ? 'bg-gradient-to-br from-[#D60041] to-[#b50037] text-white rounded-tr-none'
-                                                            : 'bg-white text-gray-800 border border-gray-100 rounded-tl-none'
-                                                        }`}>
-                                                        {msg.content}
+                                            <div key={idx} className={`flex ${isMe ? 'justify-end' : 'justify-start'} ${showAvatar ? 'mt-4' : 'mt-1'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
+                                                <div className={`flex items-end gap-1.5 max-w-[90%] ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
+                                                    {/* Avatar */}
+                                                    <div className={`w-6 h-6 rounded-lg overflow-hidden shrink-0 shadow-sm border border-gray-100 flex items-center justify-center bg-gray-50 ${!showAvatar ? 'opacity-0' : 'opacity-100'}`}>
+                                                        {isMe ? (
+                                                            myProfileImage ? <img src={myProfileImage} className="w-full h-full object-cover" /> : <div className="text-[8px] font-bold text-[#D60041]">{localStorage.getItem('fullname')?.charAt(0) || 'M'}</div>
+                                                        ) : (
+                                                            activeContact.profile_image_url ? <img src={activeContact.profile_image_url} className="w-full h-full object-cover" /> : <div className="text-[8px] font-bold text-gray-400">{activeContact.fullname?.charAt(0)}</div>
+                                                        )}
                                                     </div>
-                                                    <p className={`text-[10px] mt-1 font-semibold text-gray-400 ${isMe ? 'text-right' : 'text-left'}`}>
-                                                        {msg.is_optimistic ? 'Sending...' : new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                                                    </p>
+
+                                                    <div className="group flex flex-col">
+                                                        <div className={`px-4 py-2 rounded-[18px] text-[13px] font-semibold shadow-sm transition-all hover:shadow-md ${isMe
+                                                                ? 'bg-[#D60041] text-white rounded-tr-none'
+                                                                : 'bg-white text-gray-800 border border-gray-100 rounded-tl-none'
+                                                            }`}>
+                                                            {msg.content}
+                                                        </div>
+                                                        {showAvatar && (
+                                                            <p className={`text-[8px] mt-1 font-bold uppercase tracking-widest text-gray-400 ${isMe ? 'text-right' : 'text-left'}`}>
+                                                                {msg.is_optimistic ? 'Sending...' : new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                                            </p>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
                                         );
