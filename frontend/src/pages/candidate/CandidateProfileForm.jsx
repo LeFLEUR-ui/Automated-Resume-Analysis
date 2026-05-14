@@ -11,6 +11,7 @@ import {
 import Header from '../../components/layout/Header';
 import Sidebar from '../../components/layout/Sidebar';
 import ApplicationSuccessModal from '../../components/modals/shared/ApplicationSuccessModal';
+import { useSubmitApplicationMutation } from '../../redux/api/apiSlice';
 
 const CandidateProfileForm = () => {
   const navigate = useNavigate();
@@ -111,10 +112,37 @@ const CandidateProfileForm = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const [submitApplication, { isLoading: isSubmitting }] = useSubmitApplicationMutation();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // In a real app, we would send an axios.put request to update the profile
-    setShowSuccessModal(true);
+    
+    const payload = {
+      job_id: jobId,
+      candidate_name: formData.fullName,
+      candidate_email: formData.email,
+      phone: formData.phone,
+      location: formData.location,
+      job_title: jobTitle,
+      company: formData.company,
+      relevance: formData.relevance,
+      degree: formData.degree,
+      college: formData.college,
+      skills: formData.skills,
+      match_score: matchScore,
+      profile_image_url: localStorage.getItem('profile_image_url'),
+    };
+
+    try {
+      await submitApplication(payload).unwrap();
+      // Clear draft as it's now submitted
+      localStorage.removeItem('draft_application_job_title');
+      localStorage.removeItem('draft_application_job_id');
+      setShowSuccessModal(true);
+    } catch (err) {
+      console.error("Failed to submit application:", err);
+      alert("Failed to submit application. Please try again.");
+    }
   };
 
   const handleFinalRedirect = () => {
@@ -379,10 +407,15 @@ const CandidateProfileForm = () => {
             </button>
             <button
               type="submit"
-              className="px-10 py-4 bg-[#D10043] hover:bg-slate-900 text-white rounded-[20px] font-bold flex items-center justify-center gap-3 transition-all shadow-xl shadow-pink-100 active:scale-[0.98]"
+              disabled={isSubmitting}
+              className="px-10 py-4 bg-[#D10043] hover:bg-slate-900 text-white rounded-[20px] font-bold flex items-center justify-center gap-3 transition-all shadow-xl shadow-pink-100 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              <Save size={20} />
-              Submit Final Application
+              {isSubmitting ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                <Save size={20} />
+              )}
+              {isSubmitting ? 'Submitting...' : 'Submit Final Application'}
             </button>
           </div>
 

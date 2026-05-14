@@ -38,6 +38,9 @@ const CandidateSmartUpload = () => {
         const response = await axios.get(`http://localhost:8000/hr/read-job/${jobId}`);
         if (response.data?.job_title) {
           setJobTitle(response.data.job_title);
+          // Store for dashboard "Continue Application" feature
+          localStorage.setItem('draft_application_job_title', response.data.job_title);
+          localStorage.setItem('draft_application_job_id', jobId);
         }
       } catch (err) {
         console.error("Failed to fetch job title:", err);

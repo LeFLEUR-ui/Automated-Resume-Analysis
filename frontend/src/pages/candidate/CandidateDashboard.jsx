@@ -11,29 +11,21 @@ import UpcomingInterviews from '../../components/candidate/dashboard/UpcomingInt
 import QuickActions from '../../components/candidate/dashboard/QuickActions';
 import ChatWidget from '../../components/layout/ChatWidget';
 
+import { Briefcase, Zap, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { useGetCandidateApplicationsQuery } from '../../redux/api/apiSlice';
+
 const CandidateDashboard = () => {
-  const APPLICATION_STATUS = [
-    {
-      id: 1,
-      role: "Senior Frontend Developer",
-      company: "Mariwasa Siam Ceramics",
-      appliedDate: "Oct 12, 2023",
-      status: "Interview",
-      statusColor: "text-blue-600 bg-blue-50 border-blue-100",
-      step: 3,
-      totalSteps: 5
-    },
-    {
-      id: 2,
-      role: "Production Supervisor",
-      company: "Mariwasa Siam Ceramics",
-      appliedDate: "Oct 08, 2023",
-      status: "Reviewing",
-      statusColor: "text-orange-600 bg-orange-50 border-orange-100",
-      step: 1,
-      totalSteps: 4
-    }
-  ];
+  const navigate = useNavigate();
+  const { user: email } = useSelector((state) => state.auth);
+  const { data: applications = [], isLoading } = useGetCandidateApplicationsQuery(email, {
+    skip: !email,
+  });
+
+  // Filter for active applications (optional, but requested "active applications")
+  // For now, we'll show all and maybe limit to top 5 or something
+  const activeApplications = applications.slice(0, 5);
 
   return (
     <div className="bg-[#F8FAFC] text-slate-900 antialiased min-h-screen font-['Inter',_sans-serif] flex flex-col">
@@ -52,7 +44,67 @@ const CandidateDashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
             <div className="lg:col-span-2 space-y-10 animate-in fade-in slide-in-from-left-6 duration-700">
-              <ApplicationList applications={APPLICATION_STATUS} />
+              {isLoading ? (
+                <div className="bg-white border border-slate-100 rounded-[40px] p-10 shadow-2xl shadow-slate-200/40 animate-pulse">
+                  <div className="h-8 bg-slate-100 rounded-full w-48 mb-10"></div>
+                  <div className="space-y-6">
+                    <div className="h-32 bg-slate-50 rounded-[32px]"></div>
+                    <div className="h-32 bg-slate-50 rounded-[32px]"></div>
+                  </div>
+                </div>
+              ) : activeApplications.length > 0 ? (
+                <ApplicationList applications={activeApplications} />
+              ) : (
+                <div className="space-y-6">
+                  {/* Draft Application / In Progress */}
+                  {localStorage.getItem('draft_application_job_id') && (
+                    <div className="bg-white border border-[#D10043]/20 rounded-[40px] p-8 shadow-xl shadow-pink-50 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                      <div className="flex items-center gap-4 mb-6">
+                        <div className="p-3 bg-pink-50 text-[#D10043] rounded-2xl">
+                          <Zap size={20} className="animate-pulse" />
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-black text-[#D10043] uppercase tracking-[0.2em] mb-1">Application In Progress</span>
+                          <h3 className="text-xl font-black text-slate-900 tracking-tight">Finish your application</h3>
+                        </div>
+                      </div>
+                      
+                      <div className="flex flex-col sm:flex-row justify-between items-center p-6 bg-slate-50 rounded-3xl border border-slate-100 gap-6">
+                        <div>
+                          <h4 className="text-lg font-black text-slate-900 leading-none mb-1">
+                            {localStorage.getItem('draft_application_job_title')}
+                          </h4>
+                          <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Mariwasa Siam Ceramics</p>
+                        </div>
+                        <button 
+                          onClick={() => navigate(`/candidate/upload-resume/${localStorage.getItem('draft_application_job_id')}`)}
+                          className="bg-[#D10043] text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-900 transition-all flex items-center gap-2 group"
+                        >
+                          Continue Applying <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="bg-white border border-slate-100 rounded-[40px] p-10 shadow-2xl shadow-slate-200/40 text-center py-20">
+                    <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-6 text-slate-300">
+                      <Briefcase size={40} />
+                    </div>
+                    <h3 className="text-xl font-black text-slate-900 mb-2">No Submitted Applications</h3>
+                    <p className="text-slate-500 mb-8 max-w-sm mx-auto font-medium">
+                      {localStorage.getItem('draft_application_job_id') 
+                        ? `You have one application in progress for ${localStorage.getItem('draft_application_job_title')}. Finish it to see it here.`
+                        : "You haven't applied for any positions yet. Explore our career opportunities to get started."}
+                    </p>
+                    <button 
+                      onClick={() => navigate('/candidate/findjobs')}
+                      className="bg-[#D10043] text-white px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-900 transition-all"
+                    >
+                      Find Jobs
+                    </button>
+                  </div>
+                </div>
+              )}
               <ProfileStrength />
             </div>
 

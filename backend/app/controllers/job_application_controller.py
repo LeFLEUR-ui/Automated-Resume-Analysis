@@ -49,6 +49,13 @@ async def get_applications_for_job(job_id: int, db: AsyncSession = Depends(get_d
     """
     return await job_application_service.get_applications_by_job(db, job_id)
 
+@router.get("/candidate/{email}", response_model=List[JobApplicationResponse])
+async def get_applications_for_candidate(email: str, db: AsyncSession = Depends(get_db)):
+    """
+    Get all applications for a specific candidate by email.
+    """
+    return await job_application_service.get_applications_by_email(db, email)
+
 @router.patch("/{application_id}/status", response_model=JobApplicationResponse)
 async def update_application_status(
     application_id: int, 

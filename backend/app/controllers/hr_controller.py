@@ -68,7 +68,8 @@ async def upload_hr_profile_image(hr_id: int, file: UploadFile = File(...), db: 
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
     
-    image_url = f"http://localhost:8000/{file_path}"
+    import time
+    image_url = f"http://localhost:8000/{file_path}?t={int(time.time())}"
     await hr_service.update_hr_profile(db, hr_id, HRUpdate(profile_image_url=image_url))
     
     return {"image_url": image_url}

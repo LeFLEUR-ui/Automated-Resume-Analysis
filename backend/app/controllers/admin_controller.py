@@ -87,7 +87,8 @@ async def upload_admin_profile_image(admin_id: int, file: UploadFile = File(...)
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
     
-    image_url = f"http://localhost:8000/{file_path}"
+    import time
+    image_url = f"http://localhost:8000/{file_path}?t={int(time.time())}"
     await admin_service.update_admin_profile(db, admin_id, AdminUpdate(profile_image_url=image_url))
     await clear_cache_pattern(f"admin_profile:*admin_id\":{admin_id}*")
     

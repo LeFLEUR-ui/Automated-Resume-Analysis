@@ -47,6 +47,16 @@ async def get_applications_by_job(db: AsyncSession, job_id: int) -> list[JobAppl
     result = await db.execute(select(JobApplication).filter(JobApplication.job_id == job_id))
     return result.scalars().all()
 
+async def get_applications_by_email(db: AsyncSession, email: str) -> list[JobApplication]:
+    from sqlalchemy.orm import selectinload
+    result = await db.execute(
+        select(JobApplication)
+        .options(selectinload(JobApplication.job))
+        .filter(JobApplication.candidate_email == email)
+        .order_by(JobApplication.created_at.desc())
+    )
+    return result.scalars().all()
+
 async def get_all_applications(db: AsyncSession) -> list[JobApplication]:
     from sqlalchemy.orm import selectinload
     result = await db.execute(

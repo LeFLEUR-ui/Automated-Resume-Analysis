@@ -155,7 +155,10 @@ const AccountSettings = () => {
         updateData.position = formData.current_job_title;
       }
 
-      await axios.put(endpoint, updateData);
+      const response = await axios.put(endpoint, updateData);
+      if (response.data.profile_image_url) {
+        dispatch(updateProfileImage(response.data.profile_image_url));
+      }
       alert("Profile updated successfully!");
     } catch (err) {
       console.error("Failed to update profile:", err);
