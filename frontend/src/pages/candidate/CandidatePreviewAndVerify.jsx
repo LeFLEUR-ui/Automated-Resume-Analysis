@@ -14,6 +14,16 @@ const CandidatePreviewAndVerify = () => {
   const navigate = useNavigate();
   const { jobId } = useParams();
 
+  React.useEffect(() => {
+    if (jobId) {
+      localStorage.setItem('draft_application_step', '2');
+      if (state?.job?.title) {
+        localStorage.setItem('draft_application_job_title', state.job.title);
+      }
+      localStorage.setItem('draft_application_job_id', jobId);
+    }
+  }, [jobId, state]);
+
   const data = state?.extractedData;
   const matchData = state?.matchData;
 
@@ -63,9 +73,14 @@ const CandidatePreviewAndVerify = () => {
               <ArrowLeft size={18} className="mr-2 group-hover:-translate-x-1 transition-transform" />
               Back to Upload
             </button>
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">Review Profile Updates</h1>
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">
+              {jobId ? "Review Profile Updates" : "AI Profile Analysis"}
+            </h1>
             <p className="text-slate-500 font-medium">
-              Verify the information extracted from your new resume <span className="text-slate-900 font-bold">{state?.fileName || "upload"}</span>.
+              {jobId 
+                ? `Verify the information extracted for your ${state?.job?.title || 'application'}.`
+                : "Verify the information our AI extracted from your resume before we find your matches."
+              }
             </p>
           </div>
           <div className="flex items-center gap-4 bg-white p-3 pr-6 rounded-2xl border border-slate-100 shadow-sm">
@@ -236,13 +251,23 @@ const CandidatePreviewAndVerify = () => {
             >
               Cancel Update
             </button>
-            <button
-              onClick={() => navigate(jobId ? `/candidate/update-profile/${jobId}` : '/candidate/update-profile', { state: { ...extractedData, fileName: state?.fileName, job: state?.job, matchData } })}
-              className="flex-[2] bg-[#D60041] hover:bg-slate-900 text-white py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 transition-all shadow-xl shadow-pink-100 active:scale-95"
-            >
-              <CheckCircle size={22} />
-              Confirm & Save Profile Changes
-            </button>
+            {!jobId ? (
+              <button
+                onClick={() => navigate('/candidate/smart-matches', { state: { matches: matchData, extractedData: data, fileName: state?.fileName } })}
+                className="flex-[2] bg-[#D60041] hover:bg-slate-900 text-white py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 transition-all shadow-xl shadow-pink-100 active:scale-95"
+              >
+                <Target size={22} />
+                View Recommended Jobs
+              </button>
+            ) : (
+              <button
+                onClick={() => navigate(`/candidate/update-profile/${jobId}`, { state: { ...extractedData, fileName: state?.fileName, job: state?.job, matchData } })}
+                className="flex-[2] bg-[#D60041] hover:bg-slate-900 text-white py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 transition-all shadow-xl shadow-pink-100 active:scale-95"
+              >
+                <CheckCircle size={22} />
+                Confirm & Save Profile Changes
+              </button>
+            )}
           </div>
         </div>
         </main>

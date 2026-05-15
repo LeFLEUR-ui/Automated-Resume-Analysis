@@ -1,12 +1,12 @@
 import React from 'react';
-import { FileText, Award, Settings, ChevronRight } from 'lucide-react';
+import { FileText, Award, Settings, ChevronRight, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const QuickActions = () => {
   const navigate = useNavigate();
 
   const ACTIONS = [
-    { icon: <FileText size={18} />, label: "Update Resume", desc: "Latest version", path: "/candidate/upload-resume" },
+    { icon: <Zap size={18} />, label: "Smart Application", desc: "AI-powered matching", path: "/candidate/upload-resume" },
     { icon: <Award size={18} />, label: "Skill Assessment", desc: "Verify expertise", path: "/candidate/settings" },
     { icon: <Settings size={18} />, label: "Portal Settings", desc: "Notifications", path: "/candidate/settings" }
   ];

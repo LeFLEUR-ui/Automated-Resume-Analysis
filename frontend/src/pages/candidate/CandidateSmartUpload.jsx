@@ -41,6 +41,7 @@ const CandidateSmartUpload = () => {
           // Store for dashboard "Continue Application" feature
           localStorage.setItem('draft_application_job_title', response.data.job_title);
           localStorage.setItem('draft_application_job_id', jobId);
+          localStorage.setItem('draft_application_step', '1');
         }
       } catch (err) {
         console.error("Failed to fetch job title:", err);
@@ -108,10 +109,15 @@ const CandidateSmartUpload = () => {
       setExtractedData(extracted);
       setUploadProgress(90);
       
+      let finalMatchData = null;
       if (jobId) {
         const matchRes = await axios.post(`http://localhost:8000/matching/match-data/${jobId}`, extracted);
-        setMatchData(matchRes.data);
+        finalMatchData = matchRes.data;
+      } else {
+        const matchRes = await axios.post('http://localhost:8000/matching/match-data', extracted);
+        finalMatchData = matchRes.data.results;
       }
+      setMatchData(finalMatchData);
       setUploadProgress(100);
 
       setTimeout(() => {
@@ -160,10 +166,17 @@ const CandidateSmartUpload = () => {
                   </span>
                 </div>
                 <h1 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight mb-4">
-                  Applying for <span className="text-[#D60041]">{jobTitle}</span>
+                  {jobId ? (
+                    <>Applying for <span className="text-[#D60041]">{jobTitle}</span></>
+                  ) : (
+                    <>Smart Match <span className="text-[#D60041]">Portal</span></>
+                  )}
                 </h1>
                 <p className="text-lg text-slate-500 font-medium max-w-2xl leading-relaxed">
-                  Keep your profile fresh. Upload your latest resume and our AI will automatically update your skills, experience, and certifications.
+                  {jobId 
+                    ? "Upload your latest resume to match your profile with this specific position and highlight your relevant skills."
+                    : "Not sure which role fits? Upload your resume and our AI will analyze your skills to match you with the perfect career opportunities."
+                  }
                 </p>
               </div>
             </div>

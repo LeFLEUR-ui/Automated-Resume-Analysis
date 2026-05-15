@@ -26,7 +26,7 @@ const ApplicationList = ({ applications }) => {
         {applications.map((app) => (
           <div
             key={app.id}
-            onClick={() => navigate('/candidate/applicationtracking')}
+            onClick={() => navigate(`/candidate/applicationtracking/${app.id}`, { state: { application: app } })}
             className="group relative border border-slate-50 bg-slate-50/30 rounded-[32px] p-8 hover:bg-white hover:border-[#D10043]/10 transition-all duration-500 cursor-pointer shadow-sm hover:shadow-xl hover:shadow-slate-200/40"
           >
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">

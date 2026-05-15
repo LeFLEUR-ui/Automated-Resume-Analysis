@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { 
   ArrowLeft, 
@@ -24,52 +25,62 @@ import Sidebar from '../../components/layout/Sidebar';
 const BRAND_RED = "#D10043";
 
 const ApplicationTracking = () => {
+  const { state } = useLocation();
+  const navigate = useNavigate();
+  const application = state?.application;
+
+  useEffect(() => {
+    if (!application) {
+      navigate('/candidate/dashboard');
+    }
+  }, [application, navigate]);
+
+  if (!application) return null;
+
   const jobDetails = {
-    role: "Senior Frontend Developer",
-    company: "Mariwasa Siam Ceramics",
-    location: "Sto. Tomas, Batangas (Hybrid)",
-    appliedDate: "Oct 12, 2023",
-    status: "Interview Stage",
-    statusColor: "text-blue-600 bg-blue-50 border-blue-100",
+    role: application.role || application.originalData?.job_title || "Position",
+    company: application.company || "Mariwasa Siam Ceramics",
+    location: application.originalData?.location || "Sto. Tomas, Batangas",
+    appliedDate: application.appliedDate || new Date().toLocaleDateString(),
+    status: application.status || "Pending",
+    statusColor: application.statusColor || "text-slate-600 bg-slate-50 border-slate-100",
   };
 
   const TIMELINE_STEPS = [
     {
       label: "Application Submitted",
-      date: "Oct 12, 2023 • 09:15 AM",
-      description: "Your application was successfully received by the recruitment team and assigned an ID #ARA-2023-882.",
+      date: application.appliedDate,
+      description: `Your application was successfully received by the recruitment team and assigned an ID #ARA-88${application.id}.`,
       status: "completed"
     },
     {
       label: "Initial Screening",
-      date: "Oct 15, 2023 • 02:30 PM",
-      description: "Recruiter reviewed your profile and resume. Your skills matched 92% of our requirements.",
-      status: "completed"
+      date: application.step >= 2 ? "Completed" : "Pending",
+      description: application.originalData?.match_score ? `Recruiter reviewed your profile and resume. Your skills matched ${application.originalData.match_score}% of our requirements.` : "Recruiter is currently reviewing your profile and resume.",
+      status: application.step >= 2 ? "completed" : (application.step === 1 ? "current" : "upcoming")
     },
     {
       label: "Technical Interview",
-      date: "Oct 20, 2023 • 10:00 AM",
-      description: "Live coding and architectural discussion with the Engineering Lead. This is your current active stage.",
-      status: "current"
+      date: application.step >= 3 ? "Completed" : "Pending",
+      description: "Live coding and architectural discussion with the Engineering Lead.",
+      status: application.step >= 3 ? "completed" : (application.step === 2 ? "current" : "upcoming")
     },
     {
       label: "Final Interview",
-      date: "Pending",
-      description: "Interview with the Head of Digital Transformation. Schedule will be sent via Twilio AI Caller.",
-      status: "upcoming"
+      date: application.step >= 4 ? "Completed" : "Pending",
+      description: "Interview with the Head of Digital Transformation.",
+      status: application.step >= 4 ? "completed" : (application.step === 3 ? "current" : "upcoming")
     },
     {
       label: "Job Offer",
-      date: "Pending",
+      date: application.status === 'ACCEPTED' ? "Completed" : "Pending",
       description: "Final decision and salary negotiation phase.",
-      status: "upcoming"
+      status: application.status === 'ACCEPTED' ? "completed" : "upcoming"
     }
   ];
 
   const ATTACHMENTS = [
-    { name: "Resume_Updated.pdf", size: "1.2 MB", date: "Oct 12", type: "PDF" },
-    { name: "Portfolio_Link.url", size: "External", date: "Oct 12", type: "LINK" },
-    { name: "Technical_Assessment.zip", size: "4.5 MB", date: "Oct 18", type: "ZIP" }
+    { name: "Resume_Updated.pdf", size: "1.2 MB", date: application.appliedDate, type: "PDF" }
   ];
 
   return (
@@ -86,7 +97,7 @@ const ApplicationTracking = () => {
         
         {/* Navigation & Header */}
         <div className="mb-12">
-          <button className="flex items-center text-xs font-black text-slate-400 uppercase tracking-widest hover:text-[#D10043] transition-colors mb-8 group">
+          <button onClick={() => navigate('/candidate/dashboard')} className="flex items-center text-xs font-black text-slate-400 uppercase tracking-widest hover:text-[#D10043] transition-colors mb-8 group">
             <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
             Back to Dashboard
           </button>
@@ -103,7 +114,7 @@ const ApplicationTracking = () => {
                   <div className="flex items-center gap-2 mb-2">
                     <span className="bg-[#D10043]/10 text-[#D10043] text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider">Active Process</span>
                     <span className="w-1 h-1 bg-slate-300 rounded-full" />
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">ID: #ARA-882</span>
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">ID: #ARA-88{application.id}</span>
                   </div>
                   <h1 className="text-3xl font-black text-slate-900 tracking-tight leading-none mb-4">{jobDetails.role}</h1>
                   <div className="flex flex-wrap gap-y-3 gap-x-6 text-xs text-slate-500 font-bold uppercase tracking-widest">
@@ -234,12 +245,19 @@ const ApplicationTracking = () => {
                 </div>
                 
                 <p className="text-sm text-slate-400 leading-relaxed font-bold mb-8">
-                  Your Technical Interview is confirmed for <span className="text-white">tomorrow at 10:00 AM</span>. Please ensure your environment is set up.
+                  {application.step === 1 && <span>Your application is currently <span className="text-white">under review</span>. Keep your profile updated to stand out.</span>}
+                  {application.step === 2 && <span>Great news! You passed the initial screening. <span className="text-white">Next steps</span> will be communicated soon.</span>}
+                  {application.step === 3 && <span>Your Technical Interview is confirmed. <span className="text-white">Please prepare</span> your environment for the session.</span>}
+                  {application.step >= 4 && <span>Your final stages are complete. We will reach out with a <span className="text-white">final decision</span> shortly.</span>}
                 </p>
                 
                 <div className="space-y-3">
                   <button className="w-full py-4 bg-[#D10043] hover:bg-white hover:text-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 group/btn shadow-lg shadow-pink-900/20">
-                    Check Environment <ExternalLink size={12} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
+                    {application.step === 3 ? (
+                      <>Check Environment <ExternalLink size={12} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" /></>
+                    ) : (
+                      <>View Status Details <ChevronRight size={12} className="group-hover/btn:translate-x-1 transition-transform" /></>
+                    )}
                   </button>
                   <div className="flex items-center justify-center gap-2 text-[9px] font-black text-slate-500 uppercase tracking-widest pt-2">
                     <ShieldCheck size={12} className="text-green-500" />

@@ -99,10 +99,10 @@ const AccountSettings = () => {
   }, [userRole, userId]);
 
   useEffect(() => {
-    if (formData.profile_image_url) {
+    if (formData.profile_image_url && !selectedImage) {
       setImagePreview(formData.profile_image_url);
     }
-  }, [formData.profile_image_url]);
+  }, [formData.profile_image_url, selectedImage]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -145,20 +145,49 @@ const AccountSettings = () => {
     }
     setLoading(true);
     try {
+      let currentImageUrl = formData.profile_image_url;
+
+      // 1. If an image is selected but not uploaded, upload it first
+      if (selectedImage) {
+        const formDataImage = new FormData();
+        formDataImage.append('file', selectedImage);
+        let uploadEndpoint = `http://localhost:8000/candidate/upload-profile-image/${userId}`;
+        if (userRole === 'HR') uploadEndpoint = `http://localhost:8000/hr/upload-profile-image/${userId}`;
+        if (userRole === 'ADMIN') uploadEndpoint = `http://localhost:8000/admins/upload-profile-image/${userId}`;
+
+        const uploadResponse = await axios.post(uploadEndpoint, formDataImage);
+        currentImageUrl = uploadResponse.data.image_url;
+        setSelectedImage(null); // Clear selected image after successful upload
+      }
+
+      // 2. Update the rest of the profile
       let endpoint = `http://localhost:8000/candidate/profile/${userId}`;
       if (userRole === 'HR') endpoint = `http://localhost:8000/hr/profile/${userId}`;
       if (userRole === 'ADMIN') endpoint = `http://localhost:8000/admins/profile/${userId}`;
 
-      let updateData = { ...formData };
+      const updateData = { ...formData, profile_image_url: currentImageUrl };
       if (userRole === 'HR') {
         updateData.company_name = formData.current_company;
         updateData.position = formData.current_job_title;
       }
 
       const response = await axios.put(endpoint, updateData);
-      if (response.data.profile_image_url) {
-        dispatch(updateProfileImage(response.data.profile_image_url));
+      const updatedData = response.data;
+      
+      // Update local state with fresh data from server
+      setFormData(prev => ({
+        ...prev,
+        ...updatedData,
+        current_job_title: updatedData.current_job_title || updatedData.position || '',
+        current_company: updatedData.current_company || updatedData.company_name || ''
+      }));
+
+      // Update Redux and LocalStorage for global consistency
+      if (updatedData.profile_image_url) {
+        dispatch(updateProfileImage(updatedData.profile_image_url));
+        localStorage.setItem('profile_image_url', updatedData.profile_image_url);
       }
+      
       alert("Profile updated successfully!");
     } catch (err) {
       console.error("Failed to update profile:", err);

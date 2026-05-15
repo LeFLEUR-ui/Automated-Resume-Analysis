@@ -81,7 +81,8 @@ export const apiSlice = createApi({
                          app.status === 'ACCEPTED' ? "text-green-600 bg-green-50 border-green-100" :
                          "text-slate-600 bg-slate-50 border-slate-100",
             step: app.status === 'PENDING' ? 1 : app.status === 'REVIEWED' ? 2 : 4,
-            totalSteps: 4
+            totalSteps: 4,
+            originalData: app
           }));
         },
       }),

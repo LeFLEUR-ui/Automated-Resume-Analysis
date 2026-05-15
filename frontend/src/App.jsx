@@ -27,6 +27,7 @@ import FindJob from './pages/candidate/FindJob';
 import CandidateSmartUpload from './pages/candidate/CandidateSmartUpload';
 import CandidatePreviewAndVerify from './pages/candidate/CandidatePreviewAndVerify';
 import CandidateProfileForm from './pages/candidate/CandidateProfileForm';
+import CandidateSmartMatchResult from './pages/candidate/CandidateSmartMatchResult';
 
 import HRDashboard from './pages/hr/HRDashboard';
 import JobManagement from './pages/hr/JobManagement';
@@ -87,6 +88,7 @@ const App = () => {
           <Route path="/candidate">
             <Route path="dashboard" element={<CandidateDashboard />} />
             <Route path="findjobs" element={<FindJob />} />
+            <Route path="applicationtracking/:id" element={<ApplicationTracking />} />
             <Route path="applicationtracking" element={<ApplicationTracking />} />
             <Route path="messages" element={<MessagesPage />} />
             <Route path="settings" element={<AccountSettings />} />
@@ -97,6 +99,7 @@ const App = () => {
             <Route path="preview-profile" element={<CandidatePreviewAndVerify />} />
             <Route path="update-profile/:jobId" element={<CandidateProfileForm />} />
             <Route path="update-profile" element={<CandidateProfileForm />} />
+            <Route path="smart-matches" element={<CandidateSmartMatchResult />} />
           </Route>
         </Route>
       </Routes>

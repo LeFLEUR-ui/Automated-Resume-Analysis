@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 import { Helmet } from 'react-helmet-async';
 import {
   User, Mail, Phone, MapPin,
@@ -17,6 +18,7 @@ const CandidateProfileForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { jobId } = useParams();
+  const loggedInEmail = useSelector((state) => state.auth.user);
   const [jobTitle, setJobTitle] = React.useState(location.state?.job?.title || 'Position');
 
   React.useEffect(() => {
@@ -31,12 +33,16 @@ const CandidateProfileForm = () => {
         console.error("Failed to fetch job title:", err);
       }
     };
-    if (jobId) fetchJobTitle();
+    if (jobId) {
+      fetchJobTitle();
+      localStorage.setItem('draft_application_step', '3');
+      localStorage.setItem('draft_application_job_id', jobId);
+    }
   }, [jobId, location.state]);
 
   const [formData, setFormData] = useState({
     fullName: location.state?.personal?.name || "Alex Thompson",
-    email: location.state?.personal?.email || "alex.t@example.com",
+    email: loggedInEmail || location.state?.personal?.email || "alex.t@example.com",
     phone: location.state?.personal?.phone || "+1 (555) 000-1234",
     location: location.state?.personal?.location || "Chicago, IL",
     jobTitle: location.state?.experience?.title || "Senior Operations Lead",
@@ -120,7 +126,7 @@ const CandidateProfileForm = () => {
     const payload = {
       job_id: jobId,
       candidate_name: formData.fullName,
-      candidate_email: formData.email,
+      candidate_email: loggedInEmail || formData.email,
       phone: formData.phone,
       location: formData.location,
       job_title: jobTitle,
@@ -138,6 +144,7 @@ const CandidateProfileForm = () => {
       // Clear draft as it's now submitted
       localStorage.removeItem('draft_application_job_title');
       localStorage.removeItem('draft_application_job_id');
+      localStorage.removeItem('draft_application_step');
       setShowSuccessModal(true);
     } catch (err) {
       console.error("Failed to submit application:", err);

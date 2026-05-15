@@ -27,6 +27,22 @@ const CandidateDashboard = () => {
   // For now, we'll show all and maybe limit to top 5 or something
   const activeApplications = applications.slice(0, 5);
 
+  const draftStep = parseInt(localStorage.getItem('draft_application_step') || '1');
+  const getDraftProgress = () => {
+    if (draftStep === 1) return { text: "Upload Phase", width: "w-1/3" };
+    if (draftStep === 2) return { text: "AI Verification", width: "w-2/3" };
+    if (draftStep === 3) return { text: "Final Review", width: "w-[90%]" };
+    return { text: "Incomplete", width: "w-1/4" };
+  };
+  const draftProgress = getDraftProgress();
+
+  const getDraftRoute = () => {
+    const jobId = localStorage.getItem('draft_application_job_id');
+    if (draftStep === 2) return `/candidate/preview-profile/${jobId}`;
+    if (draftStep === 3) return `/candidate/update-profile/${jobId}`;
+    return `/candidate/upload-resume/${jobId}`;
+  };
+
   return (
     <div className="bg-[#F8FAFC] text-slate-900 antialiased min-h-screen font-['Inter',_sans-serif] flex flex-col">
       <Helmet>
@@ -52,8 +68,6 @@ const CandidateDashboard = () => {
                     <div className="h-32 bg-slate-50 rounded-[32px]"></div>
                   </div>
                 </div>
-              ) : activeApplications.length > 0 ? (
-                <ApplicationList applications={activeApplications} />
               ) : (
                 <div className="space-y-6">
                   {/* Draft Application / In Progress */}
@@ -76,9 +90,18 @@ const CandidateDashboard = () => {
                           </h4>
                           <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Mariwasa Siam Ceramics</p>
                         </div>
+                        <div className="flex-1 max-w-xs mx-4 hidden md:block">
+                          <div className="flex justify-between text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">
+                            <span>Process Stage</span>
+                            <span className="text-[#D10043]">{draftProgress.text}</span>
+                          </div>
+                          <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                            <div className={`bg-[#D10043] ${draftProgress.width} h-full rounded-full animate-pulse transition-all duration-700`}></div>
+                          </div>
+                        </div>
                         <button 
-                          onClick={() => navigate(`/candidate/upload-resume/${localStorage.getItem('draft_application_job_id')}`)}
-                          className="bg-[#D10043] text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-900 transition-all flex items-center gap-2 group"
+                          onClick={() => navigate(getDraftRoute())}
+                          className="bg-[#D10043] whitespace-nowrap text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-900 transition-all flex items-center gap-2 group"
                         >
                           Continue Applying <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
                         </button>
@@ -86,25 +109,30 @@ const CandidateDashboard = () => {
                     </div>
                   )}
 
-                  <div className="bg-white border border-slate-100 rounded-[40px] p-10 shadow-2xl shadow-slate-200/40 text-center py-20">
-                    <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-6 text-slate-300">
-                      <Briefcase size={40} />
+                  {activeApplications.length > 0 ? (
+                    <ApplicationList applications={activeApplications} />
+                  ) : (
+                    <div className="bg-white border border-slate-100 rounded-[40px] p-10 shadow-2xl shadow-slate-200/40 text-center py-20">
+                      <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-6 text-slate-300">
+                        <Briefcase size={40} />
+                      </div>
+                      <h3 className="text-xl font-black text-slate-900 mb-2">No Submitted Applications</h3>
+                      <p className="text-slate-500 mb-8 max-w-sm mx-auto font-medium">
+                        {localStorage.getItem('draft_application_job_id') 
+                          ? `You have one application in progress for ${localStorage.getItem('draft_application_job_title')}. Finish it to see it here.`
+                          : "You haven't applied for any positions yet. Explore our career opportunities to get started."}
+                      </p>
+                      <button 
+                        onClick={() => navigate('/candidate/findjobs')}
+                        className="bg-[#D10043] text-white px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-900 transition-all"
+                      >
+                        Find Jobs
+                      </button>
                     </div>
-                    <h3 className="text-xl font-black text-slate-900 mb-2">No Submitted Applications</h3>
-                    <p className="text-slate-500 mb-8 max-w-sm mx-auto font-medium">
-                      {localStorage.getItem('draft_application_job_id') 
-                        ? `You have one application in progress for ${localStorage.getItem('draft_application_job_title')}. Finish it to see it here.`
-                        : "You haven't applied for any positions yet. Explore our career opportunities to get started."}
-                    </p>
-                    <button 
-                      onClick={() => navigate('/candidate/findjobs')}
-                      className="bg-[#D10043] text-white px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-900 transition-all"
-                    >
-                      Find Jobs
-                    </button>
-                  </div>
+                  )}
                 </div>
               )}
+              
               <ProfileStrength />
             </div>
 
